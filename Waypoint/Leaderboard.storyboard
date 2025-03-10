@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Leaderboard View Controller-->
+        <!--Leaderboard-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController id="Y6W-OH-hqX" customClass="LeaderboardViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
@@ -43,7 +43,7 @@
                                 </connections>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="68d-RW-xLQ">
-                                <rect key="frame" x="16" y="277" width="361" height="491"/>
+                                <rect key="frame" x="16" y="277" width="361" height="442"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeaderboardCell" id="aBj-6o-fuz" customClass="LeaderboardViewCell" customModule="Waypoint" customModuleProvider="target">
@@ -115,6 +115,8 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="68d-RW-xLQ" secondAttribute="bottom" constant="50" id="tWZ-QZ-ZTN"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Leaderboard" id="bAO-nD-ltT"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="dateSegment" destination="cv8-t2-Bg4" id="rW1-HD-yhW"/>
                         <outlet property="scopeSegment" destination="VMv-hn-inC" id="guN-X6-6Z5"/>
