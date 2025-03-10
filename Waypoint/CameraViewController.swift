@@ -6,24 +6,41 @@
 //
 
 import UIKit
+import AVFoundation
 
-class CameraViewController: UIViewController {
-
+class CameraViewController: UIViewController
+{
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        
         // Do any additional setup after loading the view.
     }
     
+    @IBAction func openBackCam(_ sender: UIButton) {
+        performSegue(withIdentifier: "openBackCam", sender: sender)
+    }
+    @IBAction func openFrontCam(_ sender: Any) {
+        performSegue(withIdentifier: "openFrontCam", sender: sender)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "openBackCam" {
+            let openCamVC = segue.destination as! OpenCamViewController
+            openCamVC.position = .back
+        } else if segue.identifier == "openFrontCam" {
+            let openCamVC = segue.destination as! OpenCamViewController
+            openCamVC.position = .front
+        }
+    }
+
+    
 
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
-    }
     */
 
 }
