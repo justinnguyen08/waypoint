@@ -73,8 +73,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             let cell: CustomTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! CustomTableViewCell
             cell.customProfileName.text? = removeFriendsArray[indexPath.row]
             return cell
-            
-            // TODO: Why is this not working??
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             let cell: PendingCustomTableViewCell = pendingFriendView.dequeueReusableCell(withIdentifier: "pendingCell", for: indexPath) as! PendingCustomTableViewCell
             cell.pendingProfileName.text? = addFriendsArray[indexPath.row]
@@ -83,6 +81,20 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             let cell: SuggestedCustomViewTableCell = suggestedFriendView.dequeueReusableCell(withIdentifier: "suggestCell", for: indexPath) as! SuggestedCustomViewTableCell
             cell.profileName.text? = addFriendsArray[indexPath.row]
             return cell
+        }
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if segCtrl?.selectedSegmentIndex == 1 && tableView == suggestedFriendView {
+            performSegue(withIdentifier: "addSegue", sender: indexPath)
+            tableView.deselectRow(at: indexPath, animated: true)
+        } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
+            performSegue(withIdentifier: "pendingSegue", sender: indexPath)
+            tableView.deselectRow(at: indexPath, animated: true)
+        } else {
+            performSegue(withIdentifier: "removeSegue", sender: indexPath)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
         
     }
