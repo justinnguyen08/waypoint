@@ -17,67 +17,26 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var pointsLabel: UILabel!
     @IBOutlet weak var friendsLabel: UILabel!
     @IBOutlet weak var streakLabel: UILabel!
+    @IBOutlet weak var mapCollectionView: UIImageView!
     
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        // Do any additional setup after loading the view.
-//        collectionView.dataSource = self
-//        collectionView.delegate = self
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return 6
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PlaceholderCell", for: indexPath) as! PlaceholderCollectionViewCell
-//        cell.PlaceholderImageView.image = UIImage(systemName: "person.fill")
-//        return cell
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView,
-//                            layout collectionViewLayout: UICollectionViewLayout,
-//                            sizeForItemAt indexPath: IndexPath) -> CGSize {
-//            // Example: 3 columns, some spacing
-//            let spacing: CGFloat = 16   // space between cells + section insets
-//            let totalHorizontalSpacing = spacing * 4 // (left + right insets + 2 gaps between 3 cells)
-//
-//            // Subtract the total spacing from the collection view width
-//            let availableWidth = collectionView.bounds.width - totalHorizontalSpacing
-//            // Divide by 3 for three columns
-//            let cellWidth = availableWidth / 3
-//            // Make cells square
-//            return CGSize(width: cellWidth, height: cellWidth)
-//        }
-//
-//        func collectionView(_ collectionView: UICollectionView,
-//                            layout collectionViewLayout: UICollectionViewLayout,
-//                            insetForSectionAt section: Int) -> UIEdgeInsets {
-//            // For example, 16-pt padding on each side
-//            return UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-//        }	
-//
-//        func collectionView(_ collectionView: UICollectionView,
-//                            layout collectionViewLayout: UICollectionViewLayout,
-//                            minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//            return 16 // vertical spacing
-//        }
-//
-//        func collectionView(_ collectionView: UICollectionView,
-//                            layout collectionViewLayout: UICollectionViewLayout,
-//                            minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//            return 16 // horizontal spacing
-//        }
     let dataItems = Array(repeating: "person.fill", count: 6)
         
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self  // Important for flow layout callbacks
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(mapImageTapped))
+        mapCollectionView.addGestureRecognizer(tapGesture)
+        mapCollectionView.isUserInteractionEnabled = true
+    }
+    
+    @objc func mapImageTapped() {
+        performSegue(withIdentifier: "MapDetailSegue", sender: self)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataItems.count
+         return dataItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView,
