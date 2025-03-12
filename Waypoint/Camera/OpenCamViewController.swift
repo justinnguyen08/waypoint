@@ -50,6 +50,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         preview = nil
     }
     
+    // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
@@ -119,6 +120,9 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         
         currentSession.commitConfiguration()
     }
+    
+    // For right now, just shows the still on the screen at the time the button is pressed.
+    // Will be updated later to actually save the photo.
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
@@ -157,6 +161,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
             self.flipButton.isHidden = true
         }
     }
+    
+    // Resume live feed, after returning from the still view
     @IBAction func resumeLiveFeed(_ sender: UIButton) {
         stillImageView?.removeFromSuperview()
         stillImageView = nil
@@ -167,7 +173,4 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         flipButton.isHidden = false
         setupCaptureSession(with: position)
     }
-    
-    
-    
 }
