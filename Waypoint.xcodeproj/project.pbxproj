@@ -157,9 +157,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Y54RYT597L;
+				DEVELOPMENT_TEAM = 5LVVMLYSLZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Waypoint/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow Camera Access";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show the User Location";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -170,7 +172,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = utcs.Waypoint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Pranav.Waypoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -185,9 +187,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Y54RYT597L;
+				DEVELOPMENT_TEAM = 5LVVMLYSLZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Waypoint/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow Camera Access";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show the User Location";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -198,7 +202,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = utcs.Waypoint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Pranav.Waypoint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
