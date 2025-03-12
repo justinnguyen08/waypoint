@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  ProfileViewController.swift
 //  Waypoint

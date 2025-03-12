@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  SceneDelegate.swift
 //  Waypoint

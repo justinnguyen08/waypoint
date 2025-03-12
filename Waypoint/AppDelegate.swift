@@ -1,10 +1,11 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  AppDelegate.swift
 //  Waypoint
 //
 //  Created by Tony Ngo on 2/28/25.
 //
-
 import UIKit
 import CoreData
 import FirebaseCore
