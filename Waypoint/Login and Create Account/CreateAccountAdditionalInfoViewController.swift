@@ -12,21 +12,13 @@ import FirebaseAuth
 
 class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDelegate {
     
-    
     @IBOutlet weak var profilePicture: UIImageView!
-    
     @IBOutlet weak var nicknameTextField: UITextField!
-    
-    
     @IBOutlet weak var usernameTextField: UITextField!
-    
-    
     @IBOutlet weak var birthdayTextField: UITextField!
-    
-    
     @IBOutlet weak var phoneNumberTextField: UITextField!
-    
     @IBOutlet weak var statusLabel: UILabel!
+    
     var validEmail: String!
     var validPassword: String!
     
@@ -36,13 +28,13 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
         // Do any additional setup after loading the view.
     }
     
-    
+    // upload profile picture
     @IBAction func uploadPhotoButtonPressed(_ sender: Any) {
+        
     }
     
-    
+    // create account into firebase
     @IBAction func createAccountButtonPressed(_ sender: Any) {
-        
         Auth.auth().createUser(withEmail: validEmail,
                                password: validPassword) {
             (authResult,error) in
@@ -55,27 +47,13 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     }
     
     // Called when 'return' key pressed
-
     func textFieldShouldReturn(_ textField:UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
     // Called when the user clicks on the view outside of the UITextField
-
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
