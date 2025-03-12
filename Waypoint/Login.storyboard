@@ -74,15 +74,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lJe-gs-ns7">
-                                <rect key="frame" x="163" y="711" width="75" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <segue destination="ZLY-0a-GO8" kind="presentation" modalPresentationStyle="fullScreen" id="eAE-a1-zHU"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -92,6 +83,7 @@
                         <outlet property="emailTextField" destination="JM4-0m-owt" id="FEF-vj-z11"/>
                         <outlet property="errorLabel" destination="MCu-z3-wlZ" id="Ozc-XD-asc"/>
                         <outlet property="passwordTextField" destination="qC8-Mq-hjw" id="hGd-xS-BGZ"/>
+                        <segue destination="ZLY-0a-GO8" kind="presentation" identifier="loginSuccessfulSegue" modalPresentationStyle="fullScreen" id="cWl-4X-NDg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

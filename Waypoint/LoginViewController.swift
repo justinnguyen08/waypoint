@@ -17,15 +17,22 @@ class LoginViewController: UIViewController {
     
     @IBOutlet weak var errorLabel: UILabel!
     
-//    let loginSegueIdentifier = "loginSuccessfulSegue"
+    let loginSegueIdentifier = "loginSuccessfulSegue"
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        do{
+            try Auth.auth().signOut()
+        }
+        catch let error as NSError{
+            errorLabel.text = "error signing out"
+        }
 
         // Do any additional setup after loading the view.
         Auth.auth().addStateDidChangeListener(){
             (auth, user) in
             if user != nil{
-//                self.performSegue(withIdentifier: self.loginSegueIdentifier, sender: nil)
+                self.performSegue(withIdentifier: self.loginSegueIdentifier, sender: nil)
                 self.emailTextField.text = nil
                 self.passwordTextField.text = nil
             }
