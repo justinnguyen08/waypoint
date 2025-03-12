@@ -21,14 +21,36 @@
                                 <rect key="frame" x="0.0" y="59" width="393" height="710"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ecL-vq-Vsa">
+                                <rect key="frame" x="341" y="69" width="52" height="35"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="gear" catalog="system"/>
+                                <connections>
+                                    <segue destination="Xmc-Rn-gnM" kind="show" id="2Na-wx-Lv6"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aJy-PT-BD7">
+                                <rect key="frame" x="8" y="69" width="49.666666666666657" height="34.333333333333329"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="person.crop.circle" catalog="system"/>
+                                <connections>
+                                    <segue destination="anZ-6c-Os3" kind="show" id="05m-sA-uOa"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="7oJ-23-77c" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="2Pg-aq-TqY"/>
                             <constraint firstItem="7oJ-23-77c" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="C5p-fS-bxD"/>
+                            <constraint firstItem="aJy-PT-BD7" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leadingMargin" constant="-8" id="PSp-Ys-CO3"/>
+                            <constraint firstItem="ecL-vq-Vsa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="T8y-HO-2Qz"/>
+                            <constraint firstItem="ecL-vq-Vsa" firstAttribute="trailing" secondItem="7oJ-23-77c" secondAttribute="trailing" id="WUk-0q-6eO"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="7oJ-23-77c" secondAttribute="bottom" id="fTr-OB-cx5"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="7oJ-23-77c" secondAttribute="trailing" id="iBm-b7-XFI"/>
+                            <constraint firstItem="aJy-PT-BD7" firstAttribute="baseline" secondItem="ecL-vq-Vsa" secondAttribute="baseline" id="tiK-Vy-t7z"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" id="VZ4-7I-kC5"/>
@@ -38,7 +60,27 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4" y="4"/>
+            <point key="canvasLocation" x="3.8167938931297707" y="3.5211267605633805"/>
+        </scene>
+        <!--Profile-->
+        <scene sceneID="217-tH-tfe">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Profile" id="anZ-6c-Os3" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="rTL-so-ndk"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nR5-Iv-AOg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="365" y="-425"/>
+        </scene>
+        <!--Settings-->
+        <scene sceneID="1vw-lU-t2d">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Settings" id="Xmc-Rn-gnM" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="lMi-an-z7W"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TEJ-DK-uPe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="457" y="-108"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ewB-TJ-G9A">
@@ -103,6 +145,11 @@
         </scene>
     </scenes>
     <resources>
+        <image name="gear" catalog="system" width="128" height="122"/>
+        <image name="person.crop.circle" catalog="system" width="128" height="123"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
