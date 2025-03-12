@@ -148,7 +148,7 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Continue"/>
                                 <connections>
                                     <action selector="createAccountButtonPressed:" destination="sLq-cI-bK3" eventType="touchUpInside" id="sPp-pd-xIp"/>
-                                    <segue destination="0SB-hn-7Jp" kind="show" id="mQl-4U-ZYa"/>
+                                    <segue destination="0SB-hn-7Jp" kind="show" identifier="AdditionalInfoSegue" id="mQl-4U-ZYa"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="azp-oy-AEA">
@@ -241,6 +241,13 @@
                                     <action selector="createAccountButtonPressed:" destination="0SB-hn-7Jp" eventType="touchUpInside" id="Rwg-xc-n2q"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jSB-YQ-qTu">
+                                <rect key="frame" x="17" y="787" width="361" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="mQE-g6-PkT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -251,12 +258,13 @@
                         <outlet property="nicknameTextField" destination="KaU-vb-dBB" id="dhx-Jd-L9I"/>
                         <outlet property="phoneNumberTextField" destination="xEL-vF-mwK" id="zZ0-Ad-IAu"/>
                         <outlet property="profilePicture" destination="bCX-Nx-G2x" id="a3j-yO-5Ms"/>
+                        <outlet property="statusLabel" destination="jSB-YQ-qTu" id="dLX-5b-D6l"/>
                         <outlet property="usernameTextField" destination="f4M-DA-xPt" id="kyM-6U-jBK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UqM-zu-Pkq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2913.740458015267" y="-485.21126760563385"/>
+            <point key="canvasLocation" x="2913.4328358208954" y="-485.35469107551484"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ggs-I4-w6t">

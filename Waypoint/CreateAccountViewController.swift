@@ -8,7 +8,7 @@
 import UIKit
 import FirebaseAuth
 
-class CreateAccountViewController: UIViewController {
+class CreateAccountViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var emailTextField: UITextField!
     
@@ -18,19 +18,54 @@ class CreateAccountViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
 
         // Do any additional setup after loading the view.
     }
     
+    func isValidEmail(_ email: String) -> Bool {
+       let emailRegEx =
+           "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+       let emailPred = NSPredicate(format:"SELF MATCHES %@",
+           emailRegEx)
+       return emailPred.evaluate(with: email)
+    }
+      
+    func isValidPassword(_ password: String) -> Bool {
+       let minPasswordLength = 6
+       return password.count >= minPasswordLength
+    }
+    
     
     @IBAction func createAccountButtonPressed(_ sender: Any) {
-        Auth.auth().createUser(withEmail: emailTextField.text!,
-                               password: passwordTextField.text!) {
-            (authResult,error) in
-            if let error = error as NSError? {
-                self.errorLabel.text = "\(error.localizedDescription)"
-            } else {
-                self.errorLabel.text = ""
+        
+    }
+    
+    // Called when 'return' key pressed
+
+    func textFieldShouldReturn(_ textField:UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    // Called when the user clicks on the view outside of the UITextField
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+        if segue.identifier == "AdditionalInfoSegue",
+           let nextVC = segue.destination as? CreateAccountAdditionalInfoViewController{
+            if (isValidEmail(emailTextField.text!) && isValidPassword(passwordTextField.text!)){
+                nextVC.validEmail = emailTextField.text!
+                nextVC.validPassword = passwordTextField.text!
+            }
+            else{
+                self.errorLabel.text = "Invalid email or password"
             }
         }
     }
