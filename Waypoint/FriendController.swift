@@ -87,13 +87,13 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if segCtrl?.selectedSegmentIndex == 1 && tableView == suggestedFriendView {
-            performSegue(withIdentifier: "addSegue", sender: indexPath)
+//            performSegue(withIdentifier: "addSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
-            performSegue(withIdentifier: "pendingSegue", sender: indexPath)
+//            performSegue(withIdentifier: "pendingSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         } else {
-            performSegue(withIdentifier: "removeSegue", sender: indexPath)
+//            performSegue(withIdentifier: "removeSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
