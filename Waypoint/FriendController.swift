@@ -40,6 +40,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     
     @IBAction func friendSegCtlrPressed(_ sender: Any) {
+        // Depending on what segctrl is clicked I changed the view
         switch segCtrl.selectedSegmentIndex {
         case 0:
             suggestFriendView.isHidden = true
@@ -68,8 +69,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // Changing the made-up data based on segctrl
         if segCtrl?.selectedSegmentIndex == 0 {
-            print("here")
             let cell: CustomTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! CustomTableViewCell
             cell.customProfileName.text? = removeFriendsArray[indexPath.row]
             return cell
@@ -86,14 +87,12 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // code to deselect the rows once they are clicked
         if segCtrl?.selectedSegmentIndex == 1 && tableView == suggestedFriendView {
-//            performSegue(withIdentifier: "addSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
-//            performSegue(withIdentifier: "pendingSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         } else {
-//            performSegue(withIdentifier: "removeSegue", sender: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
         }
         

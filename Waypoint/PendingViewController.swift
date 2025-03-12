@@ -8,6 +8,8 @@
 import UIKit
 
 class PendingViewController: UIViewController {
+    
+    // Does nothing for now needed it for a new controller
 
     override func viewDidLoad() {
         super.viewDidLoad()

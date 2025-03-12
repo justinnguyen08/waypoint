@@ -13,6 +13,8 @@ class AddFriendViewController: UIViewController {
     @IBOutlet weak var pendingButton: UIButton!
     
     override func viewDidLoad() {
+        
+        // Creating some connections add and pending buttons and hiding them based on what is called
         super.viewDidLoad()
         pendingButton.isHidden = true
     }

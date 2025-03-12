@@ -11,6 +11,8 @@ import UIKit
 
 class CustomTableViewCell: UITableViewCell {
     
+    // Just created some connections to the table view in profile cell
+    
     @IBOutlet weak var customProfileName: UILabel!
     
     @IBOutlet weak var profilePic: UIImageView!

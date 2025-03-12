@@ -8,6 +8,8 @@
 import UIKit
 
 class RemoveViewController: UIViewController {
+    
+    // Does nothing for now needed it for different controller
 
     override func viewDidLoad() {
         super.viewDidLoad()
