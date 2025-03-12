@@ -26,13 +26,15 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
-        collectionView.delegate = self  // Important for flow layout callbacks
+        collectionView.delegate = self  // Flow layout callbacks
         
+        // mapCollectionView segue
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(mapImageTapped))
         mapCollectionView.addGestureRecognizer(tapGesture)
         mapCollectionView.isUserInteractionEnabled = true
     }
     
+    // Programatically implemented segue for mapCollectionView
     @objc func mapImageTapped() {
         performSegue(withIdentifier: "MapDetailSegue", sender: self)
     }
@@ -50,7 +52,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         return cell
     }
     
-    // setting appropriate spacing (3 column layout
+    // Setting appropriate spacing (3 column layout)
+    // Cell size
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -68,18 +71,21 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         return CGSize(width: cellWidth, height: cellWidth)
     }
     
+    // Section insets (16 padding on each side)
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     }
     
+    // Vertical spacing
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 16
     }
     
+    // Horizontal spacing between items
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
