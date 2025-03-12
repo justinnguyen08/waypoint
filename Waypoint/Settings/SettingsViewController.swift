@@ -12,9 +12,7 @@ import UIKit
 class SettingsViewController: UITableViewController {
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
+        super.viewDidLoad()  
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
