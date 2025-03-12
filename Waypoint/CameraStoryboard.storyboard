@@ -48,11 +48,13 @@
             </objects>
             <point key="canvasLocation" x="914.92537313432831" y="-13.043478260869565"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Camera-->
         <scene sceneID="V4p-aJ-Cqk">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="VPM-a3-3gM" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Camera" id="sJN-JO-ci7"/>
                     <toolbarItems/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="B2m-mc-Po2">
                         <rect key="frame" x="0.0" y="62" width="402" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
