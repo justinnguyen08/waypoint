@@ -95,16 +95,19 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         
         currentSession.beginConfiguration()
         
+        // Stopping active camera
         if let currentInput = currentSession.inputs.first as? AVCaptureDeviceInput {
             currentSession.removeInput(currentInput)
         }
         
+        // Setting up device
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: newPosition) else {
             print("Camera unavailable for position \(newPosition.rawValue)")
             currentSession.commitConfiguration()
             return
         }
         
+        // Add to session
         do {
             let newInput = try AVCaptureDeviceInput(device: newDevice)
             if currentSession.canAddInput(newInput) {
@@ -129,6 +132,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
+    // Saves still image of captured photo
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             print("Error capturing photo: \(error.localizedDescription)")
