@@ -20,7 +20,7 @@ class TagFriendsViewController: UIViewController, UITableViewDelegate, UITableVi
         tagFriendsTableView.dataSource = self
     }
     
-
+    // Setting up table view
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }

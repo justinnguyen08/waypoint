@@ -16,7 +16,6 @@ class CameraViewController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         // Do any additional setup after loading the view.
     }
     
@@ -27,6 +26,7 @@ class CameraViewController: UIViewController
         performSegue(withIdentifier: "openFrontCam", sender: sender)
     }
     
+    // Preparing segue for back and front camera
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "openBackCam" {
             let openCamVC = segue.destination as! OpenCamViewController
