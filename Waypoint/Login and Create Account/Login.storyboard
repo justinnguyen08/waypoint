@@ -148,7 +148,6 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Continue"/>
                                 <connections>
                                     <action selector="createAccountButtonPressed:" destination="sLq-cI-bK3" eventType="touchUpInside" id="sPp-pd-xIp"/>
-                                    <segue destination="0SB-hn-7Jp" kind="show" identifier="AdditionalInfoSegue" id="mQl-4U-ZYa"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="azp-oy-AEA">
@@ -167,11 +166,12 @@
                         <outlet property="emailTextField" destination="aHl-SL-iMI" id="75m-Os-Y9S"/>
                         <outlet property="errorLabel" destination="azp-oy-AEA" id="dhC-Wj-Cbb"/>
                         <outlet property="passwordTextField" destination="8W3-LY-gRL" id="Hq3-sT-cQa"/>
+                        <segue destination="0SB-hn-7Jp" kind="show" identifier="AdditionalInfoSegue" id="zMn-Tw-Gsc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b8r-4H-hiv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2011.4503816793892" y="-485.21126760563385"/>
+            <point key="canvasLocation" x="1967" y="-485"/>
         </scene>
         <!--Create Account Additional Info View Controller-->
         <scene sceneID="GQf-bx-uxY">
