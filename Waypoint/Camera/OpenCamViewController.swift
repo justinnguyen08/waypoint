@@ -18,7 +18,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     var position: AVCaptureDevice.Position!
     var photoOutput: AVCapturePhotoOutput?
     var stillImageView: UIImageView?
-
+    var capturedData: Data?
+    var validPicture = false
 
     
     @IBOutlet weak var sendPostButton: UIButton!
@@ -125,11 +126,11 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     }
     
     // For right now, just shows the still on the screen at the time the button is pressed.
-    // Will be updated later to actually save the photo.
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
+        validPicture = true
     }
     
     // Saves still image of captured photo
@@ -163,6 +164,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
             self.pinPhotoButton.isHidden = false
             self.stillImageView!.image = image
             self.flipButton.isHidden = true
+            
+            self.capturedData = imageData
         }
     }
     
@@ -176,5 +179,52 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         tagFriendsButton.isHidden = true
         flipButton.isHidden = false
         setupCaptureSession(with: position)
+        validPicture = false
+        capturedData = nil
+    }
+    @IBAction func onSendPressed(_ sender: UIButton) {
+        guard let imageData = capturedData else {
+            print("Take a picture first")
+            return
+        }
+        if (!validPicture) {
+            print("Picture already uploaded")
+            return
+        }
+        uploadImage(imageData: imageData)
+        validPicture = false
+//        resumeLiveFeed(sender)
+    }
+    
+    func uploadImage(imageData: Data) {
+        let uploadURL = URL(string: "https://www.cs.utexas.edu/~pranavs/upload.php")!
+        var request = URLRequest(url: uploadURL)
+        request.httpMethod = "POST"
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = body
+        
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                print("Upload error: \(error.localizedDescription)")
+                return
+            }
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Image uploaded successfully")
+            } else {
+                print("Upload failed with status: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+            }
+        }
+        task.resume()
     }
 }

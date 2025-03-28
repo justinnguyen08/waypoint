@@ -35,5 +35,5 @@ class CameraViewController: UIViewController
             let openCamVC = segue.destination as! OpenCamViewController
             openCamVC.position = .front
         }
-    }
+    } 
 }
