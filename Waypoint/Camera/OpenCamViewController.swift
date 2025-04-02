@@ -9,6 +9,8 @@
 
 import UIKit
 import AVFoundation
+import FirebaseStorage
+import FirebaseAuth
 
 class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 
@@ -20,6 +22,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     var stillImageView: UIImageView?
     var capturedData: Data?
     var validPicture = false
+    var timestamp: Date?
 
     
     @IBOutlet weak var sendPostButton: UIButton!
@@ -142,6 +145,15 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         
         guard let imageData = photo.fileDataRepresentation() else { return }
         guard var image = UIImage(data: imageData) else { return }
+        
+        timestamp = Date()
+        
+        if let exifMeta = photo.metadata[kCGImagePropertyExifDictionary as String] as? [String: Any],
+           let originalDate = exifMeta[kCGImagePropertyExifDateTimeOriginal as String] as? String {
+            print("EXIF Timestamp: \(originalDate)")
+        } else {
+            print("Using current timestamp: \(timestamp)")
+        }
         if self.position == .front {
             guard let cgImage = image.cgImage else { return }
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
@@ -182,6 +194,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         validPicture = false
         capturedData = nil
     }
+    
     @IBAction func onSendPressed(_ sender: UIButton) {
         guard let imageData = capturedData else {
             print("Take a picture first")
@@ -197,34 +210,28 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     }
     
     func uploadImage(imageData: Data) {
-        let uploadURL = URL(string: "https://www.cs.utexas.edu/~pranavs/upload.php")!
-        var request = URLRequest(url: uploadURL)
-        request.httpMethod = "POST"
-        
-        let boundary = "Boundary-\(UUID().uuidString)"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var body = Data()
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData)
-        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = body
-        
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: request) { (data, response, error) in
+        guard let user = Auth.auth().currentUser else { return }
+        let userId = user.uid
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let imageRef = storageRef.child("\(userId)/all_pics/\(timestamp!.timeIntervalSince1970).jpg") // Unique filename
+
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)"]
+
+        imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
             if let error = error {
                 print("Upload error: \(error.localizedDescription)")
                 return
             }
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                print("Image uploaded successfully")
-            } else {
-                print("Upload failed with status: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+            imageRef.downloadURL { (url, error) in
+                if let error = error {
+                    print("Failed to get download URL: \(error.localizedDescription)")
+                } else if let downloadURL = url {
+                    print("Image uploaded successfully: \(downloadURL.absoluteString)")
+                }
             }
         }
-        task.resume()
     }
 }
