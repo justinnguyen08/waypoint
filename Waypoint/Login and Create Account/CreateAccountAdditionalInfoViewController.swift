@@ -9,6 +9,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseCore
+import FirebaseFirestore
 
 class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDelegate {
     
@@ -35,16 +37,38 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     
     // create account into firebase
     @IBAction func createAccountButtonPressed(_ sender: Any) {
-        Auth.auth().createUser(withEmail: validEmail,
-                               password: validPassword) {
-            (authResult,error) in
+        Auth.auth().createUser(withEmail: validEmail, password: validPassword) { authResult, error in
             if let error = error as NSError? {
                 self.statusLabel.text = "\(error.localizedDescription)"
+                return
             } else {
                 self.statusLabel.text = ""
             }
+            
+            // Ensure user authentication was successful before proceeding
+            let userID = self.usernameTextField.text!
+
+            // Add a new document with the user's ID
+            let userData: [String: Any] = [
+                "birthday": "Ada",
+                "friends": [],
+                "phoneNumber": "Lovelace",
+                "nickname": "Lovelace",
+                "score": 1,
+                "streak": 1,
+                "username": "Ada"
+            ]
+
+            FirestoreManager.shared.db.collection("users").document(userID).setData(userData) { error in
+                if let error = error {
+                    print("Error adding document: \(error)")
+                } else {
+                    print("Document successfully added for user ID: \(userID)")
+                }
+            }
         }
     }
+
     
     // Called when 'return' key pressed
     func textFieldShouldReturn(_ textField:UITextField) -> Bool {
