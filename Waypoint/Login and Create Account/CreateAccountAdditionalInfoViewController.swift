@@ -46,7 +46,7 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
             }
             
             // Ensure user authentication was successful before proceeding
-            let userID = self.usernameTextField.text!
+            guard let userID = Auth.auth().currentUser?.uid else { return }
 
             // Add a new document with the user's ID
             let userData: [String: Any] = [
