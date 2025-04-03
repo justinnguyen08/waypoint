@@ -50,13 +50,11 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
 
             // Add a new document with the user's ID
             let userData: [String: Any] = [
-                "birthday": "Ada",
                 "friends": [],
-                "phoneNumber": "Lovelace",
-                "nickname": "Lovelace",
-                "score": 1,
-                "streak": 1,
-                "username": "Ada"
+                "nickname": self.nicknameTextField.text!,
+                "score": 0,
+                "streak": 0,
+                "username": self.usernameTextField.text!
             ]
 
             FirestoreManager.shared.db.collection("users").document(userID).setData(userData) { error in
