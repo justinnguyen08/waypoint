@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PsO-zX-3ML">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PsO-zX-3ML">
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -170,7 +170,7 @@
             <objects>
                 <viewController id="Rzo-hG-RSl" customClass="ProfileSettingsPageViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HNF-c4-JCb">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="864"/>
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="802"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.fill" catalog="system" id="cLH-sC-Bm2">
@@ -227,6 +227,9 @@
                                 <rect key="frame" x="101" y="267" width="190" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Upload Profile Picture"/>
+                                <connections>
+                                    <segue destination="C6w-uv-s0a" kind="show" id="RDs-BO-Lb1"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile Settings" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kuZ-tD-8SW">
                                 <rect key="frame" x="104" y="110.33333333333333" width="194" height="33.666666666666671"/>
@@ -265,12 +268,77 @@
             </objects>
             <point key="canvasLocation" x="2556.4885496183206" y="-28.169014084507044"/>
         </scene>
+        <!--Profile Pic View Controller-->
+        <scene sceneID="Y2X-zP-0eW">
+            <objects>
+                <viewController id="C6w-uv-s0a" customClass="ProfilePicViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xuE-PP-9rg">
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="802"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z21-7Y-GQL">
+                                <rect key="frame" x="8" y="20" width="84" height="83"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="arrow.counterclockwise.circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="flipCamera:" destination="C6w-uv-s0a" eventType="touchUpInside" id="vW3-TH-mjL"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ob7-9b-dAF">
+                                <rect key="frame" x="165" y="593" width="88" height="88"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="capturePicture:" destination="C6w-uv-s0a" eventType="touchUpInside" id="E80-S1-E5d"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="itH-Fa-sh2">
+                                <rect key="frame" x="27" y="44" width="47" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
+                                <connections>
+                                    <action selector="resumeLiveFeed:" destination="C6w-uv-s0a" eventType="touchUpInside" id="Q10-TA-ZKQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MW6-s0-AG3">
+                                <rect key="frame" x="165" y="593" width="88" height="88"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Send"/>
+                                <connections>
+                                    <action selector="onSendPressed:" destination="C6w-uv-s0a" eventType="touchUpInside" id="JNf-VA-tR3"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="SwV-Ve-WlR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="CGs-vg-ZN0"/>
+                    <connections>
+                        <outlet property="capturePicButton" destination="Ob7-9b-dAF" id="glz-0o-57g"/>
+                        <outlet property="flipButton" destination="z21-7Y-GQL" id="DHy-Re-wNl"/>
+                        <outlet property="resumeLiveButton" destination="itH-Fa-sh2" id="795-xz-wf2"/>
+                        <outlet property="sendPostButton" destination="MW6-s0-AG3" id="BgO-oP-6X2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Iu3-ma-92v" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3374.6268656716416" y="-18.535469107551485"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="iIT-jN-uBN">
             <objects>
                 <viewController id="eoQ-pt-G3i" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hhg-nk-egD">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="864"/>
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="802"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Yearly Timelapse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nb8-l4-MeC">
@@ -296,7 +364,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
