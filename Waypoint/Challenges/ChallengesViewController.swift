@@ -19,13 +19,14 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
 
     @IBOutlet weak var dailyView: UIView!
+    
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var dailyChallengeImage: UIImageView!
     
     @IBOutlet weak var flashButton: UIButton!
     @IBOutlet weak var cameraButton: UIButton!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var rotateCameraButton: UIButton!
-    
     @IBOutlet weak var backButton: UIButton!
     
     @IBOutlet weak var monthlyView: UIView!
@@ -51,36 +52,91 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     var monthlyChallenges: [ChallengeInfo]!
     var currentDateSince1970: TimeInterval!
     
-    var didDoDailyChallenge: Bool!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
-        dailyView.isHidden = false
-        monthlyView.isHidden = true
-        self.sendButton.isHidden = true
-        self.backButton.isHidden = true
-        
         monthlyTableView.delegate = self
         monthlyTableView.dataSource = self
-        
         currentDateSince1970 = Date().timeIntervalSince1970
-        loadChallenges()
+        loadChallenges{
+            self.getDailyChallengePhoto()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if didDoDailyChallenge{
-            
+        super.viewWillAppear(animated)
+        
+        // get the current date and load daily/monthly challenges
+        currentDateSince1970 = Date().timeIntervalSince1970
+        loadChallenges{
+            self.getDailyChallengePhoto()
         }
-        else{
-            setupCaptureSession(with: position)
+        
+        // look into the user document and find if they have completed the daily challenge
+        guard let uid = Auth.auth().currentUser?.uid else {
+           print("User not authenticated")
+           return
+        }
+        let userDocRef = FirestoreManager.shared.db.collection("users").document(uid)
+        userDocRef.getDocument { (document, error) in
+            if let error = error{
+                print("Error getting user document: \(error)")
+                    return
+            }
+            if let document = document, document.exists {
+                if let data = document.data(), let didDoDailyChallenge = data["getDailyChallenge"] as? Bool {
+                    
+                    if didDoDailyChallenge{
+                        // display the image that was loaded from getDailyChallengePhoto
+                        self.flashButton.isHidden = true
+                        self.backButton.isHidden = true
+                        self.cameraButton.isHidden = true
+                        self.rotateCameraButton.isHidden = true
+                        self.sendButton.isHidden = true
+                    }
+                    else{
+                        self.flashButton.isHidden = false
+                        self.backButton.isHidden = false
+                        self.cameraButton.isHidden = false
+                        self.rotateCameraButton.isHidden = false
+                        self.dailyChallengeImage.isHidden = false
+                        self.sendButton.isHidden = true
+                        self.setupCaptureSession(with: .back)
+                    }
+                    
+                } else {
+                    print("Key 'getDailyChallenge' not found or not a boolean.")
+                }
+            } else {
+                print("User document does not exist.")
+            }
         }
     }
     
+    func getDailyChallengePhoto() {
+        guard let user = Auth.auth().currentUser else {
+            print("No user logged in")
+            return
+        }
+        let userId = user.uid
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicRef = storageRef.child("\(userId)/challenges/dailyChallenge/\(dailyChallenge.id!).jpg")
+        
+        profilePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] data, error in
+            if let error = error {
+                print("Error fetching profile picture: \(error.localizedDescription)")
+                return
+            }
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.dailyChallengeImage.image = image
+                }
+            }
+        }
+    }
     
-    
-    func loadChallenges(){
+    func loadChallenges(completion: @escaping () -> Void){
         FirestoreManager.shared.db.collection("dailyChallenges").getDocuments { (querySnapshot, error) in
             if let error = error {
                 print("Error getting documents: \(error)")
@@ -93,7 +149,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                         ($0.data()["id"] as? Int ?? 0) < ($1.data()["id"] as? Int ?? 0)
                     }
                     // set the daily challenge
-                    self.dailyChallenge = ChallengeInfo(data: sortedDocumentsById[weekdayIndex].data())
+                    self.dailyChallenge = ChallengeInfo(data: sortedDocumentsById[weekdayIndex - 1].data())
+                    completion()
                 }
             }
         }
@@ -164,10 +221,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             self.flashButton.setImage(UIImage(systemName: "flashlight.slash"), for: .normal)
         }
     }
-    
-    
-    
-    
     
     @IBAction func flipCamera(_ sender: Any) {
         guard let currentSession = session, currentSession.isRunning else { return }
@@ -282,7 +335,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     @IBAction func sendPhotoButtonPressed(_ sender: Any) {
-        guard let imageData = capturedData else {
+        guard capturedData != nil else {
             print("No image data to upload")
             return
         }
@@ -290,8 +343,20 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             print("Picture already uploaded")
             return
         }
+        
         uploadImage(imageData: self.capturedData!)
-        resumeCamera()
+        dismissCamera()
+        stillImageView?.removeFromSuperview()
+        stillImageView = nil
+        if let imageData = capturedData, let image = UIImage(data: imageData) {
+            dailyChallengeImage.image = image
+            dailyChallengeImage.isHidden = false
+        }
+        flashButton.isHidden = true
+        cameraButton.isHidden = true
+        rotateCameraButton.isHidden = true
+        sendButton.isHidden = true
+        backButton.isHidden = true
         validPicture = false
     }
     
@@ -320,7 +385,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let storageRef = storage.reference()
         
         
-        let imageRef = storageRef.child("\(userId)/challenges/dailyChallenge/\(timestamp!.timeIntervalSince1970).jpg") // Unique filename
+        let imageRef = storageRef.child("\(userId)/challenges/dailyChallenge/\(dailyChallenge.id!).jpg") // Unique filename
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
@@ -337,19 +402,16 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     print("Failed to get download URL: \(error.localizedDescription)")
                 } else if let downloadURL = url {
                     print("Image uploaded successfully: \(downloadURL.absoluteString)")
+                    
+                    FirestoreManager.shared.db.collection("users").document(userId).setData(["getDailyChallenge" : true], merge: true)
+                    
                 }
             }
         }
+        
+        
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     @IBAction func onSegmentChange(_ sender: Any) {
         
         switch segmentControl.selectedSegmentIndex {
@@ -357,13 +419,11 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             dailyView.isHidden = false
             monthlyView.isHidden = true
             view.bringSubviewToFront(dailyView)
-            setupCaptureSession(with: position)
         case 1: // monthly view
             monthlyView.isHidden = false
             dailyView.isHidden = true
             monthlyTableView.reloadData()
             view.bringSubviewToFront(monthlyView)
-            dismissCamera()
         case 2: // segue to feed page
             dismissCamera()
             performSegue(withIdentifier: "ChallengeFeedSegue", sender: self)
