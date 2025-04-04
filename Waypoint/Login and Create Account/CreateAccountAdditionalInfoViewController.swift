@@ -37,33 +37,60 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     
     // create account into firebase
     @IBAction func createAccountButtonPressed(_ sender: Any) {
-        Auth.auth().createUser(withEmail: validEmail, password: validPassword) { authResult, error in
-            if let error = error as NSError? {
-                self.statusLabel.text = "\(error.localizedDescription)"
-                return
-            } else {
-                self.statusLabel.text = ""
-            }
-            
-            // Ensure user authentication was successful before proceeding
-            guard let userID = Auth.auth().currentUser?.uid else { return }
-
-            // Add a new document with the user's ID
-            let userData: [String: Any] = [
-                "friends": [],
-                "nickname": self.nicknameTextField.text!,
-                "score": 0,
-                "streak": 0,
-                "username": self.usernameTextField.text!
-            ]
-
-            FirestoreManager.shared.db.collection("users").document(userID).setData(userData) { error in
+        
+        let enteredUsername = usernameTextField.text ?? ""	
+        let db = Firestore.firestore()
+        
+        // check if username is unique
+        db.collection("users").whereField("username", isEqualTo: enteredUsername)
+            .getDocuments { [weak self] (querySnapshot, error) in
                 if let error = error {
-                    print("Error adding document: \(error)")
-                } else {
-                    print("Document successfully added for user ID: \(userID)")
+                    // add ui changes to main dispatch queue from now on
+                    DispatchQueue.main.async {
+                        self?.statusLabel.text = "Error checking username: \(error.localizedDescription)"
+                    }
+                    return
                 }
-            }
+                
+                if let snapshot = querySnapshot, !snapshot.documents.isEmpty {
+                    DispatchQueue.main.async {
+                        self?.statusLabel.text = "Username is already taken. Please choose another."
+                    }
+                    return
+                } else {
+                    Auth.auth().createUser(withEmail: self!.validEmail, password: self!.validPassword) { authResult, error in
+                        if let error = error {
+                            DispatchQueue.main.async {
+                                self?.statusLabel.text = error.localizedDescription
+                            }
+                            return
+                        } else {
+                            DispatchQueue.main.async {
+                                self?.statusLabel.text = ""
+                            }
+                        }
+                        
+                        guard let userID = Auth.auth().currentUser?.uid else { return }
+                        
+                        let userData: [String: Any] = [
+                            "friends": [],
+                            "nickname": self!.nicknameTextField.text ?? "",
+                            "score": 0,
+                            "streak": 0,
+                            "username": enteredUsername
+                        ]
+                        
+                        db.collection("users").document(userID).setData(userData) { error in
+                            DispatchQueue.main.async {
+                                if let error = error {
+                                    self?.statusLabel.text = "Error adding document: \(error.localizedDescription)"
+                                } else {
+                                    self?.statusLabel.text = "Account successfully created!"
+                                }
+                            }
+                        }
+                    }
+                }
         }
     }
 
