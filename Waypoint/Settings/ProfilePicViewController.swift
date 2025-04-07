@@ -219,7 +219,7 @@ class ProfilePicViewController: UIViewController, AVCapturePhotoCaptureDelegate 
         let userId = user.uid
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let imageRef = storageRef.child("\(userId)/profile_pic/.jpg") // Unique filename
+        let imageRef = storageRef.child("\(userId)/profile_pic.jpg") // Unique filename
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
