@@ -39,7 +39,6 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        setupCaptureSession(with: position)
         
         capturePicButton.layer.cornerRadius = 35
         capturePicButton.clipsToBounds = true
@@ -51,6 +50,11 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         locManager.delegate = self
         locManager.requestWhenInUseAuthorization()
         locManager.startUpdatingLocation()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupCaptureSession(with: position)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
