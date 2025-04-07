@@ -49,7 +49,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // challanges info
     var dailyChallenge: ChallengeInfo!
-    var hasDoneDailyChallenge: Bool!
+    var hasDoneDailyChallenge: Bool = false
     var monthlyChallenges: [ChallengeInfo]!
     var currentDateSince1970: TimeInterval!
     var monthlyChallengeIndex: Int!
