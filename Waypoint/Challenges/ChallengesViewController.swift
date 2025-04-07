@@ -273,7 +273,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
-        self.tabBarController?.tabBar.isHidden = true
+//        self.tabBarController?.tabBar.isHidden = true
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return

@@ -73,7 +73,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         guard !isCameraRunning else{
             return
         }
-        self.tabBarController?.tabBar.isHidden = true
+//        self.tabBarController?.tabBar.isHidden = true
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return
