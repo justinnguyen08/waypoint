@@ -19,9 +19,9 @@ public struct User {
 //    let photoURL: String
 }
 
-public var addFriendsArray: [User] = []
-public var removeFriendsArray: [User] = []
-public var pendingFriendsArray: [User] = []
+public var addFriendsArray: [User] = []     //suggested friends
+public var removeFriendsArray: [User] = []  //current friends
+public var pendingFriendsArray: [User] = [] //pending friends
 
 class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -40,64 +40,83 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         friendProfileView.delegate = self
         friendProfileView.dataSource = self
         pendingFriendView.delegate = self
         pendingFriendView.dataSource = self
         suggestedFriendView.delegate = self
         suggestedFriendView.dataSource = self
+        
         suggestFriendView.isHidden = true
         currentFriendsView.isHidden = false
-        // Do any additional setup after loading the view.
-        
-        suggestedFriend()
         
         guard let uid = Auth.auth().currentUser?.uid else {
-                print("User not authenticated")
-                return
+            print("User not authenticated")
+            return
         }
-
-        getCurrentFriend(uid: uid)
-        pendingFriends(uid: uid)
         
-        print(removeFriendsArray)
-        
-        
-        pendingFriendView.reloadData()
-        suggestedFriendView.reloadData()
-        friendProfileView.reloadData()
+        // Start the sequence of loading data
+        suggestedFriend {
+            self.getCurrentFriend(uid: uid) {
+                self.pendingFriends(uid: uid) {
+                    // Once all data is fetched, filter the addFriendsArray
+                    print("before: \(addFriendsArray)")
+                    addFriendsArray.removeAll { user in
+                        removeFriendsArray.contains(where: { $0.uid == user.uid })
+                    }
+                    print("after: \(addFriendsArray)")
+                    
+                    // Reload the table views to reflect the changes
+                    DispatchQueue.main.async {
+                        self.pendingFriendView.reloadData()
+                        self.suggestedFriendView.reloadData()
+                        self.friendProfileView.reloadData()
+                    }
+                }
+            }
+        }
     }
+
     
     override func viewWillAppear(_ animated: Bool) {
+        
         guard let uid = Auth.auth().currentUser?.uid else {
                 print("User not authenticated")
                 return
         }
-        suggestedFriend()
-        pendingFriends(uid: uid)
-        getCurrentFriend(uid: uid)
-        pendingFriendView.reloadData()
-        suggestedFriendView.reloadData()
-        friendProfileView.reloadData()
+        
+        suggestedFriend {
+            self.getCurrentFriend(uid: uid) {
+                self.pendingFriends(uid: uid) {
+                    // Once all data is fetched, filter the addFriendsArray
+//                    print("before: \(addFriendsArray)")
+                    addFriendsArray.removeAll { user in
+                        removeFriendsArray.contains(where: { $0.uid == user.uid })
+                    }
+//                    print("after: \(addFriendsArray)")
+                    
+                    // Reload the table views to reflect the changes
+                    DispatchQueue.main.async {
+                        self.pendingFriendView.reloadData()
+                        self.suggestedFriendView.reloadData()
+                        self.friendProfileView.reloadData()
+                    }
+                }
+            }
+        }
     }
     
-    func pendingFriends(uid: String) {
+    func pendingFriends(uid: String, completion: @escaping () -> Void) {
         db.collection("users").document(uid).getDocument { (document, error) in
             if let error = error {
                 print("Error fetching user data: \(error.localizedDescription)")
                 return
             }
-            
-            if let document = document, document.exists {
-                print("Document Data: \(document.data() ?? [:])")  // Debugging print
 
-                // Fetch the pendingFriends array
+            if let document = document, document.exists {
                 if let pendingFriendsData = document.data()?["pendingFriends"] as? [[String: Any]] {
-                    print("Pending Friends Data: \(pendingFriendsData)")  // Debugging print
-                    
                     var pendingList: [User] = []
-                    
-                    // Iterate through the pending friends array
                     for friendInfo in pendingFriendsData {
                         if let uid = friendInfo["uid"] as? String,
                            let username = friendInfo["username"] as? String {
@@ -105,14 +124,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                             pendingList.append(friend)
                         }
                     }
-                    
-                    // Update the pendingFriendsArray
                     pendingFriendsArray = pendingList
-                    
-                    // Reload the table view to display the changes
                     DispatchQueue.main.async {
                         self.pendingFriendView.reloadData()
                     }
+                    completion() // Call the completion handler when done
                 } else {
                     print("No pending friends data found")
                 }
@@ -122,8 +138,9 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
 
+
     
-    func suggestedFriend() {
+    func suggestedFriend(completion: @escaping () -> Void) {
         guard let currentUser = Auth.auth().currentUser else {
             print("No current user logged in")
             return
@@ -133,24 +150,25 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 print("Error fetching users: \(error.localizedDescription)")
                 return
             }
-            var fetchedUsers: [User] = [] // Temporary array to store users
+            var fetchedUsers: [User] = []
             for document in snapshot!.documents {
                 let data = document.data()
                 let user = User(
-                    uid: data["uid"] as? String ?? "Unknown UID",
+                    uid: document.documentID,
                     username: data["username"] as? String ?? "No Name"
                 )
-                
                 if document.documentID != currentUser.uid {
                     fetchedUsers.append(user)
                 }
-                addFriendsArray = fetchedUsers
             }
+            addFriendsArray = fetchedUsers
+            completion() // Call the completion handler when done
         }
     }
 
+
     
-    func getCurrentFriend(uid: String) {
+    func getCurrentFriend(uid: String, completion: @escaping () -> Void) {
         db.collection("users").document(uid).getDocument { (document, error) in
             if let error = error {
                 print("Error fetching user data: \(error.localizedDescription)")
@@ -158,15 +176,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             }
 
             if let document = document, document.exists {
-                print("Document Data: \(document.data() ?? [:])")
-
-                // Fetch the friends array
                 if let friendsData = document.data()?["friends"] as? [[String: Any]] {
-                    print("Current Friends Data: \(friendsData)")
-
                     var friendsList: [User] = []
-
-                    // Iterate through the friends array
                     for friendInfo in friendsData {
                         if let uid = friendInfo["uid"] as? String,
                            let username = friendInfo["username"] as? String {
@@ -174,14 +185,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                             friendsList.append(friend)
                         }
                     }
-
-                    // Update the removeFriendsArray
                     removeFriendsArray = friendsList
-
-                    // Reload the table view to reflect changes
                     DispatchQueue.main.async {
                         self.friendProfileView.reloadData()
                     }
+                    completion() // Call the completion handler when done
                 } else {
                     print("No current friends data found")
                 }
@@ -191,7 +199,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
 
-    
     
     @IBAction func friendSegCtlrPressed(_ sender: Any) {
         // Depending on what segctrl is clicked I changed the view
