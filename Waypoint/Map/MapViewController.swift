@@ -12,12 +12,14 @@ import MapKit
 import CoreLocation
 import FirebaseStorage
 import FirebaseAuth
+import FirebaseFirestore
 
 class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     
     @IBOutlet weak var profilePic: UIButton!
     @IBOutlet weak var mapView: MKMapView!
+    private var userAnnotations: [String: PhotoPost] = [:]   // uid → annotation
     var dailyAnnotation: PhotoPost?
     var posted: Bool = false
     
@@ -34,13 +36,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         profilePic.clipsToBounds = true
         profilePic.imageView?.contentMode = .scaleAspectFit
         getProfilePic()
-        postDailyPic()
+//        postDailyPic()
+        refreshAllPins()
         mapView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        postDailyPic()
+        // postDailyPic()
+        refreshAllPins()
     }
     
     func getProfilePic() {
@@ -79,58 +83,79 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    func postDailyPic() {
-        guard let user = Auth.auth().currentUser else {
-            print("No user logged in")
-            return
-        }
-        let userId = user.uid
-        let storageRef = Storage.storage().reference()
-        let dailyPicRef = storageRef.child("\(userId)/daily_pic.jpg")
-        
-        dailyPicRef.getMetadata { metadata, error in
-            if let error = error {
+    // load up daily photo posts from Firebase
+    private func showDailyPic(for uid: String) {
+        let dailyRef = Storage.storage().reference()
+                         .child("\(uid)/daily_pic.jpg")
+
+        dailyRef.getMetadata { [weak self] metaResult in
+            guard let self = self else { return }
+
+            switch metaResult {
+            case .failure(let error):
                 print("Error retrieving metadata: \(error.localizedDescription)")
                 return
+
+            case .success(let metadata):
+                guard
+                    let custom = metadata.customMetadata,
+                    let latStr = custom["latitude"],
+                    let lonStr = custom["longitude"],
+                    let lat    = Double(latStr),
+                    let lon    = Double(lonStr)
+                else { return }
+
+                let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+
+                dailyRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] dataResult in
+                    guard let self = self else { return }
+
+                    switch dataResult {
+                    case .failure(let error):
+                        print("Error downloading daily picture: \(error.localizedDescription)")
+                        return
+
+                    case .success(let data):
+                        guard let img = UIImage(data: data) else { return }
+
+                        DispatchQueue.main.async {
+                            if let old = self.userAnnotations[uid] {
+                                self.mapView.removeAnnotation(old)
+                            }
+
+                            let post = PhotoPost(coordinate: coord, image: img)
+                            self.mapView.addAnnotation(post)
+                            self.userAnnotations[uid] = post
+                            
+                            print("Total pins on map: \(self.userAnnotations.count)")
+                        }
+                    }
+                }
             }
-            guard let metadata = metadata,
-                  let customMetadata = metadata.customMetadata,
-                  let latString = customMetadata["latitude"],
-                  let lonString = customMetadata["longitude"],
-                  let latitude = Double(latString),
-                  let longitude = Double(lonString) else {
-                print("Missing or invalid metadata")
+        }
+    }
+    
+    // show photos on map for user AND friends
+    func refreshAllPins() {
+        guard let me = Auth.auth().currentUser else { return }
+        let users = Firestore.firestore().collection("users")
+        
+        users.document(me.uid).getDocument { [weak self] snap, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("Firestore error: \(error.localizedDescription)")
                 return
             }
-            
-            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            
-            dailyPicRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
-                if let error = error {
-                    print("Error downloading daily picture: \(error.localizedDescription)")
-                    return
-                }
-                var image: UIImage? = nil
-                if let data = data {
-                    image = UIImage(data: data)
-                }
-                
-                // add the post on main thread
-                DispatchQueue.main.async {
-                    if let existing = self.dailyAnnotation {
-                        self.mapView.removeAnnotation(existing)
-                    }
-                    
-                    let photoPost = PhotoPost(coordinate: coordinate, image: image)
-                    self.mapView.addAnnotation(photoPost)
-                    
-                    self.dailyAnnotation = photoPost
-                    
-//                    let photoPost = PhotoPost(coordinate: coordinate, image: image)
-//                    self.mapView.addAnnotation(photoPost)
-//                    self.posted = true
-                }
+
+            let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? [])
+                .compactMap { $0["uid"] as? String }
+            self.showDailyPic(for: me.uid)
+
+            for uid in friendUIDs {
+                self.showDailyPic(for: uid)
             }
+            self.mapView.showAnnotations(Array(self.userAnnotations.values), animated: true)
         }
     }
     
