@@ -15,6 +15,7 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
 
+    @IBOutlet weak var logoImage: UIImageView!
     @IBOutlet weak var errorLabel: UILabel!
     
     let loginSegueIdentifier = "loginSuccessfulSegue"
@@ -23,7 +24,7 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
         super.viewDidLoad()
         emailTextField.delegate = self
         passwordTextField.delegate = self
-        
+        logoImage.image = UIImage(named: "Waypoint-Logo")
         // sign out
         do{
             try Auth.auth().signOut()

@@ -115,7 +115,7 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="68d-RW-xLQ" secondAttribute="bottom" constant="50" id="tWZ-QZ-ZTN"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Leaderboard" id="bAO-nD-ltT"/>
+                    <tabBarItem key="tabBarItem" title="Leaderboard" image="rectangle.pattern.checkered" catalog="system" id="bAO-nD-ltT"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="dateSegment" destination="cv8-t2-Bg4" id="rW1-HD-yhW"/>
@@ -129,6 +129,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="rectangle.pattern.checkered" catalog="system" width="128" height="93"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -52,7 +52,7 @@
         <scene sceneID="V4p-aJ-Cqk">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="VPM-a3-3gM" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Camera" id="sJN-JO-ci7"/>
+                    <tabBarItem key="tabBarItem" title="Camera" image="camera" catalog="system" id="sJN-JO-ci7"/>
                     <toolbarItems/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="B2m-mc-Po2">
@@ -89,7 +89,9 @@
                                 <rect key="frame" x="157" y="679" width="88" height="88"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Button">
+                                    <color key="baseBackgroundColor" red="0.64868156197144811" green="0.0069677806017467763" blue="0.20915656142095748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </buttonConfiguration>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="5"/>
@@ -246,6 +248,7 @@
     </inferredMetricsTieBreakers>
     <resources>
         <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="camera" catalog="system" width="128" height="93"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
