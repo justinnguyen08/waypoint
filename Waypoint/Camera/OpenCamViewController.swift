@@ -18,7 +18,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var preview: AVCaptureVideoPreviewLayer?
-    var position: AVCaptureDevice.Position!
+    var position: AVCaptureDevice.Position = .front
     var photoOutput: AVCapturePhotoOutput?
     var stillImageView: UIImageView?
     var capturedData: Data?

@@ -627,7 +627,7 @@
         <scene sceneID="0Pt-Yt-Tzh">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="mj7-LL-JxS" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Friends" id="cd7-I0-R3A"/>
+                    <tabBarItem key="tabBarItem" title="Friends" image="figure.2.arms.open" catalog="system" id="cd7-I0-R3A"/>
                     <toolbarItems/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cDa-wt-Mb4">
@@ -655,6 +655,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="figure.2.arms.open" catalog="system" width="128" height="105"/>
         <image name="gearshape" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
