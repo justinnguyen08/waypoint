@@ -35,6 +35,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     override func viewWillAppear(_ animated: Bool) {
+//        tableView.backgroundColor = .red
         getAllUsers{
             self.loadTableInformation()
         }
@@ -108,8 +109,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 }
             }
             var newFeedMainPicture: UIImage!
-            var newFeedLikes = 0
-            var newFeedComemnts: [CommentInfo] = []
+            let newFeedLikes = 0
+            let newFeedComemnts: [CommentInfo] = []
             
             
             dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
@@ -122,6 +123,28 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                         newFeedMainPicture = image
                         let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComemnts, uid: uid)
                         self?.feed.append(dailyImageIntoFeed)
+                        self?.tableView.reloadData()
+                        
+                    }
+                }
+            }
+            
+            for index in 1..<6{
+                let monthlyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(index).jpg")
+                
+                monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
+                    [weak self] data, error in
+                    if let error = error{
+                        print("Error fetching monthly photo for \(uid): \(error.localizedDescription)")
+                    }
+                    else{
+                        if let data = data, let image = UIImage(data: data){
+                            newFeedMainPicture = image
+                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComemnts, uid: uid)
+                            self?.feed.append(dailyImageIntoFeed)
+                            self?.tableView.reloadData()
+                            
+                        }
                     }
                 }
             }
@@ -146,9 +169,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
 //                }
 //            }
         }
-        print("The table has \(feed.count) entries")
-        tableView.reloadData()
-        
         
         
     }
@@ -161,7 +181,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         
-        var cInfo = feed[indexPath.row]
+        let cInfo = feed[indexPath.row]
+//        cell.contentView.backgroundColor = .red
+        cell.selectionStyle = .none
         
         cell.usernameLabel.text = cInfo.username
         cell.typeLabel.text = cInfo.indicator
@@ -170,6 +192,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         
         return cell
     }
+
 
 
     /*
