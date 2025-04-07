@@ -420,7 +420,7 @@
         <scene sceneID="O9x-Cr-1cw">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fD7-TY-l2m" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Challenges" id="31E-bt-Ue3"/>
+                    <tabBarItem key="tabBarItem" title="Challenges" image="figure.run" catalog="system" id="31E-bt-Ue3"/>
                     <toolbarItems/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ha3-Qr-8zu">
@@ -441,6 +441,7 @@
         <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
         <image name="bubble" catalog="system" width="128" height="110"/>
         <image name="camera" catalog="system" width="128" height="93"/>
+        <image name="figure.run" catalog="system" width="115" height="128"/>
         <image name="flashlight.slash" catalog="system" width="94" height="128"/>
         <image name="hand.thumbsup" catalog="system" width="123" height="128"/>
         <image name="paperplane.fill" catalog="system" width="128" height="119"/>
