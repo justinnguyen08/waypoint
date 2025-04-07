@@ -18,6 +18,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     @IBOutlet weak var profilePic: UIButton!
     @IBOutlet weak var mapView: MKMapView!
+    var dailyAnnotation: PhotoPost?
+    var posted: Bool = false
     
     let manager = CLLocationManager()
     
@@ -32,13 +34,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         profilePic.clipsToBounds = true
         profilePic.imageView?.contentMode = .scaleAspectFit
         getProfilePic()
+        postDailyPic()
+        mapView.delegate = self
     }
     
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        profilePic.layer.cornerRadius = profilePic.frame.width / 2
-//        print("profilePic frame, viewDidLayoutSubviews: \(profilePic.frame)")
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        postDailyPic()
+    }
     
     func getProfilePic() {
         guard let user = Auth.auth().currentUser else {
@@ -50,7 +53,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let userId = user.uid
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let profilePicRef = storageRef.child("\(userId)/profile_pic/.jpg")
+        let profilePicRef = storageRef.child("\(userId)/profile_pic.jpg")
         
         profilePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] data, error in
             if let error = error {
@@ -73,6 +76,71 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+    
+    func postDailyPic() {
+        guard let user = Auth.auth().currentUser else {
+            print("No user logged in")
+            return
+        }
+        let userId = user.uid
+        let storageRef = Storage.storage().reference()
+        let dailyPicRef = storageRef.child("\(userId)/daily_pic.jpg")
+        
+        dailyPicRef.getMetadata { metadata, error in
+            if let error = error {
+                print("Error retrieving metadata: \(error.localizedDescription)")
+                return
+            }
+            guard let metadata = metadata,
+                  let customMetadata = metadata.customMetadata,
+                  let latString = customMetadata["latitude"],
+                  let lonString = customMetadata["longitude"],
+                  let latitude = Double(latString),
+                  let longitude = Double(lonString) else {
+                print("Missing or invalid metadata")
+                return
+            }
+            
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            dailyPicRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                if let error = error {
+                    print("Error downloading daily picture: \(error.localizedDescription)")
+                    return
+                }
+                var image: UIImage? = nil
+                if let data = data {
+                    image = UIImage(data: data)
+                }
+                
+                // add the post on main thread
+                DispatchQueue.main.async {
+                    if let existing = self.dailyAnnotation {
+                        self.mapView.removeAnnotation(existing)
+                    }
+                    
+                    let photoPost = PhotoPost(coordinate: coordinate, image: image)
+                    self.mapView.addAnnotation(photoPost)
+                    
+                    self.dailyAnnotation = photoPost
+                    
+//                    let photoPost = PhotoPost(coordinate: coordinate, image: image)
+//                    self.mapView.addAnnotation(photoPost)
+//                    self.posted = true
+                }
+            }
+        }
+    }
+    
+    func circularImage(from image: UIImage, size: CGSize) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            let rect = CGRect(origin: .zero, size: size)
+            context.cgContext.addEllipse(in: rect)
+            context.cgContext.clip()
+            image.draw(in: rect)
         }
     }
 
@@ -103,7 +171,34 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         )
     }
-    
-    
 
+}
+
+extension MapViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        // Skip the user location annotation
+        if annotation is MKUserLocation {
+            return nil
+        }
+        let identifier = "PhotoPost"
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+        
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView?.canShowCallout = false
+        } else {
+            annotationView?.annotation = annotation
+        }
+        
+        if let photoPost = annotation as? PhotoPost, let photoImage = photoPost.image {
+            let size = CGSize(width: 50, height: 50)
+                if let circularImg = circularImage(from: photoImage, size: size) {
+                    annotationView?.image = circularImg
+                } else {
+                    annotationView?.image = photoImage
+                }
+        }
+        
+        return annotationView
+    }
 }
