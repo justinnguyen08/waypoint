@@ -11,8 +11,9 @@ import UIKit
 import AVFoundation
 import FirebaseStorage
 import FirebaseAuth
+import CoreLocation
 
-class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
+class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CLLocationManagerDelegate {
 
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
@@ -23,6 +24,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     var capturedData: Data?
     var validPicture = false
     var timestamp: Date?
+    var locManager = CLLocationManager()
+    var location: CLLocation?
 
     
     @IBOutlet weak var sendPostButton: UIButton!
@@ -44,7 +47,17 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
         tagFriendsButton.isHidden = true
+        
+        locManager.delegate = self
+        locManager.requestWhenInUseAuthorization()
+        locManager.startUpdatingLocation()
     }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+            if let currentLocation = locations.last {
+                location = currentLocation
+            }
+        }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -128,7 +141,6 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         currentSession.commitConfiguration()
     }
     
-    // For right now, just shows the still on the screen at the time the button is pressed.
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
@@ -136,7 +148,6 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         validPicture = true
     }
     
-    // Saves still image of captured photo
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             print("Error capturing photo: \(error.localizedDescription)")
@@ -154,6 +165,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         } else {
             print("Using current timestamp: \(timestamp)")
         }
+        
         if self.position == .front {
             guard let cgImage = image.cgImage else { return }
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
@@ -214,11 +226,20 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
         let userId = user.uid
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let imageRef = storageRef.child("\(userId)/all_pics/\(timestamp!.timeIntervalSince1970).jpg") // Unique filename
+        let imageRef = storageRef.child("\(userId)/all_pics/\(timestamp!.timeIntervalSince1970).jpg")
+        let dailyImageRef = storageRef.child("\(userId)/daily_pic.jpg")
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
-        metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)"]
+        if let currLocation = location {
+            metadata.customMetadata = [
+                "timestamp": "\(timestamp!.timeIntervalSince1970)",
+                "latitude": "\(currLocation.coordinate.latitude)",
+                "longitude": "\(currLocation.coordinate.longitude)"
+            ]
+        } else {
+            metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)"]
+        }
 
         imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
             if let error = error {
@@ -226,6 +247,20 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate {
                 return
             }
             imageRef.downloadURL { (url, error) in
+                if let error = error {
+                    print("Failed to get download URL: \(error.localizedDescription)")
+                } else if let downloadURL = url {
+                    print("Image uploaded successfully: \(downloadURL.absoluteString)")
+                }
+            }
+        }
+        
+        dailyImageRef.putData(imageData, metadata: metadata) { (metadata, error) in
+            if let error = error {
+                print("Upload error: \(error.localizedDescription)")
+                return
+            }
+            dailyImageRef.downloadURL { (url, error) in
                 if let error = error {
                     print("Failed to get download URL: \(error.localizedDescription)")
                 } else if let downloadURL = url {
