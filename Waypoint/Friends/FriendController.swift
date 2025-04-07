@@ -90,11 +90,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
                     // Once all data is fetched, filter the addFriendsArray
-                    print("before: \(addFriendsArray)")
+//                    print("before: \(addFriendsArray)")
                     addFriendsArray.removeAll { user in
                         removeFriendsArray.contains(where: { $0.uid == user.uid })
                     }
-                    print("after: \(addFriendsArray)")
+//                    print("after: \(addFriendsArray)")
                     
                     // Reload the table views to reflect the changes
                     DispatchQueue.main.async {
