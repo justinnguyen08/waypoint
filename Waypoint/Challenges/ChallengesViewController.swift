@@ -19,6 +19,13 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var dailyView: UIView!
     
     @IBOutlet weak var descriptionLabel: UILabel!
+    
+    @IBOutlet weak var streakLabel: UILabel!
+    @IBOutlet weak var weeklyChallengeScore: UILabel!
+    @IBOutlet weak var monthlyChallengeScore: UILabel!
+    
+    @IBOutlet weak var pointsLabel: UILabel!
+    
     @IBOutlet weak var dailyChallengeImage: UIImageView!
     
     @IBOutlet weak var flashButton: UIButton!
@@ -67,18 +74,27 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // get the current date and load daily/monthly challenges
-        currentDateSince1970 = Date().timeIntervalSince1970
-        loadChallenges{
-            self.monthlyTableView.reloadData()
-            self.deleteDailyChallenge{
-                self.loadDailyChallengePhoto()
-                if self.hasDoneDailyChallenge{
-                    self.hideAllButtons()
-                }
-                else{
-                    self.showCameraButtons()
-                    self.setupCaptureSession(with: .back)
+        if segmentControl.selectedSegmentIndex == 2 {
+            segmentControl.selectedSegmentIndex = 0
+        }
+        loadUserChallengeInfo()
+        dailyView.isHidden = true
+        
+        
+        if segmentControl.selectedSegmentIndex == 0 {
+            // get the current date and load daily/monthly challenges
+            currentDateSince1970 = Date().timeIntervalSince1970
+            loadChallenges{
+                self.monthlyTableView.reloadData()
+                self.deleteDailyChallenge{
+                    self.loadDailyChallengePhoto()
+                    if self.hasDoneDailyChallenge{
+                        self.hideAllButtons()
+                    }
+                    else{
+                        self.showCameraButtons()
+                        self.setupCaptureSession(with: .back)
+                    }
                 }
             }
         }
@@ -213,9 +229,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 return
             }
             if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    self?.dailyChallengeImage.image = image
-                }
+                self?.dailyChallengeImage.image = image
+                self?.dailyView.isHidden = false
             }
         }
     }
@@ -236,6 +251,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                         }
                         // set the daily challenge
                         self.dailyChallenge = ChallengeInfo(data: sortedDocumentsById[weekdayIndex - 1].data())
+                        self.descriptionLabel.text = self.dailyChallenge.description
+                        self.pointsLabel.text = "Points: \(self.dailyChallenge.points ?? 0)"
                         completion()
                     }
                 }
@@ -270,6 +287,28 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
     }
     
+    
+    func loadUserChallengeInfo(){
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in")
+            return
+        }
+        
+        db.collection("users").document(uid).getDocument() {
+            (document, error) in
+            if let error = error{
+                print("Error occured getting a user document: \(error.localizedDescription)")
+            }
+            if let document = document, let data = document.data(){
+                self.streakLabel.text = "Streak: \(String(data["challengeStreak"] as? Int ?? 0))"
+                self.weeklyChallengeScore.text = "W: \(String(data["weeklyChallengeScore"] as? Int ?? 0))"
+                self.monthlyChallengeScore.text = "M: \(String(data["monthlyChallengeScore"] as? Int ?? 0))"
+            }
+        }
+        
+        
+    }
+    
     func dismissCamera(){
         session?.stopRunning()
         session = nil
@@ -279,6 +318,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
+        dailyView.isHidden = false
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return
@@ -300,10 +340,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             preview!.videoGravity = .resizeAspectFill
             
             let previewWidth: CGFloat = view.safeAreaLayoutGuide.layoutFrame.width
-            let previewHeight: CGFloat = 500
+            let previewHeight: CGFloat = 480
             
             let xOffset = view.safeAreaLayoutGuide.layoutFrame.minX
-            let yOffset = dailyView.frame.minY + 30
+            let yOffset = dailyView.frame.minY + 50
             
             preview!.frame =  CGRect(x: xOffset, y: yOffset, width: previewWidth, height: previewHeight)
             
@@ -408,10 +448,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             
             if self.stillImageView == nil {
                 let previewWidth: CGFloat = self.view.safeAreaLayoutGuide.layoutFrame.width
-                let previewHeight: CGFloat = 500
+                let previewHeight: CGFloat = 480
                 
                 let xOffset = self.view.safeAreaLayoutGuide.layoutFrame.minX
-                let yOffset = self.dailyView.frame.minY + 30
+                let yOffset = self.dailyView.frame.minY + 50
                 
                 self.stillImageView = UIImageView(frame: CGRect(x: xOffset, y: yOffset, width: previewWidth, height: previewHeight))
                 self.stillImageView!.contentMode = .scaleAspectFill
@@ -453,7 +493,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
         let userDocRef = db.collection("users").document(userId)
-        print("user is logged in!")
         userDocRef.getDocument { (document, error) in
             print("inside closure")
             if let document = document, let data = document.data(),
@@ -494,7 +533,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func uploadImage(imageData: Data) {
-        print("inside uploadImage")
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
         let storage = Storage.storage()
@@ -522,6 +560,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     
                     self.updateChallengePoints(points: self.dailyChallenge.points)
                     self.updateStreak()
+                   
                     
         
                 }
@@ -552,6 +591,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 
                 self.db.collection("users").document(uid).updateData(["weeklyChallengeScore" : currentWeeklyPoints + points, "monthlyChallengeScore" : currentMonthlyPoints + points])
+                self.loadUserChallengeInfo()
             }
         }
     }
@@ -589,6 +629,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 
                 self.db.collection("users").document(uid).updateData(["lastChallengeCompletedDate" : Date().timeIntervalSince1970])
+                self.loadUserChallengeInfo()
             }
         }
     }
@@ -599,10 +640,25 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         switch segmentControl.selectedSegmentIndex {
         case 0: // daily view
+            currentDateSince1970 = Date().timeIntervalSince1970
+            loadChallenges{
+                self.monthlyTableView.reloadData()
+                self.deleteDailyChallenge{
+                    self.loadDailyChallengePhoto()
+                    if self.hasDoneDailyChallenge{
+                        self.hideAllButtons()
+                    }
+                    else{
+                        self.showCameraButtons()
+                        self.setupCaptureSession(with: .back)
+                    }
+                }
+            }
             dailyView.isHidden = false
             monthlyView.isHidden = true
             view.bringSubviewToFront(dailyView)
         case 1: // monthly view
+            dismissCamera()
             monthlyView.isHidden = false
             dailyView.isHidden = true
             loadChallenges {
