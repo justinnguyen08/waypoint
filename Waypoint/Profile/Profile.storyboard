@@ -287,7 +287,13 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="LcN-bK-lmb"/>
+                    <navigationItem key="navigationItem" id="LcN-bK-lmb">
+                        <barButtonItem key="leftBarButtonItem" image="arrow.left" catalog="system" id="bu8-bz-ewi">
+                            <connections>
+                                <action selector="backButtonTapped:" destination="Y6W-OH-hqX" id="fVN-ab-CLB"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="avatarImageView" destination="3ow-EM-ws3" id="YTM-wn-Edv"/>
@@ -591,6 +597,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.left" catalog="system" width="128" height="95"/>
         <image name="gearshape" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="pin" catalog="system" width="116" height="128"/>
