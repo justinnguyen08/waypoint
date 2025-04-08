@@ -44,6 +44,8 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     
     var isCameraRunning = false
     
+    let db = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -223,7 +225,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                     print("Failed to get download URL: \(error.localizedDescription)")
                 } else if let url = url {
                     
-                    let userDocRef = FirestoreManager.shared.db.collection("users").document(userId)
+                    let userDocRef = self.db.collection("users").document(userId)
                     
                     userDocRef.getDocument{
                         (document, error) in
@@ -331,7 +333,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
-        let userDocRef = FirestoreManager.shared.db.collection("users").document(userId)
+        let userDocRef = db.collection("users").document(userId)
         userDocRef.getDocument { (document, error) in
             if let document = document, let data = document.data(),
                let monthlyChallengeStatus = data["didMonthlyChallenges"] as? [Bool]{

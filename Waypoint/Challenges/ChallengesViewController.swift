@@ -13,8 +13,6 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
-var challengeText = ["Testing"]
-
 class ChallengesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AVCapturePhotoCaptureDelegate {
     
 
@@ -35,7 +33,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
     
-    // camerea type stuff
+    // camerea information
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var preview: AVCaptureVideoPreviewLayer?
@@ -54,6 +52,9 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     var currentDateSince1970: TimeInterval!
     var monthlyChallengeIndex: Int!
     
+    
+    // Firestore DB
+    let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +82,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
             }
         }
-        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        dismissCamera()
     }
     
     func hasUploadedDailyChallenge(_ timestamp: TimeInterval) -> Bool{
@@ -96,7 +100,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             return
         }
 
-        let userDocRef = FirestoreManager.shared.db.collection("users").document(uid)
+        let userDocRef = db.collection("users").document(uid)
         
         userDocRef.getDocument { (document, error) in
             
@@ -216,9 +220,11 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
+    // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
     func loadChallenges(completion: @escaping () -> Void){
         if segmentControl.selectedSegmentIndex == 0{
-            FirestoreManager.shared.db.collection("dailyChallenges").getDocuments { (querySnapshot, error) in
+            db.collection("dailyChallenges").getDocuments { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting daily challenge: \(error)")
                 } else {
@@ -236,7 +242,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         }
         else if segmentControl.selectedSegmentIndex == 1{
-            FirestoreManager.shared.db.collection("monthlyChallenges").getDocuments {
+            db.collection("monthlyChallenges").getDocuments {
                 (querySnapshot, error) in
                 if let error = error{
                     print("Error getting monthly challenges: \(error)")
@@ -273,7 +279,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
-//        self.tabBarController?.tabBar.isHidden = true
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return
@@ -447,7 +452,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
-        let userDocRef = FirestoreManager.shared.db.collection("users").document(userId)
+        let userDocRef = db.collection("users").document(userId)
         print("user is logged in!")
         userDocRef.getDocument { (document, error) in
             print("inside closure")
@@ -510,15 +515,85 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             imageRef.downloadURL { (url, error) in
                 if let error = error {
                     print("Failed to get download URL: \(error.localizedDescription)")
-                } else if let url = url {
-                    FirestoreManager.shared.db.collection("users").document(userId).setData(["getDailyChallenge" : Date().timeIntervalSince1970], merge: true)
-                    print("set data for getDailyChallenge")
+                }
+                else {
+                    self.db.collection("users").document(userId).updateData(["getDailyChallenge" : Date().timeIntervalSince1970])
+        
+                    
+                    self.updateChallengePoints(points: self.dailyChallenge.points)
+                    self.updateStreak()
+                    
+        
                 }
             }
         }
-        
-        
     }
+    
+    func updateChallengePoints(points: Int){
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("User is not logged in while attempting to update the challenge points")
+            return
+        }
+        
+        db.collection("users").document(uid).getDocument() {
+            (document, error) in
+            if let error = error{
+                print("Error collecting user document when updating challenge points")
+                return
+            }
+            if let document = document, let data = document.data(){
+                guard let currentWeeklyPoints = data["weeklyChallengeScore"] as? Int else{
+                    print("Error retrieving weeklyChallengeScore")
+                    return
+                }
+                guard let currentMonthlyPoints = data["monthlyChallengeScore"] as? Int else{
+                    print("Error retrieving monthlyChallengeScore")
+                    return
+                }
+                
+                self.db.collection("users").document(uid).updateData(["weeklyChallengeScore" : currentWeeklyPoints + points, "monthlyChallengeScore" : currentMonthlyPoints + points])
+            }
+        }
+    }
+    
+    func updateStreak(){
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in while attempting to update the challenge streak")
+            return
+        }
+        
+        db.collection("users").document(uid).getDocument(){
+            (document, error) in
+            if let error = error{
+                print("Error collecting user document when updating challenge streak")
+                return
+            }
+            if let document = document, let data = document.data(){
+                guard let lastChallengeCompletedDate = data["lastChallengeCompletedDate"] as? TimeInterval else{
+                    print("Error retrieving lastChallengeCompletedDate")
+                    return
+                }
+                guard let currentStreak = data["challengeStreak"] as? Int else{
+                    print("Error retrieving challengeStreak")
+                    return
+                }
+                
+                let calendar = Calendar.current
+                if calendar.isDateInYesterday(Date(timeIntervalSince1970: lastChallengeCompletedDate)){
+                    // we can update the streak to plus one
+                    self.db.collection("users").document(uid).updateData(["challengeStreak" : currentStreak + 1])
+                }
+                else{
+                    // reset to 1
+                    self.db.collection("users").document(uid).updateData(["challengeStreak" : 1])
+                }
+                
+                self.db.collection("users").document(uid).updateData(["lastChallengeCompletedDate" : Date().timeIntervalSince1970])
+            }
+        }
+    }
+    
+    
 
     @IBAction func onSegmentChange(_ sender: Any) {
         
