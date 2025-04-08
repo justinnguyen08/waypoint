@@ -89,7 +89,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         // Assuming score represents points.
         pointsLabel.text = "\(user.score ?? 0)"
         // Display the count of friend IDs.
-        friendsLabel.text = "\(user.friendIDs.count)"
+        friendsLabel.text = "\(user.friends.count)"
         streakLabel.text = "\(user.streak ?? 0)"
     }
     
@@ -143,5 +143,10 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 16
+    }
+    
+    @IBAction func backButtonTapped(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+
     }
 }

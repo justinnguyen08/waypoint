@@ -52,9 +52,17 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         locManager.startUpdatingLocation()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         setupCaptureSession(with: position)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        session?.stopRunning()
+        session = nil
+        preview?.removeFromSuperlayer()
+        preview = nil
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -106,6 +114,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             }
 
             session!.startRunning()
+            print("Session running: \(session?.isRunning ?? false)")
         } catch {
             print("Unable to create input: \(error.localizedDescription)")
         }
@@ -182,13 +191,9 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             self.session?.stopRunning()
             self.preview?.removeFromSuperlayer()
             
-            
-
-//            preview!.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - tabBarHeight!)
             if self.stillImageView == nil {
                 let tabBarController = self.tabBarController
                 let tabBarHeight = tabBarController?.tabBar.frame.height
-//                self.stillImageView = UIImageView(frame: self.view.bounds)
                 self.stillImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height - tabBarHeight!))
                 self.stillImageView!.contentMode = .scaleAspectFill
                 self.stillImageView!.clipsToBounds = true
@@ -210,6 +215,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     @IBAction func resumeLiveFeed(_ sender: UIButton) {
         stillImageView?.removeFromSuperview()
         stillImageView = nil
+        preview?.removeFromSuperlayer()
         sender.isHidden = true
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
@@ -244,18 +250,16 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             return
         }
         let alert = UIAlertController(title: "Pin Photo",
-                                             message: "Are you sure you want to pin this photo?",
-                                             preferredStyle: .alert)
+                                      message: "Are you sure you want to pin this photo?",
+                                      preferredStyle: .alert)
                 
-        alert.addAction(UIAlertAction(
-            title: "Yes",
-            style: .default)
+        alert.addAction(UIAlertAction( title: "Yes",
+                                       style: .default)
                         { [weak self] _ in self?.uploadImage(imageData: imageData, postType: "pinned_pic.jpg")
                             self?.validPicture = false})
         
-        alert.addAction(UIAlertAction(
-            title: "No",
-            style: .cancel)
+        alert.addAction(UIAlertAction(title: "No",
+                                      style: .cancel)
                         { _ in print("Pin cancelled")})
         
         present(alert, animated: true)
