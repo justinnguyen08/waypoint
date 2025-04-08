@@ -81,7 +81,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
             }
         }
-        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        dismissCamera()
     }
     
     func hasUploadedDailyChallenge(_ timestamp: TimeInterval) -> Bool{

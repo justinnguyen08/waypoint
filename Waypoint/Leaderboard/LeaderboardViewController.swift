@@ -8,6 +8,8 @@
 //
 
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 // every leaderboard entry will have this format
 struct LeaderboardEntry{
@@ -15,17 +17,7 @@ struct LeaderboardEntry{
     let weeklyScore: Int
     let monthlyScore: Int
     let isFriend: Bool
-    let date: Date
 }
-
-// fake data for now
-let mockLeaderboard: [LeaderboardEntry] = [
-    LeaderboardEntry(username: "Alice", weeklyScore: 1200, monthlyScore: 2400, isFriend: true, date: Date()),
-    LeaderboardEntry(username: "Bob", weeklyScore: 950, monthlyScore: 1900, isFriend: false, date: Date()),
-    LeaderboardEntry(username: "Charlie", weeklyScore: 1100, monthlyScore: 2200, isFriend: true, date: Date()),
-    LeaderboardEntry(username: "David", weeklyScore: 890, monthlyScore: 1800, isFriend: false, date: Date()),
-    LeaderboardEntry(username: "Eve", weeklyScore: 1300, monthlyScore: 2600, isFriend: true, date: Date())
-]
 
 class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -34,7 +26,12 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var tableView: UITableView!
     
     var currentLeaderboardToDisplay: [LeaderboardEntry] = []
+    var mockLeaderboard: [LeaderboardEntry] = []
     var leaderboardCellIdentifier = "LeaderboardCell"
+    
+    var allUIds: [String] = []
+    
+    let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,14 +39,111 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
-        
-        // default segment is friends
-        for item in mockLeaderboard {
-            if(item.isFriend){ // if they are friends then count them
-                currentLeaderboardToDisplay.append(item)
-            }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        //
+        getAllUsers {
+            self.loadInformation()
+            
         }
     }
+    
+    func getAllUsers(completion: @escaping () -> Void){
+        db.collection("users").getDocuments {
+            (snapshot, error) in
+            if let error = error{
+                print("Error fetching users: \(error.localizedDescription)")
+                return
+            }
+            var fetchedUIDs: [String] = []
+            for document in snapshot!.documents{
+                fetchedUIDs.append(document.documentID)
+            }
+            self.allUIds = fetchedUIDs
+            completion()
+        }
+    }
+    
+    func loadInformation() {
+        self.mockLeaderboard = []
+        self.currentLeaderboardToDisplay = []
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("User is not logged in!")
+            return
+        }
+
+        var currentUserUsername: String = ""
+        var currentUserWeeklyScore: Int = 0
+        var currentUserMonthlyScore: Int = 0
+        var currentUserFriends: [String] = []
+
+        db.collection("users").document(uid).getDocument { (document, error) in
+            if let error = error {
+                print("Error getting current user information: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = document?.data(),
+                  let friends = data["friends"] as? [String],
+                  let weeklyScore = data["weeklyChallengeScore"] as? Int,
+                  let monthlyScore = data["monthlyChallengeScore"] as? Int,
+                  let username = data["username"] as? String else {
+                print("Current user document is missing required fields or has incorrect types")
+                return
+            }
+
+            currentUserFriends = friends
+            currentUserWeeklyScore = weeklyScore
+            currentUserMonthlyScore = monthlyScore
+            currentUserUsername = username
+
+            self.mockLeaderboard.append(LeaderboardEntry(
+                username: currentUserUsername,
+                weeklyScore: currentUserWeeklyScore,
+                monthlyScore: currentUserMonthlyScore,
+                isFriend: true))
+
+            for otherUID in self.allUIds {
+                if uid != otherUID {
+                    let isFriend = currentUserFriends.contains(otherUID)
+
+                    self.db.collection("users").document(otherUID).getDocument { (document, error) in
+                        if let error = error {
+                            print("Error getting other user information: \(error.localizedDescription)")
+                            return
+                        }
+
+                        guard let innerData = document?.data(),
+                              let otherUsername = innerData["username"] as? String,
+                              let otherWeeklyScore = innerData["weeklyChallengeScore"] as? Int,
+                              let otherMonthlyScore = innerData["monthlyChallengeScore"] as? Int else {
+                            print("Other user document \(otherUID) is missing required fields or has incorrect types")
+                            return
+                        }
+
+                        self.mockLeaderboard.append(LeaderboardEntry(
+                            username: otherUsername,
+                            weeklyScore: otherWeeklyScore,
+                            monthlyScore: otherMonthlyScore,
+                            isFriend: isFriend))
+                        
+                    }
+                }
+            }
+            
+            for item in self.mockLeaderboard {
+                if(item.isFriend){ // if they are friends then count them
+                    self.currentLeaderboardToDisplay.append(item)
+                }
+            }
+            self.tableView.reloadData()
+            self.scopeSegment.selectedSegmentIndex = 0
+            self.dateSegment.selectedSegmentIndex = 0
+        }
+    }
+
+    
     
     // table view function
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

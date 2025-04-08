@@ -42,11 +42,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func getAllUsers(completion: @escaping () -> Void){
-        guard let currentUser = Auth.auth().currentUser else {
-            print("No current user loggin in")
-            return
-        }
-        
         db.collection("users").getDocuments {
             (snapshot, error) in
             if let error = error{
@@ -56,8 +51,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             
             var fetchedUIDs: [String] = []
             for document in snapshot!.documents{
-                let data = document.data()
-                fetchedUIDs.append(document.documentID as! String)
+                fetchedUIDs.append(document.documentID)
             }
             
             self.allUIds = fetchedUIDs
@@ -96,7 +90,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     print("Error getting document")
                 }
             }
-            
             
             profilePicRef.getData(maxSize: 10 * 1024 * 1024) {
                  data, error in
@@ -148,29 +141,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     }
                 }
             }
-            
-//            for index in 1..<6{
-//                let dailyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(index).jpg")
-//                
-//                
-//                
-//                
-//            }
-            
-            
-            
-            
-//            dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] data, error in
-//                if let error = error {
-//                    print("Error fetching monthly challenge photo: \(error.localizedDescription)")
-//                }
-//                if let data = data, let image = UIImage(data: data) {
-//                    
-//                }
-//            }
         }
-        
-        
     }
     
     
@@ -182,7 +153,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         
         let cInfo = feed[indexPath.row]
-//        cell.contentView.backgroundColor = .red
         cell.selectionStyle = .none
         
         cell.usernameLabel.text = cInfo.username
@@ -192,17 +162,5 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         
         return cell
     }
-
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
