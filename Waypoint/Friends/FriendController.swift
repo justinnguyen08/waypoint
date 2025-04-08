@@ -23,18 +23,20 @@ public var addFriendsArray: [User] = []     //suggested friends
 public var removeFriendsArray: [User] = []  //current friends
 public var pendingFriendsArray: [User] = [] //pending friends
 
-class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var friendProfileView: UITableView!
     @IBOutlet weak var pendingFriendView: UITableView!
     @IBOutlet weak var suggestedFriendView: UITableView!
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     @IBOutlet weak var segCtrl: UISegmentedControl!
     
     @IBOutlet weak var currentFriendsView: UIView!
     @IBOutlet weak var suggestFriendView: UIView!
     
-    
+    var filteredUsers: [User] = []
     let db = Firestore.firestore()
     
     
@@ -47,6 +49,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         pendingFriendView.dataSource = self
         suggestedFriendView.delegate = self
         suggestedFriendView.dataSource = self
+        searchBar.delegate = self
         
         suggestFriendView.isHidden = true
         currentFriendsView.isHidden = false
@@ -61,11 +64,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
                     // Once all data is fetched, filter the addFriendsArray
-                    print("before: \(addFriendsArray)")
                     addFriendsArray.removeAll { user in
-                        removeFriendsArray.contains(where: { $0.uid == user.uid })
+                        return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
+                        pendingFriendsArray.contains(where: { $0.uid == user.uid })
                     }
-                    print("after: \(addFriendsArray)")
+                    
                     
                     // Reload the table views to reflect the changes
                     DispatchQueue.main.async {
@@ -73,6 +76,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                         self.suggestedFriendView.reloadData()
                         self.friendProfileView.reloadData()
                     }
+                    
+                    self.filteredUsers = addFriendsArray
                 }
             }
         }
@@ -90,11 +95,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
                     // Once all data is fetched, filter the addFriendsArray
-//                    print("before: \(addFriendsArray)")
                     addFriendsArray.removeAll { user in
-                        removeFriendsArray.contains(where: { $0.uid == user.uid })
+                        return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
+                        pendingFriendsArray.contains(where: { $0.uid == user.uid })
                     }
-//                    print("after: \(addFriendsArray)")
                     
                     // Reload the table views to reflect the changes
                     DispatchQueue.main.async {
@@ -105,6 +109,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
         }
+        
+        filteredUsers = addFriendsArray
+        
+        
     }
     
     func pendingFriends(uid: String, completion: @escaping () -> Void) {
@@ -226,7 +234,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             return pendingFriendsArray.count
         } else {
-            return addFriendsArray.count
+            return filteredUsers.count
         }
     }
     
@@ -241,7 +249,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return cell
         } else {
             let cell: SuggestedCustomViewTableCell = suggestedFriendView.dequeueReusableCell(withIdentifier: "suggestCell", for: indexPath) as! SuggestedCustomViewTableCell
-            cell.profileName.text = addFriendsArray[indexPath.row].username  // Extract display name
+            cell.profileName.text = filteredUsers[indexPath.row].username  // Extract display name
+            cell.updateButtonState()
             return cell
         }
     }
@@ -272,14 +281,33 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             destinationVC.selectedUsername = selectedUser.username
         } else if segue.identifier == "removeSegue", let destinationVC = segue.destination as? RemoveViewController, let indexPath = friendProfileView.indexPathForSelectedRow {
             var selectedUser: User
-//            print(removeFriendsArray)
             selectedUser = removeFriendsArray[indexPath.row]
             destinationVC.selectedUsername = selectedUser.username
         }
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            // If the search text is empty, show all users
+            filteredUsers = addFriendsArray
+        } else {
+            // Filter the users based on the search text (case-insensitive substring match)
+            filteredUsers = addFriendsArray.filter { user in
+                return user.username.lowercased().contains(searchText.lowercased())
+            }
+        }
+        
+        // Reload the table view to reflect the changes
+        suggestedFriendView.reloadData()
+    }
 
-    
-    
+    // Optional: Clear search when cancel button is tapped
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        filteredUsers = addFriendsArray
+        suggestedFriendView.reloadData()
+    }
     
 }
+
 
