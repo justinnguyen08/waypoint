@@ -16,7 +16,7 @@ class UserProfile: Codable, Identifiable {
     var profilePicture: String?
     
     // List of friend document IDs.
-    var friendIDs: [String]
+    var friends: [String]
     
     // Additional properties
     var streak: Int?
@@ -27,14 +27,14 @@ class UserProfile: Codable, Identifiable {
          nickname: String,
          username: String,
          profilePicture: String? = nil,
-         friendIDs: [String] = [],
+         friends: [String] = [],
          streak: Int? = 0,
          score: Int? = 0) {
         self.id = id
         self.nickname = nickname
         self.username = username
         self.profilePicture = profilePicture
-        self.friendIDs = friendIDs
+        self.friends = friends
         self.streak = streak
         self.score = score
     }
@@ -51,7 +51,7 @@ class UserProfile: Codable, Identifiable {
         }
         
         let profilePicture = data["profilePicture"] as? String
-        let friendIDs = data["friendIDs"] as? [String] ?? []
+        let friends = data["friends"] as? [String] ?? []
         let streak = data["streak"] as? Int
         let score = data["score"] as? Int
         
@@ -59,7 +59,7 @@ class UserProfile: Codable, Identifiable {
                   nickname: nickname,
                   username: username,
                   profilePicture: profilePicture,
-                  friendIDs: friendIDs,
+                  friends: friends,
                   streak: streak,
                   score: score)
     }
@@ -85,7 +85,7 @@ extension UserProfile {
         let userRef = db.collection("users").document(userId)
         
         userRef.updateData([
-            "friendIDs": FieldValue.arrayUnion([friendID])
+            "friends": FieldValue.arrayUnion([friendID])
         ]) { error in
             completion(error)
         }
@@ -107,7 +107,7 @@ extension UserProfile {
         let userRef = db.collection("UserProfiles").document(userId)
         
         userRef.updateData([
-            "friendIDs": FieldValue.arrayRemove([friendID])
+            "friends": FieldValue.arrayRemove([friendID])
         ]) { error in
             completion(error)
         }
@@ -135,7 +135,7 @@ extension UserProfile {
         let newProfile = UserProfile(nickname: nickname,
                                      username: username,
                                      profilePicture: profilePicture,
-                                     friendIDs: [],
+                                     friends: [],
                                      streak: 0,
                                      score: 0)
         
