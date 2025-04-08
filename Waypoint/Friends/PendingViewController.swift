@@ -58,9 +58,9 @@ class PendingViewController: UIViewController {
                             "friends": FieldValue.arrayUnion([currentUserDict])
                         ]) { error in
                             if let error = error {
-                                print("Error updating pendingUsers: \(error.localizedDescription)")
+                                print("Error updating pendingFriends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingUsers.")
+                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
                             }
                         }
                         
@@ -85,13 +85,11 @@ class PendingViewController: UIViewController {
                             "pendingFriends": FieldValue.arrayRemove([targetUserDict])
                         ]) { error in
                             if let error = error {
-                                print("Error removing user from pendingUsers: \(error.localizedDescription)")
+                                print("Error removing user from pendingFriends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully removed user from pendingUsers")
+                                print("Successfully removed user from pendingFriends")
                             }
                         }
-                        
-                        
                         
                     }
                 } else {
