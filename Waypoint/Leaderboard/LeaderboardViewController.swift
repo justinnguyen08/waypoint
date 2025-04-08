@@ -10,6 +10,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import CoreLocation
 
 // every leaderboard entry will have this format
 struct LeaderboardEntry{
@@ -17,6 +18,7 @@ struct LeaderboardEntry{
     let weeklyScore: Int
     let monthlyScore: Int
     let isFriend: Bool
+    let location: String
 }
 
 class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -39,14 +41,30 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
+        scopeSegment.isHidden = true
+        dateSegment.isHidden = true
+        tableView.isHidden = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         //
         getAllUsers {
-            self.loadInformation()
-            
+            self.loadInformation{
+                self.scopeSegment.isHidden = false
+                self.dateSegment.isHidden = false
+                self.tableView.isHidden = false
+                for item in self.mockLeaderboard {
+                    if(item.isFriend){ // if they are friends then count them
+                        self.currentLeaderboardToDisplay.append(item)
+                    }
+                }
+                self.tableView.reloadData()
+                self.scopeSegment.selectedSegmentIndex = 0
+                self.dateSegment.selectedSegmentIndex = 0
+            }
         }
+        
     }
     
     func getAllUsers(completion: @escaping () -> Void){
@@ -65,7 +83,28 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func loadInformation() {
+    // https://medium.com/@wesleymatlock/unlocking-the-power-of-cllocation-working-with-geolocation-in-swift-0d07fe73a8b8
+    func getCityName(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async -> String? {
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+        
+        return await withCheckedContinuation { continuation in
+            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+                guard error == nil else {
+                    print("Error in reverse geocoding: \(error!.localizedDescription)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                if let placemark = placemarks?.first, let city = placemark.locality {
+                    continuation.resume(returning: city)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
+    
+    func loadInformation(completion: @escaping () -> Void) {
         self.mockLeaderboard = []
         self.currentLeaderboardToDisplay = []
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -88,7 +127,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                   let friends = data["friends"] as? [String],
                   let weeklyScore = data["weeklyChallengeScore"] as? Int,
                   let monthlyScore = data["monthlyChallengeScore"] as? Int,
-                  let username = data["username"] as? String else {
+                  let username = data["username"] as? String,
+                  let location = data["location"] as? GeoPoint
+            else {
                 print("Current user document is missing required fields or has incorrect types")
                 return
             }
@@ -98,11 +139,17 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             currentUserMonthlyScore = monthlyScore
             currentUserUsername = username
 
-            self.mockLeaderboard.append(LeaderboardEntry(
-                username: currentUserUsername,
-                weeklyScore: currentUserWeeklyScore,
-                monthlyScore: currentUserMonthlyScore,
-                isFriend: true))
+            Task {
+                let city = await self.getCityName(latitude: location.latitude, longitude: location.longitude) ?? "n/a"
+                self.mockLeaderboard.append(LeaderboardEntry(
+                    username: currentUserUsername,
+                    weeklyScore: currentUserWeeklyScore,
+                    monthlyScore: currentUserMonthlyScore,
+                    isFriend: true,
+                    location: city
+                ))
+                completion()
+            }
 
             for otherUID in self.allUIds {
                 if uid != otherUID {
@@ -117,29 +164,33 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         guard let innerData = document?.data(),
                               let otherUsername = innerData["username"] as? String,
                               let otherWeeklyScore = innerData["weeklyChallengeScore"] as? Int,
-                              let otherMonthlyScore = innerData["monthlyChallengeScore"] as? Int else {
+                              let otherMonthlyScore = innerData["monthlyChallengeScore"] as? Int,
+                              let otherLocation = innerData["locatiin"] as? GeoPoint
+                            
+                        else {
                             print("Other user document \(otherUID) is missing required fields or has incorrect types")
                             return
                         }
 
-                        self.mockLeaderboard.append(LeaderboardEntry(
-                            username: otherUsername,
-                            weeklyScore: otherWeeklyScore,
-                            monthlyScore: otherMonthlyScore,
-                            isFriend: isFriend))
+                        Task {
+                            let city = await self.getCityName(latitude: otherLocation.latitude, longitude: otherLocation.longitude) ?? "n/a"
+                            self.mockLeaderboard.append(LeaderboardEntry(
+                                username: otherUsername,
+                                weeklyScore: otherWeeklyScore,
+                                monthlyScore: otherMonthlyScore,
+                                isFriend: isFriend,
+                                location: city
+                            ))
+                            completion()
+                            
+                        }
                         
                     }
                 }
+                
+                
             }
             
-            for item in self.mockLeaderboard {
-                if(item.isFriend){ // if they are friends then count them
-                    self.currentLeaderboardToDisplay.append(item)
-                }
-            }
-            self.tableView.reloadData()
-            self.scopeSegment.selectedSegmentIndex = 0
-            self.dateSegment.selectedSegmentIndex = 0
         }
     }
 
@@ -155,9 +206,14 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: leaderboardCellIdentifier, for: indexPath) as! LeaderboardViewCell
         let currentEntry = currentLeaderboardToDisplay[indexPath.row]
         cell.username.text = currentEntry.username
-        cell.place.text = String(indexPath.row)
+        cell.place.text = String(indexPath.row + 1)
         cell.points.text = String(dateSegment.selectedSegmentIndex == 0 ? currentEntry.weeklyScore : currentEntry.monthlyScore)
-        
+        if scopeSegment.selectedSegmentIndex == 1{
+            cell.location.text = currentEntry.location
+        }
+        else{
+            cell.location.text = ""
+        }
         return cell
     }
     

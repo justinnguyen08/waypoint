@@ -10,14 +10,9 @@ import FirebaseAuth
 import FirebaseStorage
 import FirebaseFirestore
 
-
 class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    
+
     @IBOutlet weak var tableView: UITableView!
-    
-    
-    
     var feed: [FeedInfo] = []
     var allUIds: [String] = []
     
@@ -29,13 +24,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
-        
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
-//        tableView.backgroundColor = .red
         getAllUsers{
             self.loadTableInformation()
         }
