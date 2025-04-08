@@ -138,6 +138,9 @@
                                                             <rect key="frame" x="229.99999999999997" y="-1" width="77.666666666666657" height="35"/>
                                                             <state key="normal" title="Button"/>
                                                             <buttonConfiguration key="configuration" style="filled" title="Accept"/>
+                                                            <connections>
+                                                                <action selector="acceptPressed:" destination="mRZ-O7-yX6" eventType="touchUpInside" id="Nin-jw-104"/>
+                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nPo-H9-l4W">
                                                             <rect key="frame" x="312" y="-1" width="79" height="35"/>
@@ -148,6 +151,9 @@
                                                                 <color key="baseForegroundColor" systemColor="labelColor"/>
                                                                 <color key="baseBackgroundColor" systemColor="systemRedColor"/>
                                                             </buttonConfiguration>
+                                                            <connections>
+                                                                <action selector="denyPressed:" destination="mRZ-O7-yX6" eventType="touchUpInside" id="th6-2A-ZBP"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <constraints>
@@ -203,6 +209,21 @@
                                                             <rect key="frame" x="333" y="4" width="55" height="35"/>
                                                             <state key="normal" title="Button"/>
                                                             <buttonConfiguration key="configuration" style="filled" title="Add"/>
+                                                            <connections>
+                                                                <action selector="addButtonPressed:" destination="mAS-nQ-17m" eventType="touchUpInside" id="qRE-6V-L5y"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sY3-KY-5YG">
+                                                            <rect key="frame" x="315" y="4" width="87" height="35"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemGray2Color"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="filled" title="Pending">
+                                                                <color key="baseBackgroundColor" systemColor="systemGray2Color"/>
+                                                            </buttonConfiguration>
+                                                            <connections>
+                                                                <action selector="pendingButtonPressed:" destination="mAS-nQ-17m" eventType="touchUpInside" id="FwU-a3-oYA"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <constraints>
@@ -218,6 +239,8 @@
                                                     </constraints>
                                                 </tableViewCellContentView>
                                                 <connections>
+                                                    <outlet property="addButton" destination="dZU-8o-a5I" id="NrD-R2-qQJ"/>
+                                                    <outlet property="pendingButton" destination="sY3-KY-5YG" id="Mp9-yy-qOC"/>
                                                     <outlet property="profileName" destination="thO-Hv-vwJ" id="TMO-dt-Nbq"/>
                                                     <outlet property="profilePic" destination="Jbv-pD-ewj" id="59N-OT-F4m"/>
                                                     <segue destination="tdd-bu-dLl" kind="show" identifier="addSegue" id="Sra-aS-9vJ"/>
@@ -271,6 +294,7 @@
                         <outlet property="currentFriendsView" destination="svw-fn-ahd" id="A6X-Ju-OyX"/>
                         <outlet property="friendProfileView" destination="WP3-6B-TR7" id="pM8-NX-Ldj"/>
                         <outlet property="pendingFriendView" destination="yYQ-sE-WWf" id="H7u-SD-i0A"/>
+                        <outlet property="searchBar" destination="DDP-it-SPh" id="Jmx-WZ-DOi"/>
                         <outlet property="segCtrl" destination="Ux4-PX-B6e" id="FxA-jr-Nsc"/>
                         <outlet property="suggestFriendView" destination="1XI-EV-0fi" id="5y2-Zc-p1M"/>
                         <outlet property="suggestedFriendView" destination="eP4-hu-mcN" id="oH3-Dx-QDV"/>
@@ -662,6 +686,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

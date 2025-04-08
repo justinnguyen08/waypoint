@@ -54,9 +54,9 @@ class RemoveViewController: UIViewController {
                             "friends": FieldValue.arrayRemove([currentUserDict])
                         ]) { error in
                             if let error = error {
-                                print("Error updating pendingUsers: \(error.localizedDescription)")
+                                print("Error updating pendingFriends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingUsers.")
+                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
                             }
                         }
                         // Adding the target in the current users' database
