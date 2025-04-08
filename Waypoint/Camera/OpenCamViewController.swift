@@ -220,18 +220,44 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             print("Picture already uploaded")
             return
         }
-        uploadImage(imageData: imageData)
+        uploadImage(imageData: imageData, postType: "daily_pic.jpg")
         validPicture = false
 //        resumeLiveFeed(sender)
     }
     
-    func uploadImage(imageData: Data) {
+    
+    @IBAction func onPinPressed(_ sender: UIButton) {
+        guard let imageData = capturedData else {
+            return
+        }
+        if (!validPicture) {
+            return
+        }
+        let alert = UIAlertController(title: "Pin Photo",
+                                             message: "Are you sure you want to pin this photo?",
+                                             preferredStyle: .alert)
+                
+        alert.addAction(UIAlertAction(
+            title: "Yes",
+            style: .default)
+                        { [weak self] _ in self?.uploadImage(imageData: imageData, postType: "pinned_pic.jpg")
+                            self?.validPicture = false})
+        
+        alert.addAction(UIAlertAction(
+            title: "No",
+            style: .cancel)
+                        { _ in print("Pin cancelled")})
+        
+        present(alert, animated: true)
+    }
+    
+    func uploadImage(imageData: Data, postType: String) {
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let imageRef = storageRef.child("\(userId)/all_pics/\(timestamp!.timeIntervalSince1970).jpg")
-        let dailyImageRef = storageRef.child("\(userId)/daily_pic.jpg")
+        let dailyImageRef = storageRef.child("\(userId)/\(postType)")
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
