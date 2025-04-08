@@ -92,7 +92,9 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
 
             self.preview = AVCaptureVideoPreviewLayer(session: session!)
             preview!.videoGravity = .resizeAspectFill
-            preview!.frame = view.layer.bounds
+            let tabBarController = self.tabBarController
+            let tabBarHeight = tabBarController?.tabBar.frame.height
+            preview!.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - tabBarHeight!)
             view.layer.insertSublayer(preview!, at: 0)
             
             self.photoOutput = AVCapturePhotoOutput()
@@ -147,6 +149,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
+        self.tabBarController?.tabBar.isHidden = true
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
         validPicture = true
@@ -179,8 +182,14 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             self.session?.stopRunning()
             self.preview?.removeFromSuperlayer()
             
+            
+
+//            preview!.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - tabBarHeight!)
             if self.stillImageView == nil {
-                self.stillImageView = UIImageView(frame: self.view.bounds)
+                let tabBarController = self.tabBarController
+                let tabBarHeight = tabBarController?.tabBar.frame.height
+//                self.stillImageView = UIImageView(frame: self.view.bounds)
+                self.stillImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height - tabBarHeight!))
                 self.stillImageView!.contentMode = .scaleAspectFill
                 self.stillImageView!.clipsToBounds = true
                 self.view.insertSubview(self.stillImageView!, belowSubview: self.resumeLiveButton)
@@ -205,6 +214,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
         tagFriendsButton.isHidden = true
+        self.tabBarController?.tabBar.isHidden = false
         flipButton.isHidden = false
         setupCaptureSession(with: position)
         validPicture = false
