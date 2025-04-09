@@ -4,14 +4,17 @@
 //
 //  Created by Tony Ngo on 4/7/25.
 //
+
 import UIKit
 
+// every coment will have this information
 public struct CommentInfo{
     var profilePicture: UIImage!
     var comment: String!
     var likes: Int!
 }
 
+// handle feed information
 class FeedInfo{
     var username: String!
     var indicator: String!

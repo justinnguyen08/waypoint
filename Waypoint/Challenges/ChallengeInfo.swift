@@ -5,6 +5,7 @@
 //  Created by Tony Ngo on 4/3/25.
 //
 
+// custom class to hold information for each challenge
 class ChallengeInfo{
     var type: String!
     var description: String!
