@@ -10,6 +10,7 @@
 import UIKit
 import AVFoundation
 import FirebaseStorage
+import FirebaseFirestore
 import FirebaseAuth
 import CoreLocation
 
@@ -34,6 +35,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     @IBOutlet weak var flipButton: UIButton!
     @IBOutlet weak var capturePicButton: UIButton!
     @IBOutlet weak var resumeLiveButton: UIButton!
+    
+    let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -309,6 +312,37 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                     print("Failed to get download URL: \(error.localizedDescription)")
                 } else if let downloadURL = url {
                     print("Image uploaded successfully: \(downloadURL.absoluteString)")
+                    
+                    
+                    self.db.collection("users").document(userId).getDocument() {
+                        (document, error) in
+                        if let error = error{
+                            print("Error attempting to access user document: \(error.localizedDescription)")
+                            return
+                        }
+                        if let document = document, let data = document.data(){
+                            guard let lastDailyPhotoDate = data["lastDailyPhotoDate"] as? TimeInterval else{
+                                print("Error retrieving lastChallengeCompletedDate")
+                                return
+                            }
+                            guard let currentStreak = data["streak"] as? Int else{
+                                print("Error retrieving streak")
+                                return
+                            }
+                            let calendar = Calendar.current
+                            
+                            if calendar.isDateInYesterday(Date(timeIntervalSince1970: lastDailyPhotoDate)){
+                                self.db.collection("users").document(userId).updateData(["streak" : currentStreak + 1])
+                            }
+                            else if !calendar.isDateInToday(Date(timeIntervalSince1970: lastDailyPhotoDate)){
+                                self.db.collection("users").document(userId).updateData(["streak" : 1])
+                            }
+                            self.db.collection("users").document(userId).updateData(["lastDailyPhotoDate" : Date().timeIntervalSince1970])
+                            
+                        }
+                    }
+                    
+                    
                 }
             }
         }

@@ -11,6 +11,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 class AddFriendViewController: UIViewController {
 
@@ -22,6 +23,7 @@ class AddFriendViewController: UIViewController {
     @IBOutlet weak var numberForStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     
+    @IBOutlet weak var profilePic: UIImageView!
     var selectedUsernameA: String?
     
     
@@ -63,7 +65,11 @@ class AddFriendViewController: UIViewController {
             if let streak = data["streak"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }
-            
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(targetUserUUID)/profile_pic.jpg")
+            self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
+            self.profilePic.layer.cornerRadius = self.profilePic.frame.width / 2
+            self.profilePic.contentMode = .scaleAspectFill
         }
     }
     
@@ -86,6 +92,7 @@ class AddFriendViewController: UIViewController {
             }
             let targetUserUUID = document.documentID
             let data = document.data()
+            print("target user UUID: \(targetUserUUID)")
             
             if let friends = data["friends"] as? [String] {
                 let count = friends.count
@@ -120,7 +127,40 @@ class AddFriendViewController: UIViewController {
         }
     }
     
+//    func fetchProfilePic() {
+//        if let userId = Auth.auth().currentUser?.uid {
+//            let storage = Storage.storage()
+//            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
+//            let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
+//            
+//            // Fetch profile pic
+//            fetchImage(from: profilePicRef, for: profilePic, fallback: "person.circle")
+//            profilePic.layer.cornerRadius = profilePic.frame.height / 2
+//            profilePic.contentMode = .scaleAspectFill
+//            // Fetch pinned pic
+////            fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
+//        } else {
+//            print("No user logged in, cannot fetch profile or pinned images")
+//            profilePic.image = UIImage(systemName: "person.circle")
+////            pinnedImageView.image = UIImage(systemName: "pin.circle")
+//        }
+//    }
     
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
+        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+            if let error = error {
+                print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(systemName: fallback)
+                }
+            } else if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    imageView.image = image
+                }
+            }
+        }
+    }
     @IBAction func addButtonPressed(_ sender: Any) {
         let uniqueUsername = username.text!
         let db = Firestore.firestore()

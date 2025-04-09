@@ -11,9 +11,11 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 class PendingViewController: UIViewController {
     
+    @IBOutlet weak var profilePic: UIImageView!
     @IBOutlet weak var nickname: UILabel!
     @IBOutlet weak var numberOfStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
@@ -61,6 +63,11 @@ class PendingViewController: UIViewController {
             if let nickname = data["nickname"] as? String {
                 self.nickname.text = nickname
             }
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(targetUserUUID)/profile_pic.jpg")
+            self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
+            self.profilePic.layer.cornerRadius = self.profilePic.frame.width / 2
+            self.profilePic.contentMode = .scaleAspectFill
             
         }
 
@@ -107,6 +114,22 @@ class PendingViewController: UIViewController {
                 self.nickname.text = nickname
             }
             
+        }
+    }
+    
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
+        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+            if let error = error {
+                print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(systemName: fallback)
+                }
+            } else if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    imageView.image = image
+                }
+            }
         }
     }
     
