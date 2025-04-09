@@ -68,7 +68,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     // get every user that has an account in the app
-    func getAllUsers(completion: @escaping () -> Void){
+    func getAllUsers(handler: @escaping () -> Void){
         db.collection("users").getDocuments {
             (snapshot, error) in
             if let error = error{
@@ -80,7 +80,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                 fetchedUIDs.append(document.documentID)
             }
             self.allUIds = fetchedUIDs
-            completion()
+            handler()
         }
     }
     
