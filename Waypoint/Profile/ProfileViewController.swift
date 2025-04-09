@@ -10,11 +10,13 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var pinnedImageView: UIImageView!
     @IBOutlet weak var avatarImageView: UIImageView!
     @IBOutlet weak var nicknameLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
@@ -23,7 +25,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var streakLabel: UILabel!
     @IBOutlet weak var mapCollectionView: UIImageView!
     
-    let dataItems = Array(repeating: "person.fill", count: 6)
+    var imageReferences: [StorageReference] = []
+    let imageCache = NSCache<NSString, UIImage>()
     
     // The current user's profile fetched from Firestore.
     var userProfile: UserProfile?
@@ -42,6 +45,75 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
         // Fetch the current user's profile data from Firestore.
         fetchUserProfile()
+        fetchProfileAndPinnedImages()
+        fetchUserImages()
+    }
+    
+    func fetchProfileAndPinnedImages() {
+        if let userId = Auth.auth().currentUser?.uid {
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
+            let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
+            
+            // Fetch profile pic
+            fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
+            avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
+            avatarImageView.contentMode = .scaleAspectFill
+            // Fetch pinned pic
+            fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
+        } else {
+            print("No user logged in, cannot fetch profile or pinned images")
+            avatarImageView.image = UIImage(systemName: "person.circle")
+            pinnedImageView.image = UIImage(systemName: "pin.circle")
+        }
+    }
+    
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
+        let path = ref.fullPath as NSString
+        if let cachedImage = imageCache.object(forKey: path) {
+            imageView.image = cachedImage
+        } else {
+            imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+            ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                if let error = error {
+                    print("Error fetching \(path): \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        imageView.image = UIImage(systemName: fallback)
+                    }
+                } else if let data = data, let image = UIImage(data: data) {
+                    self.imageCache.setObject(image, forKey: path)
+                    DispatchQueue.main.async {
+                        imageView.image = image
+                    }
+                }
+            }
+        }
+    }
+    
+    func fetchUserImages() {
+        if let userId = Auth.auth().currentUser?.uid {
+            let storage = Storage.storage()
+            let allPicsRef = storage.reference().child("\(userId)/all_pics")
+            
+            allPicsRef.listAll { [weak self] (result, error) in
+                if let error = error {
+                    print("Error listing images: \(error.localizedDescription)")
+                    return
+                }
+                if let result = result {
+                    self?.imageReferences = result.items.sorted { ref1, ref2 in
+                        let time1 = Double(ref1.name.replacingOccurrences(of: ".jpg", with: "")) ?? 0
+                        let time2 = Double(ref2.name.replacingOccurrences(of: ".jpg", with: "")) ?? 0
+                        return time1 > time2
+                    }
+                    DispatchQueue.main.async {
+                        self?.collectionView.reloadData()
+                    }
+                }
+            }
+        } else {
+            print("No user logged in, cannot fetch images")
+        }
     }
     
     // MARK: - Data Fetching
@@ -100,14 +172,43 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - UICollectionViewDataSource Methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-         return dataItems.count
+         return imageReferences.count
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PlaceholderCell", for: indexPath) as! PlaceholderCollectionViewCell
-        let symbolName = dataItems[indexPath.item]
-        cell.PlaceholderImageView.image = UIImage(systemName: symbolName)
+        let imageRef = imageReferences[indexPath.item]
+        let imagePath = imageRef.fullPath as NSString
+        
+        // Check cache first
+        if let cachedImage = imageCache.object(forKey: imagePath) {
+            cell.PlaceholderImageView.image = cachedImage
+        } else {
+            // Set a placeholder while loading
+            cell.PlaceholderImageView.image = nil  // Or UIImage(systemName: "photo")
+            print("Fetching image: \(imagePath)")
+            
+            imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                if let error = error {
+                    print("Error fetching image \(imagePath): \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        cell.PlaceholderImageView.image = UIImage(systemName: "exclamationmark.triangle")
+                    }
+                } else if let data = data, let image = UIImage(data: data) {
+                    self.imageCache.setObject(image, forKey: imagePath)
+                    DispatchQueue.main.async {
+                        cell.PlaceholderImageView.image = image
+                    }
+                } else {
+                    print("Data fetched but no valid image for \(imagePath)")
+                    DispatchQueue.main.async {
+                        cell.PlaceholderImageView.image = UIImage(systemName: "questionmark")
+                    }
+                }
+            }
+        }
+        
         return cell
     }
     
