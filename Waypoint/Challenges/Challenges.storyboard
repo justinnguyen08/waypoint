@@ -404,6 +404,13 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Please complete a challenge to see your friends' as well!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DpH-qb-i6P">
+                                <rect key="frame" x="16" y="376" width="361" height="100"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="tVg-ZD-mQw"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -416,6 +423,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="NaM-5B-hbx"/>
                     <connections>
+                        <outlet property="noDataLabel" destination="DpH-qb-i6P" id="c7W-cj-MMe"/>
                         <outlet property="tableView" destination="3IY-jb-CAX" id="w5x-cH-Ygb"/>
                     </connections>
                 </viewController>

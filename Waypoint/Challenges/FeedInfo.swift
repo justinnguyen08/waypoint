@@ -4,14 +4,17 @@
 //
 //  Created by Tony Ngo on 4/7/25.
 //
+
 import UIKit
 
+// every coment will have this information
 public struct CommentInfo{
     var profilePicture: UIImage!
     var comment: String!
     var likes: Int!
 }
 
+// handle feed information
 class FeedInfo{
     var username: String!
     var indicator: String!
@@ -19,10 +22,10 @@ class FeedInfo{
     var mainPicture: UIImage!
     var likes: Int!
     var comments: [CommentInfo]!
-    
     var uid: String!
+    var monthlyChallengeIndex: Int!
     
-    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: Int!, comments: [CommentInfo]!, uid: String!) {
+    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: Int!, comments: [CommentInfo]!, uid: String!, monthlyChallngeIndex: Int!) {
         self.username = username
         self.indicator = indicator
         self.profilePicture = profilePicture
@@ -30,5 +33,6 @@ class FeedInfo{
         self.likes = likes
         self.comments = comments
         self.uid = uid
+        self.monthlyChallengeIndex = monthlyChallngeIndex
     }
 }

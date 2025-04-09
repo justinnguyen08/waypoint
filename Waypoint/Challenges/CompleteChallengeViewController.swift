@@ -13,7 +13,6 @@ import FirebaseAuth
 
 class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDelegate{
     
-    
     @IBOutlet weak var cameraButton: UIButton!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var flashButton: UIButton!
@@ -35,24 +34,22 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     var validPicture = false
     var flashMode: AVCaptureDevice.FlashMode = .off
     var timestamp: Date?
-    
     var challengeDescriptionText: String?
     var challengePointsText: String?
     var index: Int?
-    
     var didDoMonthlyChallenge: Bool!
-    
     var isCameraRunning = false
     
+    // allows us access into the Google Firebase Firestore
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         hideAllButtons()
     }
     
+    // update the UI and get stuff ready
     override func viewWillAppear(_ animated: Bool) {
         challengeDescription.text = challengeDescriptionText ?? ""
         challengePoints.text = challengePointsText ?? "0"
@@ -71,11 +68,10 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     
     // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
-//        print("setting up camera!")
+        // if the camera is already running do not try to set up another one
         guard !isCameraRunning else{
             return
         }
-//        self.tabBarController?.tabBar.isHidden = true
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return
@@ -121,17 +117,16 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         }
     }
     
+    // stop the camera session
     func dismissCamera(){
-        print("Stopping camera session and removing preview layer...")
         session?.stopRunning()
         session = nil
-        if preview != nil{
-            preview?.removeFromSuperlayer()
-            preview = nil
-        }
+        preview?.removeFromSuperlayer()
+        preview = nil
         isCameraRunning = false
     }
     
+    // turn the flash on or off for the camera
     @IBAction func flashButtonPressed(_ sender: Any) {
         self.flashMode = (self.flashMode == .off) ? .on : .off
         if self.flashMode == .on{
@@ -142,11 +137,11 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         }
     }
     
+    // flip from the back or front camera
     @IBAction func flipCamera(_ sender: Any) {
         guard let currentSession = session, currentSession.isRunning else { return }
         
         let newPosition: AVCaptureDevice.Position = (position == .front) ? .back : .front
-        
         currentSession.beginConfiguration()
         
         // Stopping active camera
@@ -178,6 +173,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         currentSession.commitConfiguration()
     }
     
+    // actually take a picture
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
@@ -187,11 +183,13 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         self.showAfterCameraTakenButtons()
     }
     
+    // photo canceled after taken
     @IBAction func backButtonPressed(_ sender: UIButton) {
         sender.isHidden = true
         resumeCamera()
     }
     
+    // resume the camera session
     func resumeCamera(){
         stillImageView?.removeFromSuperview()
         stillImageView = nil
@@ -201,8 +199,8 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         capturedData = nil
     }
     
+    // upload image to the monthlyChallenges
     func uploadImage(imageData: Data) {
-        print("inside uploadImage")
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
         let storage = Storage.storage()
@@ -223,31 +221,28 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
             imageRef.downloadURL { (url, error) in
                 if let error = error {
                     print("Failed to get download URL: \(error.localizedDescription)")
-                } else if let url = url {
-                    
-                    let userDocRef = self.db.collection("users").document(userId)
-                    
-                    userDocRef.getDocument{
+                }
+                else{
+                    // update the user document information for the monthly challenge status
+                    self.db.collection("users").document(userId).getDocument{
                         (document, error) in
                         if let error = error{
                             print("Error getting users document: \(error)")
                             return
                         }
                         
-                        guard let document = document, var data = document.data() else{
+                        guard let document = document, let data = document.data() else{
                             print("Document does not exist or has no data")
                             return
                         }
                         
                         if var monthlyChallengeStatus = data["didMonthlyChallenges"] as? [Bool]{
                             monthlyChallengeStatus[self.index!] = true
-                            
-                            userDocRef.setData(["didMonthlyChallenges" : monthlyChallengeStatus], merge: true){
+                            self.db.collection("users").document(userId).setData(["didMonthlyChallenges" : monthlyChallengeStatus], merge: true){
                                 (error) in
                                 if let error = error{
                                     print("Error updating didMonthlyChallenges: \(error.localizedDescription)")
                                 }
-                                
                             }
                         }
                         else{
@@ -257,8 +252,6 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                 }
             }
         }
-        
-        
     }
     
     // Saves still image of captured photo
@@ -312,15 +305,13 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                     )
                 }
             }
-            
             self.stillImageView!.image = image
-            
             self.showAfterCameraTakenButtons()
-
             self.capturedData = imageData
         }
     }
     
+    // actually upload the photo and update necessary information
     @IBAction func sendPhotoButtonPressed(_ sender: Any) {
         guard capturedData != nil else {
             print("No image data to upload")
@@ -331,10 +322,11 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
             return
         }
         
-        guard let user = Auth.auth().currentUser else { return }
-        let userId = user.uid
-        let userDocRef = db.collection("users").document(userId)
-        userDocRef.getDocument { (document, error) in
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("User is not logged in")
+            return
+        }
+        db.collection("users").document(uid).getDocument { (document, error) in
             if let document = document, let data = document.data(),
                let monthlyChallengeStatus = data["didMonthlyChallenges"] as? [Bool]{
                 if monthlyChallengeStatus[self.index!]{
@@ -351,12 +343,10 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                     DispatchQueue.main.async {
                         self.stillImageView?.removeFromSuperview()
                         self.stillImageView = nil
-
                         if let image = UIImage(data: self.capturedData!) {
                             self.monthlyChallengeImage.image = image
                             self.monthlyChallengeImage.isHidden = false
                         }
-
                         self.hideAllButtons()
                     }
                 }
@@ -364,8 +354,8 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         }
     }
     
-    
-    func getMonthlyChallengePhoto(completion: @escaping () -> Void){
+    // if the user has done the specific monthly challenge then display it
+    func getMonthlyChallengePhoto(handler: @escaping () -> Void){
         guard let uid = Auth.auth().currentUser?.uid else {
             print("No user logged in")
             return
@@ -385,7 +375,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
             if let error = error {
                 self?.didDoMonthlyChallenge = false
                 print("Error fetching monthly challenge photo: \(error.localizedDescription)")
-                completion()
+                handler()
             }
             if let data = data, let image = UIImage(data: data) {
                 self?.didDoMonthlyChallenge = true
@@ -393,11 +383,11 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                     self?.monthlyChallengeImage.image = image
                 }
             }
-            completion()
+            handler()
         }
     }
     
-    
+    // show all buttons necessary for the camera
     func showCameraButtons(){
         flashButton.isHidden = false
         cameraButton.isHidden = false
@@ -406,6 +396,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         backButton.isHidden = true
     }
     
+    // show all buttons necessary after the photo is taken
     func showAfterCameraTakenButtons(){
         flashButton.isHidden = true
         cameraButton.isHidden = true
@@ -416,6 +407,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         self.view.bringSubviewToFront(self.backButton)
     }
     
+    // hide every single button related to the camera and after camera
     func hideAllButtons(){
         flashButton.isHidden = true
         cameraButton.isHidden = true
@@ -425,5 +417,4 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         backButton.isHidden = true
         self.view.bringSubviewToFront(self.backButton)
     }
-
 }

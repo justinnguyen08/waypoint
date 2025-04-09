@@ -11,7 +11,6 @@ import UIKit
 
 // this class handles the custom cell for the leaderboard table view
 class LeaderboardViewCell: UITableViewCell {
-
     @IBOutlet weak var place: UILabel!
     @IBOutlet weak var profilePic: UIImageView!
     @IBOutlet weak var username: UILabel!
