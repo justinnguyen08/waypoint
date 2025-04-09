@@ -92,10 +92,10 @@
             </objects>
             <point key="canvasLocation" x="586" y="-102"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main Tab Bar Controller-->
         <scene sceneID="ewB-TJ-G9A">
             <objects>
-                <tabBarController id="zVN-gO-1Fl" sceneMemberID="viewController">
+                <tabBarController id="zVN-gO-1Fl" customClass="MainTabBarController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tyA-J4-mYm">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
