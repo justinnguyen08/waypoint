@@ -40,12 +40,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 print("Error fetching users: \(error.localizedDescription)")
                 return
             }
-            
             var fetchedUIDs: [String] = []
             for document in snapshot!.documents{
                 fetchedUIDs.append(document.documentID)
             }
-            
             self.allUIds = fetchedUIDs
             completion()
         }
@@ -53,8 +51,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     
     func loadTableInformation(){
-        // get a list of all users!
-        
         let storage = Storage.storage()
         let storageRef = storage.reference()
         
@@ -70,12 +66,15 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             var newFeedUsername: String!
             var newFeedProfilePicture: UIImage!
             
+            // first ensure that we can access the user document from firebase
             db.collection("users").document(uid).getDocument() { document, error in
                 if let error = error{
                     print("Error reading user document: \(error.localizedDescription)")
                 }
                 else if let data = document?.data(){
                     newFeedUsername = data["username"] as? String
+                    
+                    // get the user profile picture
                     profilePicRef.getData(maxSize: 10 * 1024 * 1024) {
                          data, error in
                         if let error = error{
@@ -87,7 +86,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             var newFeedMainPicture: UIImage!
                             let newFeedLikes = 0
                             let newFeedComments: [CommentInfo] = []
-                        
+                            
+                            // get their daily challenge if it exists
                             dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
                                 [weak self] data, error in
                                 if let error = error{
@@ -98,12 +98,12 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                         newFeedMainPicture = image
                                         let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid)
                                         self?.feed.append(dailyImageIntoFeed)
-                                        print("The feed count is: \(self?.feed.count)")
                                         self?.tableView.reloadData()
                                     }
                                 }
                             }
                             
+                            // get their monthly challenge if it exists
                             for index in 1..<6{
                                 let monthlyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(index).jpg")
                                 
@@ -117,7 +117,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                             let newFeedMainPicture = image
                                             let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid)
                                             self?.feed.append(dailyImageIntoFeed)
-                                            print("The feed count is: \(self?.feed.count)")
                                             self?.tableView.reloadData()
                                             
                                         }
