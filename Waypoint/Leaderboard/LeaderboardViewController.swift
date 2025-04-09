@@ -170,7 +170,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                               let otherUsername = innerData["username"] as? String,
                               let otherWeeklyScore = innerData["weeklyChallengeScore"] as? Int,
                               let otherMonthlyScore = innerData["monthlyChallengeScore"] as? Int,
-                              let otherLocation = innerData["locatiin"] as? GeoPoint
+                              let otherLocation = innerData["location"] as? GeoPoint
                                 
                         else {
                             print("Other user document \(otherUID) is missing required fields or has incorrect types")
@@ -180,7 +180,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         // https://developer.apple.com/documentation/corelocation/clgeocoder
                         // https://developer.apple.com/documentation/corelocation/clplacemark
                         // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
-                        let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+                        let swiftLocation = CLLocation(latitude: otherLocation.latitude, longitude: otherLocation.longitude)
                         CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
                             if let error = error {
                                 print("Error in reverse geocoding: \(error.localizedDescription)")
