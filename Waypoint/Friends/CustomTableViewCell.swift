@@ -12,6 +12,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 
 class CustomTableViewCell: UITableViewCell {
