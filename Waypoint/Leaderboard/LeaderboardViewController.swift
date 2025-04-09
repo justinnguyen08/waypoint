@@ -122,6 +122,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             
             // https://developer.apple.com/documentation/corelocation/clgeocoder
             // https://developer.apple.com/documentation/corelocation/clplacemark
+            // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
             let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
             CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
                 if let error = error {
@@ -178,6 +179,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         
                         // https://developer.apple.com/documentation/corelocation/clgeocoder
                         // https://developer.apple.com/documentation/corelocation/clplacemark
+                        // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
                         let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
                         CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
                             if let error = error {
@@ -187,17 +189,17 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                             if let placemark = placemarks?[0],
                                let city = placemark.locality {
                                 self.mockLeaderboard.append(LeaderboardEntry(
-                                username: currentUserUsername,
-                                weeklyScore: currentUserWeeklyScore,
-                                monthlyScore: currentUserMonthlyScore,
+                                username: otherUsername,
+                                weeklyScore: otherWeeklyScore,
+                                monthlyScore: otherMonthlyScore,
                                 isFriend: isFriend,
                                 location: city))
                                 handler()
                             } else {
                                 self.mockLeaderboard.append(LeaderboardEntry(
-                                username: currentUserUsername,
-                                weeklyScore: currentUserWeeklyScore,
-                                monthlyScore: currentUserMonthlyScore,
+                                username: otherUsername,
+                                weeklyScore: otherWeeklyScore,
+                                monthlyScore: otherMonthlyScore,
                                 isFriend: isFriend,
                                 location: "n/a"))
                                 handler()
