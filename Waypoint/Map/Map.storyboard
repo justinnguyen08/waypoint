@@ -35,9 +35,9 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ecL-vq-Vsa">
-                                <rect key="frame" x="340.66666666666669" y="72" width="51.333333333333314" height="50"/>
+                                <rect key="frame" x="10" y="130" width="50" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="ec1-N3-BZk"/>
+                                    <constraint firstAttribute="width" constant="50" id="ec1-N3-BZk"/>
                                     <constraint firstAttribute="height" constant="50" id="ehF-QZ-yjB"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
@@ -54,11 +54,10 @@
                             <constraint firstItem="7oJ-23-77c" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="2Pg-aq-TqY"/>
                             <constraint firstItem="aJy-PT-BD7" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="3i4-iv-m3e"/>
                             <constraint firstItem="7oJ-23-77c" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="C5p-fS-bxD"/>
-                            <constraint firstItem="ecL-vq-Vsa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="T8y-HO-2Qz"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ecL-vq-Vsa" secondAttribute="trailing" constant="10" id="WLR-ca-fBQ"/>
-                            <constraint firstItem="ecL-vq-Vsa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="deq-xc-x6G"/>
+                            <constraint firstItem="ecL-vq-Vsa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="68" id="T8y-HO-2Qz"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="7oJ-23-77c" secondAttribute="bottom" id="fTr-OB-cx5"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="7oJ-23-77c" secondAttribute="trailing" id="iBm-b7-XFI"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ecL-vq-Vsa" secondAttribute="trailing" constant="342" id="vKq-nL-oB0"/>
                             <constraint firstItem="aJy-PT-BD7" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="vkr-Kc-1e3"/>
                         </constraints>
                     </view>
