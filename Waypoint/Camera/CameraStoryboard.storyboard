@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZRo-Cw-v29">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZRo-Cw-v29">
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -25,9 +25,11 @@
                                     <action selector="flipCamera:" destination="nZr-z4-OeM" eventType="touchUpInside" id="hpo-zj-zG7"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
-                                <rect key="frame" x="157" y="679" width="88" height="88"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
+                                <rect key="frame" x="163.66666666666666" y="679" width="88" height="88"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="88" id="oKq-Wc-FND"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Button"/>
                                 <userDefinedRuntimeAttributes>
@@ -39,38 +41,37 @@
                                     <action selector="capturePicture:" destination="nZr-z4-OeM" eventType="touchUpInside" id="44n-dC-6Iz"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwd-iE-Jvz">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwd-iE-Jvz">
                                 <rect key="frame" x="19" y="130" width="47" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
                                 <connections>
                                     <action selector="resumeLiveFeed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="Mik-E6-u24"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
-                                <rect key="frame" x="19" y="811" width="113" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
+                                <rect key="frame" x="19" y="809" width="120" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Tag Friends"/>
+                                <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system" title="Tag Friends"/>
                                 <connections>
                                     <segue destination="8EX-yT-KkL" kind="show" id="5b1-st-S4R"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
-                                <rect key="frame" x="153" y="810" width="97" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
+                                <rect key="frame" x="147" y="809" width="121.33333333333331" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Pin Photo"/>
+                                <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system" title="Pin Photo"/>
                                 <connections>
                                     <action selector="onPinPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="cZ5-iW-v9U"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
-                                <rect key="frame" x="322" y="810" width="64" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
+                                <rect key="frame" x="287" y="809" width="99" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="99" id="DSi-WN-fUY"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Send"/>
+                                <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system" title="Send"/>
                                 <connections>
                                     <action selector="onSendPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="I2k-nR-j6E"/>
                                 </connections>
@@ -78,6 +79,22 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ham-cv-7LU"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="vwd-iE-Jvz" secondAttribute="leading" id="6rF-bd-QDY"/>
+                            <constraint firstItem="YhB-nW-oTU" firstAttribute="leading" secondItem="iRs-lF-iDs" secondAttribute="trailing" constant="18.666666666666686" id="Ku9-e1-z5x"/>
+                            <constraint firstAttribute="bottom" secondItem="YhB-nW-oTU" secondAttribute="bottom" constant="30" id="Oh4-2o-gi1"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="163.66666666666666" id="TMz-7b-b18"/>
+                            <constraint firstAttribute="bottom" secondItem="55X-QM-QQ3" secondAttribute="bottom" constant="30" id="TPD-3L-pRw"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="leading" secondItem="55X-QM-QQ3" secondAttribute="trailing" constant="8" id="WtC-N9-n64"/>
+                            <constraint firstItem="YhB-nW-oTU" firstAttribute="trailing" secondItem="hM8-Ez-ZBL" secondAttribute="trailingMargin" id="Xoz-qF-Ud8"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="baa-WZ-nmr"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="iRs-lF-iDs" secondAttribute="centerX" id="d3X-mI-SFw"/>
+                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="jNg-rs-15s"/>
+                            <constraint firstItem="Ham-cv-7LU" firstAttribute="bottom" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="24" id="pfc-fG-ZGG"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="573" id="shz-NY-ysq"/>
+                            <constraint firstAttribute="bottom" secondItem="iRs-lF-iDs" secondAttribute="bottom" constant="30" id="sqk-Bn-ayf"/>
+                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="24" id="xgQ-HJ-Iua"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jFC-ld-vya"/>
                     <connections>
@@ -191,7 +208,7 @@
                     <toolbarItems/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="EiU-en-bab">
-                        <rect key="frame" x="0.0" y="124" width="402" height="44"/>
+                        <rect key="frame" x="0.0" y="62" width="402" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -207,6 +224,9 @@
     <resources>
         <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
         <image name="camera" catalog="system" width="128" height="93"/>
+        <image name="paperplane" catalog="system" width="128" height="119"/>
+        <image name="person.crop.circle" catalog="system" width="128" height="123"/>
+        <image name="pin" catalog="system" width="116" height="128"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
