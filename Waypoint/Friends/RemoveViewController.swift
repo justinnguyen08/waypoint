@@ -11,6 +11,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 class RemoveViewController: UIViewController {
     
@@ -18,6 +19,9 @@ class RemoveViewController: UIViewController {
     @IBOutlet weak var username: UILabel!
     var selectedUsername: String?
     
+    @IBOutlet weak var dailyPic: UIImageView!
+    @IBOutlet weak var pinnedPic: UIImageView!
+    @IBOutlet weak var profilePic: UIImageView!
     @IBOutlet weak var numberForStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     
@@ -62,6 +66,17 @@ class RemoveViewController: UIViewController {
             if let streak = data["streak"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(targetUserUUID)/profile_pic.jpg")
+            let pinnedPicRef = storage.reference().child("\(targetUserUUID)/pinned_pic.jpg")
+            let dailyPicRef = storage.reference().child("\(targetUserUUID)/daily_pic.jpg")
+            
+            self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
+            self.profilePic.layer.cornerRadius = self.profilePic.frame.height / 2
+            self.profilePic.contentMode = .scaleAspectFill
+            
+            self.fetchImage(from: pinnedPicRef, for: self.pinnedPic, fallback: "pin.circle")
+            self.fetchImage(from: dailyPicRef, for: self.dailyPic, fallback: "person.circle")
         }
     }
     
@@ -82,6 +97,8 @@ class RemoveViewController: UIViewController {
             
             let targetUserUUID = document.documentID
             let data = document.data()
+            print("target user UUID: \(targetUserUUID)")
+            
             print("type: \(type(of: data["friends"]))")
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
@@ -103,6 +120,44 @@ class RemoveViewController: UIViewController {
             
             if let nickname = data["nickname"] as? String {
                 self.nickname.text = nickname
+            }
+        }
+    }
+    
+//    func fetchAllImages() {
+//        if let userId = Auth.auth().currentUser?.uid {
+//            let storage = Storage.storage()
+//            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
+//            let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
+//            let dailyPicRef = storage.reference().child("\(userId)/daily_pic.jpg")
+//            
+//            // Fetch profile pic
+//            fetchImage(from: profilePicRef, for: profilePic, fallback: "person.circle")
+//            profilePic.layer.cornerRadius = profilePic.frame.height / 2
+//            profilePic.contentMode = .scaleAspectFill
+//            // Fetch pinned pic
+//            fetchImage(from: pinnedPicRef, for: pinnedPic, fallback: "pin.circle")
+//            
+//            fetchImage(from: dailyPicRef, for: dailyPic, fallback: "person.circle")
+//        } else {
+//            print("No user logged in, cannot fetch profile or pinned images")
+//            profilePic.image = UIImage(systemName: "person.circle")
+////            pinnedImageView.image = UIImage(systemName: "pin.circle")
+//        }
+//    }
+    
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
+        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+            if let error = error {
+                print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(systemName: fallback)
+                }
+            } else if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    imageView.image = image
+                }
             }
         }
     }

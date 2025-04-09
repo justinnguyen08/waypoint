@@ -11,6 +11,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseStorage
 
 public struct User {
     let uid: String
@@ -227,6 +228,24 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
+        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+            if let error = error {
+                print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(systemName: fallback)
+                }
+            } else if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    imageView.image = image
+                }
+            }
+        }
+        imageView.layer.cornerRadius = imageView.frame.width / 2
+        imageView.contentMode = .scaleAspectFill
+    }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if segCtrl?.selectedSegmentIndex == 0 {
@@ -239,17 +258,33 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let storage = Storage.storage()
         if segCtrl?.selectedSegmentIndex == 0 {
             let cell: CustomTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! CustomTableViewCell
             cell.customProfileName.text = removeFriendsArray[indexPath.row].username  // Extract display name
+            
+            let profilePicRef = storage.reference().child("\(removeFriendsArray[indexPath.row].uid)/profile_pic.jpg")
+            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
+            cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
+            cell.profilePic.contentMode = .scaleAspectFill
             return cell
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             let cell: PendingCustomTableViewCell = pendingFriendView.dequeueReusableCell(withIdentifier: "pendingCell", for: indexPath) as! PendingCustomTableViewCell
             cell.pendingProfileName.text = pendingFriendsArray[indexPath.row].username  // Extract display name
+            
+            let profilePicRef = storage.reference().child("\(pendingFriendsArray[indexPath.row].uid)/profile_pic.jpg")
+            fetchImage(from: profilePicRef, for: cell.profilePicture, fallback: "person.circle")
+            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+            cell.profilePicture.contentMode = .scaleAspectFill
             return cell
         } else {
             let cell: SuggestedCustomViewTableCell = suggestedFriendView.dequeueReusableCell(withIdentifier: "suggestCell", for: indexPath) as! SuggestedCustomViewTableCell
             cell.profileName.text = filteredUsers[indexPath.row].username  // Extract display name
+            
+            let profilePicRef = storage.reference().child("\(filteredUsers[indexPath.row].uid)/profile_pic.jpg")
+            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
+            cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
+            cell.profilePic.contentMode = .scaleAspectFill
             cell.updateButtonState()
             return cell
         }
