@@ -58,6 +58,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
             avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
             avatarImageView.contentMode = .scaleAspectFill
+            
             // Fetch pinned pic
             fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
         } else {
@@ -156,7 +157,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
         nicknameLabel.text = user.nickname
         usernameLabel.text = user.username
-        // Assuming score represents points.
         pointsLabel.text = "\(user.score ?? 0)"
         // Display the count of friend IDs.
         friendsLabel.text = "\(user.friends.count)"

@@ -32,7 +32,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var monthlyTableView: UITableView!
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
-    // camerea information
+    // camera information
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var preview: AVCaptureVideoPreviewLayer?
@@ -77,6 +77,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         // on the daily challenge segment
         if segmentControl.selectedSegmentIndex == 0 {
             // get the current date and load daily/monthly challenges
+            // time doesn't start til 1970
             currentDateSince1970 = Date().timeIntervalSince1970
             loadChallenges{
                 self.monthlyTableView.reloadData()
@@ -113,7 +114,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             print("User is not logged in")
             return
         }
-
         
         db.collection("users").document(uid).getDocument {
             (document, error) in
@@ -130,17 +130,19 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             if let lastUploadTimestamp = data["getDailyChallenge"] as? TimeInterval {
                 self.hasDoneDailyChallenge = self.hasUploadedDailyChallenge(lastUploadTimestamp)
                 if !self.hasDoneDailyChallenge {
-                    self.deleteOldDailyChallengeImages(for: uid)
+                    self.deleteOldDailyChallengeImages(userId: uid)
                 }
             } else {
                 print("getDailyChallenge field not found or wrong type")
             }
+            
+            // loads photo or sets up camera depending on challenge completion status
             handler()
         }
     }
     
     // actually deletes the image from the Firebase Storage
-    func deleteOldDailyChallengeImages(for userId: String) {
+    func deleteOldDailyChallengeImages(userId: String) {
         let storageRef = Storage.storage().reference()
         let dailyChallengeRef = storageRef.child("\(userId)/challenges/dailyChallenge")
 
@@ -405,7 +407,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         currentSession.commitConfiguration()
     }
     
-    // actually take a picture
+    // actually take the picture
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
@@ -438,6 +440,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
         }
         
+        // update interface with image, setting photo's properties
         DispatchQueue.main.async {
             self.session?.stopRunning()
             self.preview?.removeFromSuperlayer()
@@ -468,9 +471,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             
             self.stillImageView!.image = image
-            
             self.showAfterCameraTakenButtons()
-
             self.capturedData = imageData
         }
     }
@@ -491,6 +492,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             print("User is not logged in!")
             return
         }
+        
         db.collection("users").document(uid).getDocument { (document, error) in
             if let document = document, let data = document.data(),
                let lastUploadTime = data["getDailyChallenge"] as? TimeInterval{
@@ -636,8 +638,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             }
         }
     }
-    
-    
 
     // control the segment control
     @IBAction func onSegmentChange(_ sender: Any) {
@@ -668,7 +668,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.monthlyTableView.reloadData()
             }
             view.bringSubviewToFront(monthlyView)
-            
         case 2: // segue to feed page
             dismissCamera()
             monthlyView.isHidden = true
@@ -679,7 +678,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-
     // table view functions
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return monthlyChallenges?.count ?? 0
@@ -707,7 +705,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 print("index not set!")
                 return
             }
-            guard let mChallenges = monthlyChallenges else{
+            guard let _ = monthlyChallenges else{
                 print("monthly challenges is nil!")
                 return
             }

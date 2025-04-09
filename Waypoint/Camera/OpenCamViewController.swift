@@ -69,10 +69,10 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            if let currentLocation = locations.last {
-                location = currentLocation
-            }
+        if let currentLocation = locations.last {
+            location = currentLocation
         }
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -188,6 +188,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             print("Using current timestamp: \(timestamp)")
         }
         
+        // flips image for front camera
         if self.position == .front {
             guard let cgImage = image.cgImage else { return }
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
@@ -263,8 +264,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                 
         alert.addAction(UIAlertAction( title: "Yes",
                                        style: .default)
-                        { [weak self] _ in self?.uploadImage(imageData: imageData, postType: "pinned_pic.jpg")
-                            self?.validPicture = false})
+                        { _ in self.uploadImage(imageData: imageData, postType: "pinned_pic.jpg")
+                            self.validPicture = false})
         
         alert.addAction(UIAlertAction(title: "No",
                                       style: .cancel)

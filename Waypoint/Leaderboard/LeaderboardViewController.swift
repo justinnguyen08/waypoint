@@ -120,6 +120,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             currentUserMonthlyScore = monthlyScore
             currentUserUsername = username
             
+            // reverse geocode location snippet inspired from 
             // https://developer.apple.com/documentation/corelocation/clgeocoder
             // https://developer.apple.com/documentation/corelocation/clplacemark
             // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
@@ -177,6 +178,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                             return
                         }
                         
+                        // reverse geocode location snippet inspired from
                         // https://developer.apple.com/documentation/corelocation/clgeocoder
                         // https://developer.apple.com/documentation/corelocation/clplacemark
                         // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure

@@ -20,8 +20,10 @@ class PendingViewController: UIViewController {
     @IBOutlet weak var numberOfStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     @IBOutlet weak var username: UILabel!
+    
     // Does nothing for now needed it for a new controller
     var selectedUsername: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         username.text = selectedUsername!

@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  ProfilePicViewController.swift
 //  Waypoint
@@ -20,14 +22,9 @@ class ProfilePicViewController: UIViewController, AVCapturePhotoCaptureDelegate 
     var stillImageView: UIImageView?
     var capturedData: Data?
     var validPicture = false
-//    var timestamp: Date?
-
-    
     
     @IBOutlet weak var resumeLiveButton: UIButton!
     @IBOutlet weak var sendPostButton: UIButton!
-    //    @IBOutlet weak var pinPhotoButton: UIButton!
-//    @IBOutlet weak var tagFriendsButton: UIButton!
     @IBOutlet weak var flipButton: UIButton!
     
     @IBOutlet weak var capturePicButton: UIButton!
@@ -43,8 +40,6 @@ class ProfilePicViewController: UIViewController, AVCapturePhotoCaptureDelegate 
         capturePicButton.clipsToBounds = true
         resumeLiveButton.isHidden = true
         sendPostButton.isHidden = true
-//        pinPhotoButton.isHidden = true
-//        tagFriendsButton.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {

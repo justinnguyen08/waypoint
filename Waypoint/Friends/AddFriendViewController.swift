@@ -51,7 +51,6 @@ class AddFriendViewController: UIViewController {
             
             let targetUserUUID = document.documentID
             let data = document.data()
-            print("type: \(type(of: data["friends"]))")
             if let friends = data["friends"] as? [String] {
                 let count = friends.count
                 print(count)
@@ -117,7 +116,7 @@ class AddFriendViewController: UIViewController {
             
             // Fetch current pendingFriends array, to make sure that if in pending then, make add button
             // disappear and have it show as a pending button
-            if var pendingFriends = data["pendingFriends"] as? [[String: Any]] {
+            if let pendingFriends = data["pendingFriends"] as? [[String: Any]] {
                 // Check if your UID already exists
                 let alreadyPending = pendingFriends.contains { entry in
                     guard let uid = entry["uid"] as? String else { return false }
@@ -125,7 +124,6 @@ class AddFriendViewController: UIViewController {
                     return uid == Auth.auth().currentUser?.uid
                 }
                 if alreadyPending {
-                    print("You are already in this user's pending list.")
                     self.pendingButton.isHidden = false
                     return
                 } else {
@@ -135,10 +133,10 @@ class AddFriendViewController: UIViewController {
         }
     }
     
-    // Fetches the image from storage to for any reference such as profile or regular pics
+    // Fetches the image from storage for any reference such as profile or regular pics
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
         imageView.image = UIImage(systemName: fallback)
-        ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
+        ref.getData(maxSize: 10 * 1024 * 1024) { (data, error) in
             if let error = error {
                 print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -158,6 +156,7 @@ class AddFriendViewController: UIViewController {
         let db = Firestore.firestore()
         pendingButton.isHidden = false
         addButton.isHidden = true
+        
         // if the add button is pressed, then you get added to the other person's pending friends array
         if !pendingButton.isHidden, let currentUser = Auth.auth().currentUser {
             db.collection("users").document(currentUser.uid).getDocument {
@@ -206,6 +205,7 @@ class AddFriendViewController: UIViewController {
         addButton.isHidden = false
         let db = Firestore.firestore()
         guard let currentUser = Auth.auth().currentUser else { return }
+        
         // This unique username is for the current profile that clicked on
         guard let uniqueUsername = username.text else { return }
         db.collection("users").document(currentUser.uid).getDocument { (currentUserSnapshot, error) in

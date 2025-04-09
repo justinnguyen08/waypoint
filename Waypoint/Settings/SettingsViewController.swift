@@ -69,6 +69,7 @@ class SettingsViewController: UITableViewController {
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {
         if sender.isOn {
             // request notification permission if notifications are being enabled
+            // will be promised in final
         } else {
             // no notification permission
         }

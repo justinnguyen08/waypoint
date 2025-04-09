@@ -32,7 +32,7 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     
     // upload profile picture
     @IBAction func uploadPhotoButtonPressed(_ sender: Any) {
-        
+        // no functionality yet, but it is complete in profile settings
     }
     
     // create account into firebase
@@ -45,7 +45,7 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
         db.collection("users").whereField("username", isEqualTo: enteredUsername)
             .getDocuments { [weak self] (querySnapshot, error) in
                 if let error = error {
-                    // add ui changes to main dispatch queue from now on
+                    // add ui changes to main dispatch queue
                     DispatchQueue.main.async {
                         self?.statusLabel.text = "Error checking username: \(error.localizedDescription)"
                     }
@@ -77,7 +77,16 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                             "nickname": self!.nicknameTextField.text ?? "",
                             "score": 0,
                             "streak": 0,
-                            "username": enteredUsername
+                            "username": enteredUsername,
+                            "pendingFriends": [],
+                            "didMonthlyChallenge": [false, false, false, false, false],
+                            "getDailyChallenge": 0,
+                            "weeklyChallengeScore": 0,
+                            "monthlyChallengeScore": 0,
+                            "challengeStreak": 0,
+                            "lastChallengeCompletedDate": 0,
+                            "Location": GeoPoint(latitude: 30.2672, longitude: -97.7431),
+                            "lastDailyPhotoDate": 0
                         ]
                         
                         db.collection("users").document(userID).setData(userData) { error in
