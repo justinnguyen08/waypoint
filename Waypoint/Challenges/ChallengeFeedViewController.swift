@@ -15,6 +15,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     @IBOutlet weak var tableView: UITableView!
     var feed: [FeedInfo] = []
     var allUIds: [String] = []
+    var didDailyChallenge: Bool = false
+    var didMonthChallenge: [Bool] = [false, false, false, false, false]
     
     let db = Firestore.firestore()
     
@@ -48,7 +50,14 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
             else{
                 if let document = document, let data = document.data(),
-                let currentUserFriendsList = data["friends"] as? [String]{
+                   let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
+                   let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
+                   let currentUserFriendsList = data["friends"] as? [String]{
+                    
+                    let calendar = Calendar.current
+                    
+                    self.didDailyChallenge = calendar.isDateInToday(Date(timeIntervalSince1970: getDailyChallenge))
+                    self.didMonthChallenge = didMonthlyChallenges
                     self.allUIds = [uid]
                     for otherID in currentUserFriendsList{
                         self.allUIds.append(otherID)
@@ -101,37 +110,41 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             let newFeedComments: [CommentInfo] = []
                             
                             // get their daily challenge if it exists
-                            dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
-                                [weak self] data, error in
-                                if let error = error{
-                                    print("Error fetching daily photo for \(uid)")
-                                }
-                                else{
-                                    if let data = data, let image = UIImage(data: data){
-                                        newFeedMainPicture = image
-                                        let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid)
-                                        self?.feed.append(dailyImageIntoFeed)
-                                        self?.tableView.reloadData()
+                            if self.didDailyChallenge{
+                                dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
+                                    [weak self] data, error in
+                                    if let error = error{
+                                        print("Error fetching daily photo for \(uid)")
+                                    }
+                                    else{
+                                        if let data = data, let image = UIImage(data: data){
+                                            newFeedMainPicture = image
+                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1)
+                                            self?.feed.append(dailyImageIntoFeed)
+                                            self?.tableView.reloadData()
+                                        }
                                     }
                                 }
                             }
                             
                             // get their monthly challenge if it exists
                             for index in 1..<6{
-                                let monthlyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(index).jpg")
+                                let monthlyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(index - 1).jpg")
                                 
-                                monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
-                                    [weak self] data, error in
-                                    if let error = error{
-                                        print("Error fetching monthly photo for \(uid): \(error.localizedDescription)")
-                                    }
-                                    else{
-                                        if let data = data, let image = UIImage(data: data){
-                                            let newFeedMainPicture = image
-                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid)
-                                            self?.feed.append(dailyImageIntoFeed)
-                                            self?.tableView.reloadData()
-                                            
+                                if self.didMonthChallenge[index - 1]{
+                                    monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
+                                        [weak self] data, error in
+                                        if let error = error{
+                                            print("Error fetching monthly photo for \(uid): \(error.localizedDescription)")
+                                        }
+                                        else{
+                                            if let data = data, let image = UIImage(data: data){
+                                                let newFeedMainPicture = image
+                                                let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index)
+                                                self?.feed.append(dailyImageIntoFeed)
+                                                self?.tableView.reloadData()
+                                                
+                                            }
                                         }
                                     }
                                 }
@@ -159,12 +172,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         
         let cInfo = feed[indexPath.row]
         cell.selectionStyle = .none
-        
         cell.usernameLabel.text = cInfo.username
-        cell.typeLabel.text = cInfo.indicator
+        cell.typeLabel.text = "\(cInfo.indicator!)" + "\(cInfo.indicator! == "monthly" ? " challenge \(String(cInfo.monthlyChallengeIndex))" : "")"
         cell.profilePictureView.image = cInfo.profilePicture
         cell.mainImageView.image = cInfo.mainPicture
-        
         return cell
     }
 

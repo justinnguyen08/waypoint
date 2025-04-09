@@ -19,10 +19,10 @@ class FeedInfo{
     var mainPicture: UIImage!
     var likes: Int!
     var comments: [CommentInfo]!
-    
     var uid: String!
+    var monthlyChallengeIndex: Int!
     
-    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: Int!, comments: [CommentInfo]!, uid: String!) {
+    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: Int!, comments: [CommentInfo]!, uid: String!, monthlyChallngeIndex: Int!) {
         self.username = username
         self.indicator = indicator
         self.profilePicture = profilePicture
@@ -30,5 +30,6 @@ class FeedInfo{
         self.likes = likes
         self.comments = comments
         self.uid = uid
+        self.monthlyChallengeIndex = monthlyChallngeIndex
     }
 }
