@@ -100,7 +100,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                 print("Cannot add input to session")
                 return
             }
-
+            
+            // fit tab bar on screen under camera view
             self.preview = AVCaptureVideoPreviewLayer(session: session!)
             preview!.videoGravity = .resizeAspectFill
             let tabBarController = self.tabBarController
@@ -159,6 +160,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         currentSession.commitConfiguration()
     }
     
+    // show captured photo still on screen
     @IBAction func capturePicture(_ sender: UIButton) {
         guard let photoOutput = photoOutput else { return }
         self.tabBarController?.tabBar.isHidden = true
@@ -167,6 +169,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         validPicture = true
     }
     
+    // set image to whatever's currently on screen
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             print("Error capturing photo: \(error.localizedDescription)")
@@ -190,6 +193,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
         }
         
+        // capture and display still image
         DispatchQueue.main.async {
             self.session?.stopRunning()
             self.preview?.removeFromSuperlayer()
@@ -230,6 +234,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         capturedData = nil
     }
     
+    // if user's taken a new picture, post to map
     @IBAction func onSendPressed(_ sender: UIButton) {
         guard let imageData = capturedData else {
             print("Take a picture first")
@@ -241,10 +246,10 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         }
         uploadImage(imageData: imageData, postType: "daily_pic.jpg")
         validPicture = false
-//        resumeLiveFeed(sender)
     }
     
     
+    // confirm and allow user to upload and pin current image on map
     @IBAction func onPinPressed(_ sender: UIButton) {
         guard let imageData = capturedData else {
             return
@@ -268,6 +273,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         present(alert, animated: true)
     }
     
+    // upload picture and its metadata to firebase
     func uploadImage(imageData: Data, postType: String) {
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
@@ -295,7 +301,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             }
             imageRef.downloadURL { (url, error) in
                 if let error = error {
-                    print("Failed to get download URL: \(error.localizedDescription)")
+                    print("Failed to download: \(error.localizedDescription)")
                 } else if let downloadURL = url {
                     print("Image uploaded successfully: \(downloadURL.absoluteString)")
                 }
@@ -309,20 +315,20 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             }
             dailyImageRef.downloadURL { (url, error) in
                 if let error = error {
-                    print("Failed to get download URL: \(error.localizedDescription)")
+                    print("Failed to download: \(error.localizedDescription)")
                 } else if let downloadURL = url {
                     print("Image uploaded successfully: \(downloadURL.absoluteString)")
                     
-                    
+                    // update daily photo streak in user's document
                     self.db.collection("users").document(userId).getDocument() {
                         (document, error) in
                         if let error = error{
-                            print("Error attempting to access user document: \(error.localizedDescription)")
+                            print("Error retrieving user document: \(error.localizedDescription)")
                             return
                         }
                         if let document = document, let data = document.data(){
                             guard let lastDailyPhotoDate = data["lastDailyPhotoDate"] as? TimeInterval else{
-                                print("Error retrieving lastChallengeCompletedDate")
+                                print("Error retrieving lastDailyPhotoDate")
                                 return
                             }
                             guard let currentStreak = data["streak"] as? Int else{

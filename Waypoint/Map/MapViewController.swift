@@ -14,7 +14,7 @@ import FirebaseStorage
 import FirebaseAuth
 import FirebaseFirestore
 
-class MapViewController: UIViewController, CLLocationManagerDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     @IBOutlet weak var profilePic: UIButton!
     @IBOutlet weak var mapView: MKMapView!
@@ -34,7 +34,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         profilePic.imageView?.contentMode = .scaleAspectFit
         getProfilePic()
         refreshAllPins()
-        showPinnedPic()
         mapView.delegate = self
         
         scheduleDailyFlush()
@@ -43,9 +42,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         refreshAllPins()
-        showPinnedPic()
     }
     
+    // retrieve and show profile picture
     func getProfilePic() {
         guard let user = Auth.auth().currentUser else {
             print("No user logged in")
@@ -119,7 +118,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                     }
                 }
             } else {
-                print("Failed to generate JPEG data from map snapshot")
+                print("Failed to get JPEG data from map snapshot")
               }
         } else {
             print("No user logged in, cannot delete daily picture")
@@ -155,6 +154,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    // retrieve daily pic and its metadata from Firebase, add annotation to map according to coordinates
     private func showDailyPic(for uid: String) {
         let dailyRef = Storage.storage().reference().child("\(uid)/daily_pic.jpg")
         dailyRef.getMetadata { [weak self] metaResult in
@@ -195,11 +195,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    private func showPinnedPic() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("No user logged in, cannot show pinned pic")
-            return
-        }
+    // very similar to dailyPic, just retrieving from different location in Firebase Storage
+    private func showPinnedPic(for uid: String) {
         let pinnedRef = Storage.storage().reference().child("\(uid)/pinned_pic.jpg")
         pinnedRef.getMetadata { [weak self] metaResult in
             guard let self = self else { return }
@@ -225,9 +222,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                     case .success(let data):
                         guard let img = UIImage(data: data) else { return }
                         DispatchQueue.main.async {
-                            if let old = self.pinnedAnnotation {
-                                self.mapView.removeAnnotation(old)
-                            }
                             let post = PhotoPost(coordinate: coord, image: img)
                             self.mapView.addAnnotation(post)
                             self.pinnedAnnotation = post
@@ -239,6 +233,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    // show all pins on map for user. includes pinned and daily pictures, for user and all added friends
     func refreshAllPins() {
         guard let me = Auth.auth().currentUser else { return }
         let users = Firestore.firestore().collection("users")
@@ -250,8 +245,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             }
             let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? []).compactMap { $0["uid"] as? String }
             self.showDailyPic(for: me.uid)
+            self.showPinnedPic(for: me.uid)
             for uid in friendUIDs {
                 self.showDailyPic(for: uid)
+                self.showPinnedPic(for: uid)
             }
             var allAnnotations = Array(self.userAnnotations.values)
             if let pinned = self.pinnedAnnotation {
@@ -260,6 +257,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             self.mapView.showAnnotations(allAnnotations, animated: true)
         }
     }
+    
     
     func circularImage(from image: UIImage, size: CGSize) -> UIImage? {
         let renderer = UIGraphicsImageRenderer(size: size)
@@ -296,9 +294,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         )
     }
-}
-
-extension MapViewController: MKMapViewDelegate {
+    
+    // format picture view on map. make circular, and add a border for pinned photos
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
@@ -330,6 +327,7 @@ extension MapViewController: MKMapViewDelegate {
     }
 }
 
+// capture screenshot of the map. called right before nightly flush occurs
 extension MKMapView {
     func snapshot() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, UIScreen.main.scale)
