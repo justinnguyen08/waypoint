@@ -15,15 +15,13 @@ import FirebaseStorage
 
 public struct User {
     let uid: String
-//    let email: String
     let username: String
-//    let photoURL: String
 }
 
-public var addFriendsArray: [User] = []     //suggested friends
-public var removeFriendsArray: [User] = []  //current friends
-public var pendingFriendsArray: [User] = [] //pending friends
-public var suggestedFriends: [User] = []
+public var addFriendsArray: [User] = []     // all users
+public var removeFriendsArray: [User] = []  // current friends
+public var pendingFriendsArray: [User] = [] // pending friends
+public var suggestedFriends: [User] = []    // suggested friends
 
 class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,
                         UITextFieldDelegate{
@@ -41,7 +39,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     var filteredUsers: [User] = []
     let db = Firestore.firestore()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,7 +60,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
         
         // Loads all the data but makes sure that one happens after the other as they
-        // depend each other
+        // depend on each other
         suggestedFriend {
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
@@ -85,14 +82,13 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
 
     
     override func viewWillAppear(_ animated: Bool) {
-        
         guard let uid = Auth.auth().currentUser?.uid else {
             print("User not authenticated")
             return
         }
         
         // Loads all the data but makes sure that one happens after the other as they
-        // depend each other
+        // depend on each other
         suggestedFriend {
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
@@ -112,10 +108,9 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         filteredUsers = addFriendsArray
     }
     
-    
+    // get all the users that are in your pending users
     // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
     // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
-    // get all the users that are in your pending users
     func pendingFriends(uid: String, handler: @escaping () -> Void) {
         db.collection("users").document(uid).getDocument { (document, error) in
             if let error = error {
@@ -147,7 +142,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             }
         }
     }
-
+    
+    // gets suggested users
     // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
     // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
     func suggestedFriend(handler: @escaping () -> Void) {
@@ -179,6 +175,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
+    // get current friends
     // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
     // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
     func getCurrentFriend(uid: String, handler: @escaping () -> Void) {
@@ -283,8 +280,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return cell
         } else {
             let cell: SuggestedCustomViewTableCell = suggestedFriendView.dequeueReusableCell(withIdentifier: "suggestCell", for: indexPath) as! SuggestedCustomViewTableCell
-            cell.profileName.text = filteredUsers[indexPath.row].username  // Extract display name
-            
+            cell.profileName.text = filteredUsers[indexPath.row].username
             let profilePicRef = storage.reference().child("\(filteredUsers[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
@@ -303,7 +299,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         } else if segCtrl?.selectedSegmentIndex == 0 {
             tableView.deselectRow(at: indexPath, animated: true)
         }
-        
     }
     
     // Makes sure to properly handle the segues
@@ -330,17 +325,15 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             // If the search text is empty, show all users
             filteredUsers = addFriendsArray
         } else {
-            // Filter the users based on the search text (case-insensitive substring match)
+            // Filter the users based on the search text (case-insensitive)
             filteredUsers = addFriendsArray.filter { user in
                 return user.username.lowercased().contains(searchText.lowercased())
             }
         }
-        
-        // Reload the table view to reflect the changes
         suggestedFriendView.reloadData()
     }
 
-    // Optional: Clear search when cancel button is tapped
+    // Clear search when cancel button is tapped
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         filteredUsers = addFriendsArray
@@ -356,7 +349,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    
 }
 
 

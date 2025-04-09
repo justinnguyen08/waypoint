@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  CompleteChallengeViewController.swift
 //  Waypoint
@@ -371,7 +373,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         
         let monthlyChallengePicRef = storageRef.child("\(uid)/challenges/monthlyChallenges/\(monthlyChallengeIndex).jpg")
         
-        monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] data, error in
+        monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] (data, error) in
             if let error = error {
                 self?.didDoMonthlyChallenge = false
                 print("Error fetching monthly challenge photo: \(error.localizedDescription)")

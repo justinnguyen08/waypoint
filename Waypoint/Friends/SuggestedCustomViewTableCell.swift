@@ -18,11 +18,8 @@ class SuggestedCustomViewTableCell: UITableViewCell {
     // Just created some connections to the table view in profile cell
     
     @IBOutlet weak var profilePic: UIImageView!
-    
     @IBOutlet weak var profileName: UILabel!
-    
     @IBOutlet weak var pendingButton: UIButton!
-    
     @IBOutlet weak var addButton: UIButton!
     
     // Checks the button state, where if the user is already a friend then make it be pending and vice versa
@@ -114,6 +111,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
         let db = Firestore.firestore()
         guard let currentUser = Auth.auth().currentUser else { return }
         guard let uniqueUsername = profileName.text else { return }
+        
         // Get current user's username
         db.collection("users").document(currentUser.uid).getDocument { (currentUserSnapshot, error) in
             if let error = error {
@@ -129,6 +127,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
                 "uid": currentUser.uid,
                 "username": username
             ]
+            
             // Find the target user (the one you sent the request to)
             db.collection("users").whereField("username", isEqualTo: uniqueUsername).getDocuments { (snapshot, error) in
                 if let error = error {

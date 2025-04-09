@@ -44,6 +44,8 @@ class RemoveViewController: UIViewController {
             }
             let targetUserUUID = document.documentID
             let data = document.data()
+            
+            // fetch friends count data
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
@@ -57,6 +59,7 @@ class RemoveViewController: UIViewController {
                 self.numberOfFriends.text = "\(count) \nfriends"
             }
             
+            // fetch other user profile data
             if let nickname = data["nickname"] as? String {
                 self.nickname.text = nickname
             }
@@ -96,6 +99,8 @@ class RemoveViewController: UIViewController {
             
             let targetUserUUID = document.documentID
             let data = document.data()
+            
+            // fetch friends count data
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
@@ -109,6 +114,7 @@ class RemoveViewController: UIViewController {
                 self.numberOfFriends.text = "\(count) \nfriends"
             }
             
+            // fetch other user profile data
             if let streak = data["streak"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }

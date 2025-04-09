@@ -1,7 +1,7 @@
 //  Project: Waypoint
 //  Course: CS371L
 //
-//  SuggestedCustomTableViewCell.swift
+//  PendingCustomTableViewCell.swift
 //  Waypoint
 //
 //  Created by Tarun Somisetty on 3/9/25.

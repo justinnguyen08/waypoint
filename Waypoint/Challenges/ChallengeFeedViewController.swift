@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  ChallengeFeedViewController.swift
 //  Waypoint
@@ -52,7 +54,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 print("Error fetching logged in user document: \(error.localizedDescription)")
                 return
             }
-            else {
+            else{
                 if let document = document, let data = document.data(),
                    let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
                    let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
@@ -107,7 +109,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             print("Error fetching profile picture for \(uid): \(error.localizedDescription)")
                         }
                         else if let data = data, let image = UIImage(data: data){
-                            
                             newFeedProfilePicture = image
                             var newFeedMainPicture: UIImage!
                             let newFeedLikes = 0
@@ -117,7 +118,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             // only get them if the logged in user has also completed that challenge
                             if self.didDailyChallenge{
                                 dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
-                                    [weak self] data, error in
+                                    [weak self] (data, error) in
                                     if let error = error{
                                         print("Error fetching daily photo for \(uid): \(error.localizedDescription)")
                                     }
@@ -141,7 +142,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                 
                                 if self.didMonthChallenge[index - 1]{
                                     monthlyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
-                                        [weak self] data, error in
+                                        [weak self] (data, error) in
                                         if let error = error{
                                             print("Error fetching monthly photo for \(uid): \(error.localizedDescription)")
                                         }
@@ -158,7 +159,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                     }
                                 }
                             }
-                            
                         }
                     }
                 }
@@ -166,12 +166,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     print("Error getting document")
                 }
             }
-            
-            
         }
     }
     
-    // table view specific functions
+    // table view specific functions (conforming)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feed.count
     }

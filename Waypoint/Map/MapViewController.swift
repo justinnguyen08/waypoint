@@ -88,11 +88,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             }
             return false
         }
+        
+        // screenshot of map with daily annotations
         guard let mapSnapshot = mapView.snapshot() else { return }
         mapView.removeAnnotations(dailyAnnotations)
         userAnnotations.removeAll()
         print("All daily annotations flushed at \(Date())")
         
+        // grab current user
         if let user = Auth.auth().currentUser {
             let userId = user.uid
             let storage = Storage.storage()
@@ -107,6 +110,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     print("Daily picture deleted successfully at \(Date())")
                 }
             }
+            // update to firebase
             if let imageData = mapSnapshot.jpegData(compressionQuality: 0.8) {
                 let metadata = StorageMetadata()
                 metadata.contentType = "image/jpeg"
@@ -157,6 +161,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     // retrieve daily pic and its metadata from Firebase, add annotation to map according to coordinates
     private func showDailyPic(for uid: String) {
         let dailyRef = Storage.storage().reference().child("\(uid)/daily_pic.jpg")
+        // retrieve metadata from daily pic
         dailyRef.getMetadata { [weak self] metaResult in
             guard let self = self else { return }
             switch metaResult {
@@ -171,7 +176,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     let lat = Double(latStr),
                     let lon = Double(lonStr)
                 else { return }
+                
                 let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                // download daily picture
                 dailyRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] dataResult in
                     guard let self = self else { return }
                     switch dataResult {
@@ -185,6 +192,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                                 self.mapView.removeAnnotation(old)
                             }
                             let post = PhotoPost(coordinate: coord, image: img)
+                            
+                            // add photo to map
                             self.mapView.addAnnotation(post)
                             self.userAnnotations[uid] = post
                             print("Total pins on map: \(self.userAnnotations.count)")
@@ -284,6 +293,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
+    // to flush before deallocating
     deinit {
         flushTimer?.invalidate()
     }

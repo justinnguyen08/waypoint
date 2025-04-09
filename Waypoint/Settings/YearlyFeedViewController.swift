@@ -10,6 +10,6 @@
 import UIKit
 
 class YearlyFeedViewController: UIViewController {
-    
+    // to be finished in final
 }
 

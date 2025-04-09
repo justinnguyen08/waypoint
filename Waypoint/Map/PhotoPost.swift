@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  PhotoPost.swift
 //  Waypoint
@@ -8,6 +10,7 @@
 import UIKit
 import MapKit
 
+// tracks image and location of photo
 class PhotoPost: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     var image: UIImage?
