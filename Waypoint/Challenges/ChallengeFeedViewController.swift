@@ -13,6 +13,9 @@ import FirebaseFirestore
 class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet weak var noDataLabel: UILabel!
+    
     var feed: [FeedInfo] = []
     var allUIds: [String] = []
     var didDailyChallenge: Bool = false
@@ -37,10 +40,14 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     func getAllUsers(completion: @escaping () -> Void){
         
+        tableView.isHidden = true
+        
         guard let uid = Auth.auth().currentUser?.uid else{
             print("user is not logged in")
             return
         }
+        
+        
         
         db.collection("users").document(uid).getDocument(){
             (document, error) in
@@ -48,7 +55,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 print("Error fetching logged in user document: \(error.localizedDescription)")
                 return
             }
-            else{
+            else {
                 if let document = document, let data = document.data(),
                    let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
                    let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
@@ -159,6 +166,14 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
             
             
+        }
+        
+        if feed.count == 0{
+            noDataLabel.isHidden = false
+        }
+        else{
+            noDataLabel.isHidden = true
+            tableView.isHidden = false
         }
     }
     
