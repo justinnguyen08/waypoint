@@ -84,29 +84,6 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    // get the city name from their location
-    // I was inspired from
-    // https://medium.com/@wesleymatlock/unlocking-the-power-of-cllocation-working-with-geolocation-in-swift-0d07fe73a8b8
-    func getCityName(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async -> String? {
-        let location = CLLocation(latitude: latitude, longitude: longitude)
-        
-        return await withCheckedContinuation { continuation in
-            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-                guard error == nil else {
-                    print("Error in reverse geocoding: \(error!.localizedDescription)")
-                    continuation.resume(returning: nil)
-                    return
-                }
-                
-                if let placemark = placemarks?.first, let city = placemark.locality {
-                    continuation.resume(returning: city)
-                } else {
-                    continuation.resume(returning: nil)
-                }
-            }
-        }
-    }
-    
     // load the information and update the table
     func loadInformation(handler: @escaping () -> Void) {
         self.mockLeaderboard = []
@@ -118,7 +95,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         var currentUserUsername: String = ""
         var currentUserWeeklyScore: Int = 0
         var currentUserMonthlyScore: Int = 0
-        var currentUserFriends: [String] = []
+        var currentUserFriends: [[String: Any]] = []
         
         db.collection("users").document(uid).getDocument {
             (document, error) in
@@ -128,7 +105,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
             guard let data = document?.data(),
-                  let friends = data["friends"] as? [String],
+                  let friends = data["friends"] as? [[String: Any]],
                   let weeklyScore = data["weeklyChallengeScore"] as? Int,
                   let monthlyScore = data["monthlyChallengeScore"] as? Int,
                   let username = data["username"] as? String,
@@ -143,23 +120,44 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             currentUserMonthlyScore = monthlyScore
             currentUserUsername = username
             
-            // add ourselves into the 
-            Task {
-                let city = await self.getCityName(latitude: location.latitude, longitude: location.longitude) ?? "n/a"
-                self.mockLeaderboard.append(LeaderboardEntry(
+            // https://developer.apple.com/documentation/corelocation/clgeocoder
+            // https://developer.apple.com/documentation/corelocation/clplacemark
+            let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+            CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
+                if let error = error {
+                    print("Error in reverse geocoding: \(error.localizedDescription)")
+                    return
+                }
+                if let placemark = placemarks?[0],
+                   let city = placemark.locality {
+                    self.mockLeaderboard.append(LeaderboardEntry(
                     username: currentUserUsername,
                     weeklyScore: currentUserWeeklyScore,
                     monthlyScore: currentUserMonthlyScore,
                     isFriend: true,
-                    location: city
-                ))
-                handler()
+                    location: city))
+                    handler()
+                } else {
+                    self.mockLeaderboard.append(LeaderboardEntry(
+                    username: currentUserUsername,
+                    weeklyScore: currentUserWeeklyScore,
+                    monthlyScore: currentUserMonthlyScore,
+                    isFriend: true,
+                    location: "n/a"))
+                    handler()
+                }
             }
-            
+
             // get information from all users except ourselves
             for otherUID in self.allUIds {
                 if uid != otherUID {
-                    let isFriend = currentUserFriends.contains(otherUID)
+                    var isFriend = false
+                    for entry in currentUserFriends {
+                        if let friendUID = entry["uid"] as? String, friendUID == otherUID {
+                            isFriend = true
+                            break
+                        }
+                    }
                     
                     self.db.collection("users").document(otherUID).getDocument { (document, error) in
                         if let error = error {
@@ -178,16 +176,32 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                             return
                         }
                         
-                        Task {
-                            let city = await self.getCityName(latitude: otherLocation.latitude, longitude: otherLocation.longitude) ?? "n/a"
-                            self.mockLeaderboard.append(LeaderboardEntry(
-                                username: otherUsername,
-                                weeklyScore: otherWeeklyScore,
-                                monthlyScore: otherMonthlyScore,
+                        // https://developer.apple.com/documentation/corelocation/clgeocoder
+                        // https://developer.apple.com/documentation/corelocation/clplacemark
+                        let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+                        CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
+                            if let error = error {
+                                print("Error in reverse geocoding: \(error.localizedDescription)")
+                                return
+                            }
+                            if let placemark = placemarks?[0],
+                               let city = placemark.locality {
+                                self.mockLeaderboard.append(LeaderboardEntry(
+                                username: currentUserUsername,
+                                weeklyScore: currentUserWeeklyScore,
+                                monthlyScore: currentUserMonthlyScore,
                                 isFriend: isFriend,
-                                location: city
-                            ))
-                            handler()
+                                location: city))
+                                handler()
+                            } else {
+                                self.mockLeaderboard.append(LeaderboardEntry(
+                                username: currentUserUsername,
+                                weeklyScore: currentUserWeeklyScore,
+                                monthlyScore: currentUserMonthlyScore,
+                                isFriend: isFriend,
+                                location: "n/a"))
+                                handler()
+                            }
                         }
                     }
                 }
