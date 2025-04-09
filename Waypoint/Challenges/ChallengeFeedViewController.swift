@@ -34,18 +34,31 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func getAllUsers(completion: @escaping () -> Void){
-        db.collection("users").getDocuments {
-            (snapshot, error) in
+        
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("user is not logged in")
+            return
+        }
+        
+        db.collection("users").document(uid).getDocument(){
+            (document, error) in
             if let error = error{
-                print("Error fetching users: \(error.localizedDescription)")
+                print("Error fetching logged in user document: \(error.localizedDescription)")
                 return
             }
-            var fetchedUIDs: [String] = []
-            for document in snapshot!.documents{
-                fetchedUIDs.append(document.documentID)
+            else{
+                if let document = document, let data = document.data(),
+                let currentUserFriendsList = data["friends"] as? [String]{
+                    self.allUIds = [uid]
+                    for otherID in currentUserFriendsList{
+                        self.allUIds.append(otherID)
+                    }
+                    completion()
+                }
+                else{
+                    print("Error fetching logged in user document")
+                }
             }
-            self.allUIds = fetchedUIDs
-            completion()
         }
     }
     
