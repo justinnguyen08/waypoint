@@ -52,38 +52,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Section-2" id="sd0-Wx-a63">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" id="1Fr-h2-g8t">
-                                        <rect key="frame" x="0.0" y="251.66666793823242" width="402" height="43.666667938232422"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1Fr-h2-g8t" id="Qnx-Tu-fWv">
-                                            <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X0C-yz-aIw">
-                                                    <rect key="frame" x="335" y="6" width="49" height="31"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <connections>
-                                                        <action selector="lightModeSwitchChanged:" destination="PsO-zX-3ML" eventType="valueChanged" id="dPA-Aq-Ynx"/>
-                                                    </connections>
-                                                </switch>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Light Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dF8-L7-Yzl">
-                                                    <rect key="frame" x="20" y="0.0" width="80" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                            <tableViewSection headerTitle="Section-3" id="6Fo-yT-9uP">
+                            <tableViewSection headerTitle="Section-2" id="6Fo-yT-9uP">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" id="Nqu-Ea-dUC">
-                                        <rect key="frame" x="0.0" y="373.33333587646484" width="402" height="43.666667938232422"/>
+                                        <rect key="frame" x="0.0" y="251.66666793823242" width="402" height="43.666667938232422"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Nqu-Ea-dUC" id="tHX-r6-sRA">
                                             <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
@@ -93,7 +65,6 @@
                                                     <rect key="frame" x="335" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <connections>
-                                                        <action selector="lightModeSwitchChanged:" destination="PsO-zX-3ML" eventType="valueChanged" id="leG-09-Ilc"/>
                                                         <action selector="notificationsButtonTapped:" destination="PsO-zX-3ML" eventType="valueChanged" id="zR4-Jm-3BW"/>
                                                     </connections>
                                                 </switch>
@@ -109,10 +80,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Section-4" id="PgH-EM-OeW">
+                            <tableViewSection headerTitle="Section-3" id="PgH-EM-OeW">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="XNK-0K-5GO" style="IBUITableViewCellStyleDefault" id="Hdy-kp-pFj">
-                                        <rect key="frame" x="0.0" y="495.00000381469727" width="402" height="43.666667938232422"/>
+                                        <rect key="frame" x="0.0" y="373.33333587646484" width="402" height="43.666667938232422"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Hdy-kp-pFj" id="5bU-3a-hZg">
                                             <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
@@ -130,10 +101,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Section-5" id="8aR-ya-OPK">
+                            <tableViewSection headerTitle="Section-4" id="8aR-ya-OPK">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="qjy-Uo-wXD" style="IBUITableViewCellStyleDefault" id="FfM-9s-oQk">
-                                        <rect key="frame" x="0.0" y="616.66667175292969" width="402" height="43.666667938232422"/>
+                                        <rect key="frame" x="0.0" y="495.00000381469727" width="402" height="43.666667938232422"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FfM-9s-oQk" id="ngT-za-OEI">
                                             <rect key="frame" x="0.0" y="0.0" width="371.66666666666669" height="43.666667938232422"/>
@@ -154,10 +125,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Section-6" id="dY7-1M-nK5">
+                            <tableViewSection headerTitle="Section-5" id="dY7-1M-nK5">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="k1z-pv-gOI" style="IBUITableViewCellStyleDefault" id="eKd-iR-TEo">
-                                        <rect key="frame" x="0.0" y="738.33333969116211" width="402" height="43.666667938232422"/>
+                                        <rect key="frame" x="0.0" y="616.66667175292969" width="402" height="43.666667938232422"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="eKd-iR-TEo" id="if7-n2-jgY">
                                             <rect key="frame" x="0.0" y="0.0" width="371.66666666666669" height="43.666667938232422"/>
@@ -172,9 +143,6 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="bdV-b7-i42" kind="presentation" modalPresentationStyle="fullScreen" id="ov8-5e-YiK"/>
-                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>

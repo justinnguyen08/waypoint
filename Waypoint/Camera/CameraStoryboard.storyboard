@@ -26,12 +26,12 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
-                                <rect key="frame" x="163.66666666666666" y="679" width="88" height="88"/>
+                                <rect key="frame" x="157" y="679" width="88" height="88"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="88" id="oKq-Wc-FND"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title=""/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="5"/>
@@ -50,17 +50,17 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
-                                <rect key="frame" x="19" y="809" width="120" height="35"/>
+                                <rect key="frame" x="19.000000000000007" y="809" width="106.66666666666669" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system" title="Tag Friends"/>
+                                <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system" title=" Tag"/>
                                 <connections>
                                     <segue destination="8EX-yT-KkL" kind="show" id="5b1-st-S4R"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
-                                <rect key="frame" x="147" y="809" width="121.33333333333331" height="35"/>
+                                <rect key="frame" x="133.66666666666669" y="809" width="134.66666666666669" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system" title="Pin Photo"/>
+                                <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system" title=" Pin Photo"/>
                                 <connections>
                                     <action selector="onPinPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="cZ5-iW-v9U"/>
                                 </connections>
@@ -71,7 +71,7 @@
                                     <constraint firstAttribute="width" constant="99" id="DSi-WN-fUY"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system" title="Send"/>
+                                <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system" title=" Send"/>
                                 <connections>
                                     <action selector="onSendPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="I2k-nR-j6E"/>
                                 </connections>
@@ -83,7 +83,6 @@
                             <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="vwd-iE-Jvz" secondAttribute="leading" id="6rF-bd-QDY"/>
                             <constraint firstItem="YhB-nW-oTU" firstAttribute="leading" secondItem="iRs-lF-iDs" secondAttribute="trailing" constant="18.666666666666686" id="Ku9-e1-z5x"/>
                             <constraint firstAttribute="bottom" secondItem="YhB-nW-oTU" secondAttribute="bottom" constant="30" id="Oh4-2o-gi1"/>
-                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="163.66666666666666" id="TMz-7b-b18"/>
                             <constraint firstAttribute="bottom" secondItem="55X-QM-QQ3" secondAttribute="bottom" constant="30" id="TPD-3L-pRw"/>
                             <constraint firstItem="iRs-lF-iDs" firstAttribute="leading" secondItem="55X-QM-QQ3" secondAttribute="trailing" constant="8" id="WtC-N9-n64"/>
                             <constraint firstItem="YhB-nW-oTU" firstAttribute="trailing" secondItem="hM8-Ez-ZBL" secondAttribute="trailingMargin" id="Xoz-qF-Ud8"/>
