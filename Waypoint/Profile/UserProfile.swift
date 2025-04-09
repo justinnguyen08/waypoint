@@ -8,21 +8,18 @@
 import Foundation
 import FirebaseFirestore
 
-/// A class representing a user profile stored in Firestore.
 class UserProfile {
     var id: String?
     var nickname: String
     var username: String
     var profilePicture: String?
     
-    // List of friend document IDs.
+    // list of friend document IDs.
     var friends: [User]
     
-    // Additional properties
     var streak: Int?
     var score: Int?
     
-    // Designated initializer.
     init(id: String? = nil,
          nickname: String,
          username: String,
@@ -39,12 +36,8 @@ class UserProfile {
         self.score = score
     }
     
-    /// Convenience initializer that creates a UserProfile from Firestore data.
-    /// - Parameters:
-    ///   - id: The document ID.
-    ///   - data: A dictionary containing the Firestore fields.
+    // convenience initializer that creates a UserProfile from Firestore data.
     convenience init?(id: String, data: [String: Any]) {
-        // Ensure required fields exist.
         guard let nickname = data["nickname"] as? String,
               let username = data["username"] as? String else {
             return nil
@@ -52,7 +45,7 @@ class UserProfile {
         
         let profilePicture = data["profilePicture"] as? String
         
-        // Build a local variable for friends.
+        // build friends local variable.
         var friendsArray: [User] = []
         if let friendsData = data["friends"] as? [[String: Any]] {
             for friendInfo in friendsData {
@@ -68,7 +61,7 @@ class UserProfile {
         let streak = data["streak"] as? Int
         let score = data["score"] as? Int
         
-        // with all necessary data, call the designated initializer.
+        // now with all necessary data, call the designated initializer.
         self.init(id: id,
                   nickname: nickname,
                   username: username,

@@ -9,6 +9,7 @@
 
 import UIKit
 
+// sets placeholder cells for table view when loading photos in profile
 class PlaceholderCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var PlaceholderImageView: UIImageView!

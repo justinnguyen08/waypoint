@@ -17,61 +17,53 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // sign out button
-        if indexPath.section == 5 && indexPath.row == 5 {
-            do {
-                try Auth.auth().signOut()
-            }
-            catch _ as NSError { }
+        // sign out button is in section 4
+        if indexPath.section == 4{
+            // create sign out alert
+            let alert = UIAlertController(title: "Sign Out",
+                                          message: "Are you sure you want to sign out?",
+                                          preferredStyle: .alert)
             
-//            // Instantiate your login view controller from its storyboard.
-//            let storyboard = UIStoryboard(name: "Login", bundle: nil)
-//            guard let loginVC = storyboard.instantiateInitialViewController() else { return }
-//           
-//            // Set full-screen presentation style.
-//            loginVC.modalPresentationStyle = .fullScreen
-//           
-//            // Present the login VC.
-//            self.present(loginVC, animated: true, completion: nil)
-            // Instantiate the login view controller.
-            let storyboard = UIStoryboard(name: "Login", bundle: nil)
-            guard let loginVC = storyboard.instantiateInitialViewController() else { return }
-            loginVC.modalPresentationStyle = .fullScreen
+            // cancel action
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
-            // Replace the root view controller.
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                let sceneDelegate = windowScene.delegate as? SceneDelegate,
-                let window = sceneDelegate.window {
-                window.rootViewController = loginVC
+            // sign out action
+            alert.addAction(UIAlertAction(title: "Sign Out", style: .destructive, handler: { _ in
+                do {
+                    try Auth.auth().signOut()
+                } catch {
+                    print("Error signing out: \(error.localizedDescription)")
+                }
                 
-//                // Optionally add a transition animation.
-//                UIView.transition(with: window,
-//                                  duration: 0.5,
-//                                  options: .transitionFlipFromLeft,
-//                                  animations: nil,
-//                                  completion: nil)
-            }
+                // instantiate the login view controller
+                let storyboard = UIStoryboard(name: "Login", bundle: nil)
+                guard let loginVC = storyboard.instantiateInitialViewController() else { return }
+                loginVC.modalPresentationStyle = .fullScreen
+                
+                // replace the root view controller
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let sceneDelegate = windowScene.delegate as? SceneDelegate,
+                   let window = sceneDelegate.window {
+                    window.rootViewController = loginVC
+                    
+                    // animate a transition
+                    UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromLeft, animations: nil, completion: nil)
+                }
+            }))
+            self.present(alert, animated: true, completion: nil)
         }
+        
         tableView.deselectRow(at: indexPath, animated: true)
     }
+
     
+    // return height of 0 for header and footer in table view
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        // Return a smaller height (or 0 if you don't need a header)
-        return 0  // Adjust as necessary
+        return 0
     }
 
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        // Return a minimal height for footers
-        return 0  // Adjust as necessary
-    }
-    
-    @IBAction func lightModeSwitchChanged(_ sender: UISwitch) {
-        if sender.isOn {
-            // enable light mode
-        }
-        else {
-            // disable light mode
-        }
+        return 0
     }
     
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {

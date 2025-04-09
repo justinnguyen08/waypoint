@@ -28,22 +28,21 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     var imageReferences: [StorageReference] = []
     let imageCache = NSCache<NSString, UIImage>()
     
-    // The current user's profile fetched from Firestore.
+    // current user's profile  from Firestore.
     var userProfile: UserProfile?
     
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        // Set up tap gesture for mapCollectionView (triggers a segue).
+        // segue for mapCollectionView
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(mapImageTapped))
         mapCollectionView.addGestureRecognizer(tapGesture)
         mapCollectionView.isUserInteractionEnabled = true
         
-        // Fetch the current user's profile data from Firestore.
+        // fetch profile data
         fetchUserProfile()
         fetchProfileAndPinnedImages()
         fetchUserImages()
@@ -116,7 +115,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         }
     }
     
-    // MARK: - Data Fetching
+    // fetch user profile data
     func fetchUserProfile() {
         guard let currentUserID = Auth.auth().currentUser?.uid else {
             print("No current user is logged in.")
@@ -151,8 +150,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         }
     }
 
-    
-    // MARK: - UI Update
+    // update labels shown on profile
     func updateProfileLabels() {
         guard let user = userProfile else { return }
         
@@ -165,12 +163,11 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         streakLabel.text = "\(user.streak ?? 0)"
     }
     
-    // MARK: - Tap Gesture Action
+    // creates a segue for MapCollectionView
     @objc func mapImageTapped() {
         performSegue(withIdentifier: "MapDetailSegue", sender: self)
     }
     
-    // MARK: - UICollectionViewDataSource Methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
          return imageReferences.count
     }
@@ -212,8 +209,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         return cell
     }
     
-    // MARK: - UICollectionViewDelegateFlowLayout Methods
-    
+    // the next 4 collection view functions deal with spacing for displaying photos
+    // displaying x rows, each row having 3 columns of photos
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
