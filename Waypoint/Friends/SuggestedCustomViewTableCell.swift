@@ -25,6 +25,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
     
     @IBOutlet weak var addButton: UIButton!
     
+    // Checks the button state, where if the user is already a friend then make it be pending and vice versa
     func updateButtonState() {
         let db = Firestore.firestore()
         guard let currentUser = Auth.auth().currentUser else { return }
@@ -35,13 +36,11 @@ class SuggestedCustomViewTableCell: UITableViewCell {
                 print("Error fetching user data: \(error.localizedDescription)")
                 return
             }
-            
             guard let documents = snapshot?.documents, !documents.isEmpty,
                   let document = documents.first else {
                 print("No user found with username: \(self.profileName!.text)")
                 return
             }
-            
             let data = document.data()
             if let pendingFriends = data["pendingFriends"] as? [[String: Any]] {
                 // Check if your UID already exists
@@ -60,7 +59,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
         }
     }
         
-    
+    // For the target user, you become a pending friend they need to accept/deny
     @IBAction func addButtonPressed(_ sender: Any) {
         let uniqueUsername = profileName.text!
         let db = Firestore.firestore()
@@ -87,6 +86,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
                         print("Error fetching user: \(error.localizedDescription)")
                         return
                     }
+                    // Adds the user to the pending friends array
                     if let documents = snapshot?.documents, !documents.isEmpty {
                         if let document = documents.first {
                             let targetUserUUID = document.documentID
@@ -107,7 +107,7 @@ class SuggestedCustomViewTableCell: UITableViewCell {
         
     }
     
-    
+    // Removes you from the target's pending friends array
     @IBAction func pendingButtonPressed(_ sender: Any) {
         pendingButton.isHidden = true
         addButton.isHidden = false

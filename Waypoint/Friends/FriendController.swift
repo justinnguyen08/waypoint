@@ -23,8 +23,10 @@ public struct User {
 public var addFriendsArray: [User] = []     //suggested friends
 public var removeFriendsArray: [User] = []  //current friends
 public var pendingFriendsArray: [User] = [] //pending friends
+public var suggestedFriends: [User] = []
 
-class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,
+                        UITextFieldDelegate{
     
     @IBOutlet weak var friendProfileView: UITableView!
     @IBOutlet weak var pendingFriendView: UITableView!
@@ -43,7 +45,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        searchBar.delegate = self
         friendProfileView.delegate = self
         friendProfileView.dataSource = self
         pendingFriendView.delegate = self
@@ -60,24 +62,21 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return
         }
         
-        // Start the sequence of loading data
+        // Loads all the data but makes sure that one happens after the other as they
+        // depend each other
         suggestedFriend {
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
-                    // Once all data is fetched, filter the addFriendsArray
                     addFriendsArray.removeAll { user in
+                        // makes sure that the users that are not in pending and are already your friend
                         return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
                         pendingFriendsArray.contains(where: { $0.uid == user.uid })
                     }
-                    
-                    
-                    // Reload the table views to reflect the changes
                     DispatchQueue.main.async {
                         self.pendingFriendView.reloadData()
                         self.suggestedFriendView.reloadData()
                         self.friendProfileView.reloadData()
                     }
-                    
                     self.filteredUsers = addFriendsArray
                 }
             }
@@ -88,20 +87,20 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     override func viewWillAppear(_ animated: Bool) {
         
         guard let uid = Auth.auth().currentUser?.uid else {
-                print("User not authenticated")
-                return
+            print("User not authenticated")
+            return
         }
         
+        // Loads all the data but makes sure that one happens after the other as they
+        // depend each other
         suggestedFriend {
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
-                    // Once all data is fetched, filter the addFriendsArray
                     addFriendsArray.removeAll { user in
+                        // makes sure that the users that are not in pending and are already your friend
                         return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
                         pendingFriendsArray.contains(where: { $0.uid == user.uid })
                     }
-                    
-                    // Reload the table views to reflect the changes
                     DispatchQueue.main.async {
                         self.pendingFriendView.reloadData()
                         self.suggestedFriendView.reloadData()
@@ -110,19 +109,21 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
         }
-        
         filteredUsers = addFriendsArray
-        
-        
     }
     
-    func pendingFriends(uid: String, completion: @escaping () -> Void) {
+    
+    // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
+    // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
+    // get all the users that are in your pending users
+    func pendingFriends(uid: String, handler: @escaping () -> Void) {
         db.collection("users").document(uid).getDocument { (document, error) in
             if let error = error {
                 print("Error fetching user data: \(error.localizedDescription)")
                 return
             }
 
+            // gets the data from the firestore storage
             if let document = document, document.exists {
                 if let pendingFriendsData = document.data()?["pendingFriends"] as? [[String: Any]] {
                     var pendingList: [User] = []
@@ -137,7 +138,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                     DispatchQueue.main.async {
                         self.pendingFriendView.reloadData()
                     }
-                    completion() // Call the completion handler when done
+                    handler() 
                 } else {
                     print("No pending friends data found")
                 }
@@ -147,13 +148,14 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
 
-
-    
-    func suggestedFriend(completion: @escaping () -> Void) {
+    // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
+    // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
+    func suggestedFriend(handler: @escaping () -> Void) {
         guard let currentUser = Auth.auth().currentUser else {
             print("No current user logged in")
             return
         }
+        // Get all users that are not you
         db.collection("users").getDocuments { (snapshot, error) in
             if let error = error {
                 print("Error fetching users: \(error.localizedDescription)")
@@ -171,19 +173,21 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
             addFriendsArray = fetchedUsers
-            completion() // Call the completion handler when done
+            // Only shows like the first 10, but you can search for all the names
+            suggestedFriends = Array(addFriendsArray.prefix(10))
+            handler()
         }
     }
-
-
     
-    func getCurrentFriend(uid: String, completion: @escaping () -> Void) {
+    // https://medium.com/@dhavalkansara51/completion-handler-in-swift-with-escaping-and-nonescaping-closures-1ea717dc93a4
+    // https://medium.com/@bestiosdevelope/what-do-mean-escaping-and-nonescaping-closures-in-swift-d404d721f39d
+    func getCurrentFriend(uid: String, handler: @escaping () -> Void) {
         db.collection("users").document(uid).getDocument { (document, error) in
             if let error = error {
                 print("Error fetching user data: \(error.localizedDescription)")
                 return
             }
-
+            // Get all the users that are listed as your friends
             if let document = document, document.exists {
                 if let friendsData = document.data()?["friends"] as? [[String: Any]] {
                     var friendsList: [User] = []
@@ -198,7 +202,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                     DispatchQueue.main.async {
                         self.friendProfileView.reloadData()
                     }
-                    completion() // Call the completion handler when done
+                    handler()
                 } else {
                     print("No current friends data found")
                 }
@@ -210,7 +214,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
 
     
     @IBAction func friendSegCtlrPressed(_ sender: Any) {
-        // Depending on what segctrl is clicked I changed the view
+        // Depending on what segctrl is clicked I change the view
         switch segCtrl.selectedSegmentIndex {
         case 0:
             suggestFriendView.isHidden = true
@@ -228,8 +232,9 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
+    // Fetches the image from storage to for any reference such as profile or regular pics
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
-        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        imageView.image = UIImage(systemName: fallback)  
         ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
             if let error = error {
                 print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
@@ -246,7 +251,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         imageView.contentMode = .scaleAspectFill
     }
     
-    
+    // Get the count of the how many rows should show up
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if segCtrl?.selectedSegmentIndex == 0 {
             return removeFriendsArray.count
@@ -257,12 +262,12 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
+    // Depicts what each cell should be, with the profile pic, username, and buttons
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let storage = Storage.storage()
         if segCtrl?.selectedSegmentIndex == 0 {
-            let cell: CustomTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! CustomTableViewCell
-            cell.customProfileName.text = removeFriendsArray[indexPath.row].username  // Extract display name
-            
+            let cell: RemoveTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! RemoveTableViewCell
+            cell.customProfileName.text = removeFriendsArray[indexPath.row].username
             let profilePicRef = storage.reference().child("\(removeFriendsArray[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
@@ -270,8 +275,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return cell
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             let cell: PendingCustomTableViewCell = pendingFriendView.dequeueReusableCell(withIdentifier: "pendingCell", for: indexPath) as! PendingCustomTableViewCell
-            cell.pendingProfileName.text = pendingFriendsArray[indexPath.row].username  // Extract display name
-            
+            cell.pendingProfileName.text = pendingFriendsArray[indexPath.row].username
             let profilePicRef = storage.reference().child("\(pendingFriendsArray[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePicture, fallback: "person.circle")
             cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
@@ -290,9 +294,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
 
-    
+    // code to deselect the rows once they are clicked
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // code to deselect the rows once they are clicked
         if segCtrl?.selectedSegmentIndex == 1 && tableView == suggestedFriendView {
             tableView.deselectRow(at: indexPath, animated: true)
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
@@ -303,6 +306,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         
     }
     
+    // Makes sure to properly handle the segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addSegue",
            let destinationVC = segue.destination as? AddFriendViewController,
@@ -341,6 +345,16 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         searchBar.text = ""
         filteredUsers = addFriendsArray
         suggestedFriendView.reloadData()
+    }
+    
+    // Helps to dismiss the keyboard when the return is presed
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    // Helps to dismiss the keyboard when you click out of it
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
 }

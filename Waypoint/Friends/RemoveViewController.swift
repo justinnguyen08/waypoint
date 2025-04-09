@@ -25,6 +25,7 @@ class RemoveViewController: UIViewController {
     @IBOutlet weak var numberForStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     
+    // Portray all the values for nickname, # of friends, and pictures
     override func viewDidLoad() {
         super.viewDidLoad()
         username.text = selectedUsername!
@@ -41,21 +42,18 @@ class RemoveViewController: UIViewController {
                 print("No user found with username: \(self.username.text)")
                 return
             }
-            
             let targetUserUUID = document.documentID
             let data = document.data()
-            print("type: \(type(of: data["friends"]))")
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
-                if let uid = friendInfo["uid"] as? String,
-                   let username = friendInfo["username"] as? String {
-                   let friend = User(uid: uid, username: username)
-                    friends.append(friend)
+                    if let uid = friendInfo["uid"] as? String,
+                       let username = friendInfo["username"] as? String {
+                           let friend = User(uid: uid, username: username)
+                            friends.append(friend)
                     }
                 }
                 let count = friends.count
-                print("This is how many friends you have friends you have \(count)")
                 self.numberOfFriends.text = "\(count) \nfriends"
             }
             
@@ -80,6 +78,7 @@ class RemoveViewController: UIViewController {
         }
     }
     
+    // Portray all the values for nickname, # of friends, and pictures
     override func viewWillAppear(_ animated: Bool) {
         let db = Firestore.firestore()
         db.collection("users").whereField("username", isEqualTo: username.text).getDocuments {
@@ -97,20 +96,16 @@ class RemoveViewController: UIViewController {
             
             let targetUserUUID = document.documentID
             let data = document.data()
-            print("target user UUID: \(targetUserUUID)")
-            
-            print("type: \(type(of: data["friends"]))")
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
-                if let uid = friendInfo["uid"] as? String,
-                   let username = friendInfo["username"] as? String {
-                   let friend = User(uid: uid, username: username)
-                    friends.append(friend)
+                    if let uid = friendInfo["uid"] as? String,
+                       let username = friendInfo["username"] as? String {
+                       let friend = User(uid: uid, username: username)
+                        friends.append(friend)
                     }
                 }
                 let count = friends.count
-                print("This is how many friends you have friends you have \(count)")
                 self.numberOfFriends.text = "\(count) \nfriends"
             }
             
@@ -124,28 +119,7 @@ class RemoveViewController: UIViewController {
         }
     }
     
-//    func fetchAllImages() {
-//        if let userId = Auth.auth().currentUser?.uid {
-//            let storage = Storage.storage()
-//            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
-//            let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
-//            let dailyPicRef = storage.reference().child("\(userId)/daily_pic.jpg")
-//            
-//            // Fetch profile pic
-//            fetchImage(from: profilePicRef, for: profilePic, fallback: "person.circle")
-//            profilePic.layer.cornerRadius = profilePic.frame.height / 2
-//            profilePic.contentMode = .scaleAspectFill
-//            // Fetch pinned pic
-//            fetchImage(from: pinnedPicRef, for: pinnedPic, fallback: "pin.circle")
-//            
-//            fetchImage(from: dailyPicRef, for: dailyPic, fallback: "person.circle")
-//        } else {
-//            print("No user logged in, cannot fetch profile or pinned images")
-//            profilePic.image = UIImage(systemName: "person.circle")
-////            pinnedImageView.image = UIImage(systemName: "pin.circle")
-//        }
-//    }
-    
+    // Fetches the image from storage to for any reference such as profile or regular pics
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
         imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
         ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
@@ -162,6 +136,7 @@ class RemoveViewController: UIViewController {
         }
     }
 
+    // Removing the friend from my friends array
     @IBAction func removeButtonPressed(_ sender: Any) {
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
@@ -187,29 +162,28 @@ class RemoveViewController: UIViewController {
                 if let documents = snapshot?.documents, !documents.isEmpty {
                     if let document = documents.first {
                         let targetUserUUID = document.documentID
-                        print("Found user UUID: \(targetUserUUID)")
-                        // Adding the current user in the target's database
+                        // Removing the current user in the target's database
                         db.collection("users").document(targetUserUUID).updateData([
                             "friends": FieldValue.arrayRemove([currentUserDict])
                         ]) { error in
                             if let error = error {
                                 print("Error updating pendingFriends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
+                                print("Successfully removed \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
                             }
                         }
-                        // Adding the target in the current users' database
+                        
+                        // Removing the target in the current users' database
                         let targetUserDict: [String: Any] = [
                             "uid": targetUserUUID,
                             "username": uniqueUsername
                         ]
-                        
                         db.collection("users").document(currentUser!.uid).updateData(["friends": FieldValue.arrayRemove([targetUserDict])]) {
                             error in
                             if let error = error {
                                 print("Error updating friends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
+                                print("Successfully removed \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
                             }
                         }
                     }
@@ -220,5 +194,4 @@ class RemoveViewController: UIViewController {
             
         }
     }
-
 }

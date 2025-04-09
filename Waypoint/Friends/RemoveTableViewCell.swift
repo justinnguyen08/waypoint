@@ -15,7 +15,7 @@ import FirebaseAuth
 import FirebaseStorage
 
 
-class CustomTableViewCell: UITableViewCell {
+class RemoveTableViewCell: UITableViewCell {
     
     // Just created some connections to the table view in profile cell
     
@@ -23,6 +23,7 @@ class CustomTableViewCell: UITableViewCell {
     
     @IBOutlet weak var profilePic: UIImageView!
     
+    // Removing the friend from my friends array
     @IBAction func removeButtonPressed(_ sender: Any) {
         let uniqueUsername = customProfileName.text!
         let db = Firestore.firestore()
@@ -48,29 +49,27 @@ class CustomTableViewCell: UITableViewCell {
                 if let documents = snapshot?.documents, !documents.isEmpty {
                     if let document = documents.first {
                         let targetUserUUID = document.documentID
-                        print("Found user UUID: \(targetUserUUID)")
-                        // Adding the current user in the target's database
+                        // Removing the current user in the target's database
                         db.collection("users").document(targetUserUUID).updateData([
                             "friends": FieldValue.arrayRemove([currentUserDict])
                         ]) { error in
                             if let error = error {
                                 print("Error updating pendingFriends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
+                                print("Successfully removed \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
                             }
                         }
-                        // Adding the target in the current users' database
+                        // Removing the target in the current users' database
                         let targetUserDict: [String: Any] = [
                             "uid": targetUserUUID,
                             "username": uniqueUsername
                         ]
-                        
                         db.collection("users").document(currentUser!.uid).updateData(["friends": FieldValue.arrayRemove([targetUserDict])]) {
                             error in
                             if let error = error {
                                 print("Error updating friends: \(error.localizedDescription)")
                             } else {
-                                print("Successfully added \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
+                                print("Successfully removed \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
                             }
                         }
                     }

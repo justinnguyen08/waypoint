@@ -117,6 +117,7 @@ class PendingViewController: UIViewController {
         }
     }
     
+    // Fetches the image from storage to for any reference such as profile or regular pics
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
         imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
         ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
@@ -133,6 +134,8 @@ class PendingViewController: UIViewController {
         }
     }
     
+    // Makes sure that when you press accept, both the target user and current user
+    // are mutual friends
     @IBAction func acceptButtonPressed(_ sender: Any) {
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
@@ -172,15 +175,11 @@ class PendingViewController: UIViewController {
                                 print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s pendingFriends.")
                             }
                         }
-                        
-                        
-                        
                         // Adding the target in the current users' database
                         let targetUserDict: [String: Any] = [
                             "uid": targetUserUUID,
                             "username": uniqueUsername
                         ]
-                        
                         db.collection("users").document(currentUser!.uid).updateData(["friends": FieldValue.arrayUnion([targetUserDict])]) {
                             error in
                             if let error = error {
@@ -189,7 +188,6 @@ class PendingViewController: UIViewController {
                                 print("Successfully added \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
                             }
                         }
-                        
                         db.collection("users").document(currentUser!.uid).updateData([
                             "pendingFriends": FieldValue.arrayRemove([targetUserDict])
                         ]) { error in
@@ -210,6 +208,8 @@ class PendingViewController: UIViewController {
 
     }
     
+    // Makes sure that when you press deny, the target loses you in the pendingFriends array, and you
+    // will see them back in people that you can add
     @IBAction func denyButtonPressed(_ sender: Any) {
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
@@ -219,16 +219,14 @@ class PendingViewController: UIViewController {
                     print("Error fetching current user: \(error.localizedDescription)")
                     return
                 }
-                
                 guard let pendingUserData = currentUserSnapshot?.data()?["pendingFriends"] as? [[String: Any]] else {
                     print("No pending friends found")
                     return
                 }
-                
                 // Find the pending friend dictionary matching the username
                 if let targetPendingFriend = pendingUserData.first(where: { ($0["username"] as? String) == uniqueUsername }) {
                     
-                    // Now remove that pending friend
+                    // Remove that pending friend
                     db.collection("users").document(currentUser!.uid).updateData([
                         "pendingFriends": FieldValue.arrayRemove([targetPendingFriend])
                     ]) { error in

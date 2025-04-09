@@ -35,7 +35,7 @@ class AddFriendViewController: UIViewController {
         username.text = selectedUsernameA!
         let db = Firestore.firestore()
         
-        // Gets the data for the user's profile that we logged into such as: streak, # of friends
+        // Gets the data for the user's profile that we logged into such as: streak, # of friends, profile pic
         db.collection("users").whereField("username", isEqualTo: username.text).getDocuments {
             (snapshot, error) in
             if let error = error {
@@ -58,13 +58,17 @@ class AddFriendViewController: UIViewController {
                 self.numberOfFriends.text = "\(count) friends"
             }
             
+            // Nickname retreival
             if let nickname = data["nickname"] as? String {
                 self.nickname.text = nickname
             }
             
+            // Streak data retrieval
             if let streak = data["streak"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }
+            
+            // Profile pic retrieval
             let storage = Storage.storage()
             let profilePicRef = storage.reference().child("\(targetUserUUID)/profile_pic.jpg")
             self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
@@ -90,25 +94,29 @@ class AddFriendViewController: UIViewController {
                 print("No user found with username: \(uniqueUsername)")
                 return
             }
+            
             let targetUserUUID = document.documentID
             let data = document.data()
-            print("target user UUID: \(targetUserUUID)")
             
+            // Friend count retrival
             if let friends = data["friends"] as? [String] {
                 let count = friends.count
                 print(count)
                 self.numberOfFriends.text = "\(count) friends"
             }
             
+            // Streak count retrival
             if let streak = data["streaks"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }
             
+            // Nickname retrieval
             if let nickname = data["nickname"] as? String {
                 self.nickname.text = nickname
             }
             
-            // Fetch current pendingFriends array
+            // Fetch current pendingFriends array, to make sure that if in pending then, make add button
+            // disappear and have it show as a pending button
             if var pendingFriends = data["pendingFriends"] as? [[String: Any]] {
                 // Check if your UID already exists
                 let alreadyPending = pendingFriends.contains { entry in
@@ -127,27 +135,9 @@ class AddFriendViewController: UIViewController {
         }
     }
     
-//    func fetchProfilePic() {
-//        if let userId = Auth.auth().currentUser?.uid {
-//            let storage = Storage.storage()
-//            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
-//            let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
-//            
-//            // Fetch profile pic
-//            fetchImage(from: profilePicRef, for: profilePic, fallback: "person.circle")
-//            profilePic.layer.cornerRadius = profilePic.frame.height / 2
-//            profilePic.contentMode = .scaleAspectFill
-//            // Fetch pinned pic
-////            fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
-//        } else {
-//            print("No user logged in, cannot fetch profile or pinned images")
-//            profilePic.image = UIImage(systemName: "person.circle")
-////            pinnedImageView.image = UIImage(systemName: "pin.circle")
-//        }
-//    }
-    
+    // Fetches the image from storage to for any reference such as profile or regular pics
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
-        imageView.image = UIImage(systemName: fallback)  // Placeholder while loading
+        imageView.image = UIImage(systemName: fallback)
         ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
             if let error = error {
                 print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
@@ -161,11 +151,14 @@ class AddFriendViewController: UIViewController {
             }
         }
     }
+    
+    // For the target user, you become a pending friend they need to accept
     @IBAction func addButtonPressed(_ sender: Any) {
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
         pendingButton.isHidden = false
         addButton.isHidden = true
+        // if the add button is pressed, then you get added to the other person's pending friends array
         if !pendingButton.isHidden, let currentUser = Auth.auth().currentUser {
             db.collection("users").document(currentUser.uid).getDocument {
                 (currentUserSnapshot, error) in
@@ -187,6 +180,7 @@ class AddFriendViewController: UIViewController {
                         print("Error fetching user: \(error.localizedDescription)")
                         return
                     }
+                    // Adds the user to pending friends array
                     if let documents = snapshot?.documents, !documents.isEmpty {
                         if let document = documents.first {
                             let targetUserUUID = document.documentID
@@ -206,15 +200,14 @@ class AddFriendViewController: UIViewController {
         }
     }
     
-    
+    // Removes you from the target's pending friends array
     @IBAction func pendingButtonPressed(_ sender: Any) {
         pendingButton.isHidden = true
         addButton.isHidden = false
         let db = Firestore.firestore()
         guard let currentUser = Auth.auth().currentUser else { return }
-        // This unique username is for the
+        // This unique username is for the current profile that clicked on
         guard let uniqueUsername = username.text else { return }
-        // Get current user's username
         db.collection("users").document(currentUser.uid).getDocument { (currentUserSnapshot, error) in
             if let error = error {
                 print("Error fetching current user: \(error.localizedDescription)")
@@ -231,6 +224,7 @@ class AddFriendViewController: UIViewController {
                 "uid": currentUser.uid,
                 "username": currentUserUsername
             ]
+            
             // Find the target user (the one you sent the request to)
             db.collection("users").whereField("username", isEqualTo: uniqueUsername).getDocuments { (snapshot, error) in
                 if let error = error {
@@ -240,6 +234,7 @@ class AddFriendViewController: UIViewController {
                 if let documents = snapshot?.documents, !documents.isEmpty {
                     if let document = documents.first {
                         let targetUserUUID = document.documentID
+                        
                         // Remove the current user from the target user's pendingFriends array
                         db.collection("users").document(targetUserUUID).updateData([
                             "pendingFriends": FieldValue.arrayRemove([currentUserDict])

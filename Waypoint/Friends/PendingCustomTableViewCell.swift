@@ -14,14 +14,12 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class PendingCustomTableViewCell: UITableViewCell {
-    
-    // Just created some connections to the table view in profile cell
-    
     @IBOutlet weak var profilePicture: UIImageView!
     
     @IBOutlet weak var pendingProfileName: UILabel!
     
-        
+    // Makes sure that when you press accept, both the target user and current user
+    // are mutual friends
     @IBAction func acceptPressed(_ sender: Any) {
         let uniqueUsername = pendingProfileName.text!
         let db = Firestore.firestore()
@@ -31,7 +29,6 @@ class PendingCustomTableViewCell: UITableViewCell {
                 print("Error fetching current user: \(error.localizedDescription)")
                 return
             }
-            
             guard let currentUserData = currentUserSnapshot?.data(),
                   let currentUsername = currentUserData["username"] as? String else { return }
             let currentUserStruct = User(uid: currentUser!.uid, username: currentUsername)
@@ -39,13 +36,11 @@ class PendingCustomTableViewCell: UITableViewCell {
                 "uid": currentUserStruct.uid,
                 "username": currentUserStruct.username
             ]
-            
             db.collection("users").whereField("username", isEqualTo: uniqueUsername).getDocuments { (snapshot, error) in
                 if let error = error {
                     print("Error fetching user: \(error.localizedDescription)")
                     return
                 }
-                
                 if let documents = snapshot?.documents, !documents.isEmpty {
                     if let document = documents.first {
                         let targetUserUUID = document.documentID
@@ -59,14 +54,11 @@ class PendingCustomTableViewCell: UITableViewCell {
                                 print("Error updating target's friends: \(error.localizedDescription)")
                                 return
                             }
-                            print("Successfully added \(currentUserStruct.username) to \(targetUserUUID)'s friends.")
-                            
                             // Adding the target in the current user's database
                             let targetUserDict: [String: Any] = [
                                 "uid": targetUserUUID,
                                 "username": uniqueUsername
                             ]
-                            
                             db.collection("users").document(currentUser!.uid).updateData([
                                 "friends": FieldValue.arrayUnion([targetUserDict])
                             ]) { error in
@@ -96,7 +88,8 @@ class PendingCustomTableViewCell: UITableViewCell {
         }
     }
 
-    
+    // Makes sure that when you press deny, the target loses you in the pendingFriends array, and you
+    // will see them back in people that you can add
     @IBAction func denyPressed(_ sender: Any) {
         let uniqueUsername = pendingProfileName.text!
         let db = Firestore.firestore()
@@ -115,7 +108,7 @@ class PendingCustomTableViewCell: UITableViewCell {
                 // Find the pending friend dictionary matching the username
                 if let targetPendingFriend = pendingUserData.first(where: { ($0["username"] as? String) == uniqueUsername }) {
                     
-                    // Now remove that pending friend
+                    // Remove that pending friend
                     db.collection("users").document(currentUser!.uid).updateData([
                         "pendingFriends": FieldValue.arrayRemove([targetPendingFriend])
                     ]) { error in
