@@ -51,7 +51,6 @@ class SuggestedCustomViewTableCell: UITableViewCell {
                     return uid == Auth.auth().currentUser?.uid
                 }
                 if alreadyPending {
-                    print("You are already in this user's pending list.")
                     self.pendingButton.isHidden = false
                     return
                 } else {

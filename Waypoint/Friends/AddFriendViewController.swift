@@ -31,9 +31,9 @@ class AddFriendViewController: UIViewController {
         super.viewDidLoad()
         pendingButton.isHidden = true
         username.text = selectedUsernameA!
-//        username.text = selectedUsername!
-//        print(username.text!)
         let db = Firestore.firestore()
+        
+        // Gets the data for the user's profile that we logged into such as: streak, # of friends
         db.collection("users").whereField("username", isEqualTo: username.text).getDocuments {
             (snapshot, error) in
             if let error = error {
@@ -50,26 +50,15 @@ class AddFriendViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             print("type: \(type(of: data["friends"]))")
-            if let friendsData = data["friends"] as? [[String: Any]] {
-                var friends: [User] = []
-                for friendInfo in friendsData {
-                if let uid = friendInfo["uid"] as? String,
-                   let username = friendInfo["username"] as? String {
-                   let friend = User(uid: uid, username: username)
-                    friends.append(friend)
-                    }
-                }
+            if let friends = data["friends"] as? [String] {
                 let count = friends.count
-                print("This is how many friends you have friends you have \(count)")
-                self.numberOfFriends.text = "\(count) \nfriends"
+                print(count)
+                self.numberOfFriends.text = "\(count) friends"
             }
             
             if let nickname = data["nickname"] as? String {
-//                print(nickname)
                 self.nickname.text = nickname
             }
-            
-//            print("Type of streaks field: \(type(of: data["streaks"]))")
             
             if let streak = data["streak"] as? Int {
                 self.numberForStreak.text = "\(streak)"
@@ -82,6 +71,8 @@ class AddFriendViewController: UIViewController {
         username.text = selectedUsernameA!
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
+        
+        // Gets the data for the user's profile that we logged into
         db.collection("users").whereField("username", isEqualTo: uniqueUsername).getDocuments {
             (snapshot, error) in
             if let error = error {
@@ -96,21 +87,13 @@ class AddFriendViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             
-            if let friendsData = data["friends"] as? [[String: Any]] {
-                var friends: [User] = []
-                for friendInfo in friendsData {
-                if let uid = friendInfo["uid"] as? String,
-                   let username = friendInfo["username"] as? String {
-                   let friend = User(uid: uid, username: username)
-                    friends.append(friend)
-                    }
-                }
+            if let friends = data["friends"] as? [String] {
                 let count = friends.count
-                print("This is how many friends you have friends you have \(count)")
-                self.numberOfFriends.text = "\(count) \nfriends"
+                print(count)
+                self.numberOfFriends.text = "\(count) friends"
             }
             
-            if let streak = data["streak"] as? Int {
+            if let streak = data["streaks"] as? Int {
                 self.numberForStreak.text = "\(streak)"
             }
             
@@ -178,6 +161,58 @@ class AddFriendViewController: UIViewController {
                     } else {
                         print("No user found with username: \(uniqueUsername)")
                     }
+                }
+            }
+        }
+    }
+    
+    
+    @IBAction func pendingButtonPressed(_ sender: Any) {
+        pendingButton.isHidden = true
+        addButton.isHidden = false
+        let db = Firestore.firestore()
+        guard let currentUser = Auth.auth().currentUser else { return }
+        // This unique username is for the
+        guard let uniqueUsername = username.text else { return }
+        // Get current user's username
+        db.collection("users").document(currentUser.uid).getDocument { (currentUserSnapshot, error) in
+            if let error = error {
+                print("Error fetching current user: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let currentUserData = currentUserSnapshot?.data(),
+                  let currentUserUsername = currentUserData["username"] as? String else {
+                print("Could not get current user data")
+                return
+            }
+            
+            let currentUserDict: [String: Any] = [
+                "uid": currentUser.uid,
+                "username": currentUserUsername
+            ]
+            // Find the target user (the one you sent the request to)
+            db.collection("users").whereField("username", isEqualTo: uniqueUsername).getDocuments { (snapshot, error) in
+                if let error = error {
+                    print("Error fetching target user: \(error.localizedDescription)")
+                    return
+                }
+                if let documents = snapshot?.documents, !documents.isEmpty {
+                    if let document = documents.first {
+                        let targetUserUUID = document.documentID
+                        // Remove the current user from the target user's pendingFriends array
+                        db.collection("users").document(targetUserUUID).updateData([
+                            "pendingFriends": FieldValue.arrayRemove([currentUserDict])
+                        ]) { error in
+                            if let error = error {
+                                print("Error removing from pendingFriends: \(error.localizedDescription)")
+                            } else {
+                                print("Successfully removed pending friend request")
+                            }
+                        }
+                    }
+                } else {
+                    print("No user found with username: \(uniqueUsername)")
                 }
             }
         }
