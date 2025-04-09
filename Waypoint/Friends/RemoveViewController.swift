@@ -14,13 +14,97 @@ import FirebaseAuth
 
 class RemoveViewController: UIViewController {
     
+    @IBOutlet weak var nickname: UILabel!
     @IBOutlet weak var username: UILabel!
     var selectedUsername: String?
     
-
+    @IBOutlet weak var numberForStreak: UILabel!
+    @IBOutlet weak var numberOfFriends: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         username.text = selectedUsername!
+        let db = Firestore.firestore()
+        db.collection("users").whereField("username", isEqualTo: username.text).getDocuments {
+            (snapshot, error) in
+            if let error = error {
+                print("Error fetching user: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let documents = snapshot?.documents, !documents.isEmpty,
+                  let document = documents.first else {
+                print("No user found with username: \(self.username.text)")
+                return
+            }
+            
+            let targetUserUUID = document.documentID
+            let data = document.data()
+            print("type: \(type(of: data["friends"]))")
+            if let friendsData = data["friends"] as? [[String: Any]] {
+                var friends: [User] = []
+                for friendInfo in friendsData {
+                if let uid = friendInfo["uid"] as? String,
+                   let username = friendInfo["username"] as? String {
+                   let friend = User(uid: uid, username: username)
+                    friends.append(friend)
+                    }
+                }
+                let count = friends.count
+                print("This is how many friends you have friends you have \(count)")
+                self.numberOfFriends.text = "\(count) \nfriends"
+            }
+            
+            if let nickname = data["nickname"] as? String {
+                self.nickname.text = nickname
+            }
+            
+            if let streak = data["streak"] as? Int {
+                self.numberForStreak.text = "\(streak)"
+            }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let db = Firestore.firestore()
+        db.collection("users").whereField("username", isEqualTo: username.text).getDocuments {
+            (snapshot, error) in
+            if let error = error {
+                print("Error fetching user: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let documents = snapshot?.documents, !documents.isEmpty,
+                  let document = documents.first else {
+                print("No user found with username: \(self.username.text)")
+                return
+            }
+            
+            let targetUserUUID = document.documentID
+            let data = document.data()
+            print("type: \(type(of: data["friends"]))")
+            if let friendsData = data["friends"] as? [[String: Any]] {
+                var friends: [User] = []
+                for friendInfo in friendsData {
+                if let uid = friendInfo["uid"] as? String,
+                   let username = friendInfo["username"] as? String {
+                   let friend = User(uid: uid, username: username)
+                    friends.append(friend)
+                    }
+                }
+                let count = friends.count
+                print("This is how many friends you have friends you have \(count)")
+                self.numberOfFriends.text = "\(count) \nfriends"
+            }
+            
+            if let streak = data["streak"] as? Int {
+                self.numberForStreak.text = "\(streak)"
+            }
+            
+            if let nickname = data["nickname"] as? String {
+                self.nickname.text = nickname
+            }
+        }
     }
 
     @IBAction func removeButtonPressed(_ sender: Any) {

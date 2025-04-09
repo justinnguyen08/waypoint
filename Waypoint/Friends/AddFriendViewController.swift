@@ -18,6 +18,8 @@ class AddFriendViewController: UIViewController {
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var pendingButton: UIButton!
     
+    @IBOutlet weak var nickname: UILabel!
+    @IBOutlet weak var numberForStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     
     var selectedUsernameA: String?
@@ -48,10 +50,29 @@ class AddFriendViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             print("type: \(type(of: data["friends"]))")
-            if let friends = data["friends"] as? [String] {
+            if let friendsData = data["friends"] as? [[String: Any]] {
+                var friends: [User] = []
+                for friendInfo in friendsData {
+                if let uid = friendInfo["uid"] as? String,
+                   let username = friendInfo["username"] as? String {
+                   let friend = User(uid: uid, username: username)
+                    friends.append(friend)
+                    }
+                }
                 let count = friends.count
-                print(count)
-                self.numberOfFriends.text = "\(count) friends"
+                print("This is how many friends you have friends you have \(count)")
+                self.numberOfFriends.text = "\(count) \nfriends"
+            }
+            
+            if let nickname = data["nickname"] as? String {
+//                print(nickname)
+                self.nickname.text = nickname
+            }
+            
+//            print("Type of streaks field: \(type(of: data["streaks"]))")
+            
+            if let streak = data["streak"] as? Int {
+                self.numberForStreak.text = "\(streak)"
             }
             
         }
@@ -75,11 +96,28 @@ class AddFriendViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             
-            if let friends = data["friends"] as? [String] {
+            if let friendsData = data["friends"] as? [[String: Any]] {
+                var friends: [User] = []
+                for friendInfo in friendsData {
+                if let uid = friendInfo["uid"] as? String,
+                   let username = friendInfo["username"] as? String {
+                   let friend = User(uid: uid, username: username)
+                    friends.append(friend)
+                    }
+                }
                 let count = friends.count
-                print(count)
-                self.numberOfFriends.text = "\(count) friends"
+                print("This is how many friends you have friends you have \(count)")
+                self.numberOfFriends.text = "\(count) \nfriends"
             }
+            
+            if let streak = data["streak"] as? Int {
+                self.numberForStreak.text = "\(streak)"
+            }
+            
+            if let nickname = data["nickname"] as? String {
+                self.nickname.text = nickname
+            }
+            
             // Fetch current pendingFriends array
             if var pendingFriends = data["pendingFriends"] as? [[String: Any]] {
                 // Check if your UID already exists
