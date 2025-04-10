@@ -170,6 +170,7 @@ class ProfilePicViewController: UIViewController, AVCapturePhotoCaptureDelegate 
             self.resumeLiveButton.isHidden = false
 //            self.tagFriendsButton.isHidden = false
             self.sendPostButton.isHidden = false
+            self.view.bringSubviewToFront(self.sendPostButton)
 //            self.pinPhotoButton.isHidden = false
             self.stillImageView!.image = image
             self.flipButton.isHidden = true
