@@ -79,13 +79,13 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                             "streak": 0,
                             "username": enteredUsername,
                             "pendingFriends": [],
-                            "didMonthlyChallenge": [false, false, false, false, false],
+                            "didMonthlyChallenges": [false, false, false, false, false],
                             "getDailyChallenge": 0,
                             "weeklyChallengeScore": 0,
                             "monthlyChallengeScore": 0,
                             "challengeStreak": 0,
                             "lastChallengeCompletedDate": 0,
-                            "Location": GeoPoint(latitude: 30.2672, longitude: -97.7431),
+                            "location": GeoPoint(latitude: 30.2672, longitude: -97.7431),
                             "lastDailyPhotoDate": 0
                         ]
                         

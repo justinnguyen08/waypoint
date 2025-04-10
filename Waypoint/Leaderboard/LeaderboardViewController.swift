@@ -104,16 +104,36 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                 return
             }
             
-            guard let data = document?.data(),
-                  let friends = data["friends"] as? [[String: Any]],
-                  let weeklyScore = data["weeklyChallengeScore"] as? Int,
-                  let monthlyScore = data["monthlyChallengeScore"] as? Int,
-                  let username = data["username"] as? String,
-                  let location = data["location"] as? GeoPoint
-            else {
-                print("Current user document is missing required fields or has incorrect types")
+            guard let data = document?.data() else {
+                print("Failed to get data from document")
                 return
             }
+
+            guard let friends = data["friends"] as? [[String: Any]] else {
+                print("Missing or invalid 'friends' field")
+                return
+            }
+
+            guard let weeklyScore = data["weeklyChallengeScore"] as? Int else {
+                print("Missing or invalid 'weeklyChallengeScore' field")
+                return
+            }
+
+            guard let monthlyScore = data["monthlyChallengeScore"] as? Int else {
+                print("Missing or invalid 'monthlyChallengeScore' field")
+                return
+            }
+
+            guard let username = data["username"] as? String else {
+                print("Missing or invalid 'username' field")
+                return
+            }
+
+            guard let location = data["location"] as? GeoPoint else {
+                print("Missing or invalid 'location' field")
+                return
+            }
+
             
             currentUserFriends = friends
             currentUserWeeklyScore = weeklyScore
