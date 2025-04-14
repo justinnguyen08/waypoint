@@ -305,6 +305,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         )
     }
     
+    // open up full photo view when photo annotation on map is tapped
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let annotation = view.annotation as? PhotoPost else {
+            return
+        }
+        
+        let photo = annotation.image
+        let map = UIStoryboard(name: "Map", bundle: nil)
+        
+        guard let fullPhotoView = map.instantiateViewController(withIdentifier: "FullPhotoViewController") as? FullPhotoViewController else {
+            return
+        }
+        fullPhotoView.photo = photo
+        self.present(fullPhotoView, animated: true, completion: nil)
+    }
+    
     // format picture view on map. make circular, and add a border for pinned photos
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
