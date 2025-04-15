@@ -55,6 +55,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                 self.dateSegment.isHidden = false
                 self.tableView.isHidden = false
                 // because our default segment is friends we do this
+                self.currentLeaderboardToDisplay = []
                 for item in self.mockLeaderboard {
                     if(item.isFriend){ // if they are friends then count them
                         self.currentLeaderboardToDisplay.append(item)
@@ -77,7 +78,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             }
             var fetchedUIDs: [String] = []
             for document in snapshot!.documents{
-                fetchedUIDs.append(document.documentID)
+                if document.documentID != "example"{
+                    fetchedUIDs.append(document.documentID)
+                }
             }
             self.allUIds = fetchedUIDs
             handler()
@@ -266,6 +269,12 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
         else{ // Global
             currentLeaderboardToDisplay = mockLeaderboard
+        }
+        if dateSegment.selectedSegmentIndex == 0{ // Weekly
+            currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
+        }
+        else{ // Monthly
+            currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
         }
         tableView.reloadData()
     }
