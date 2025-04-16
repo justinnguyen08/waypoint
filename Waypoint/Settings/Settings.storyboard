@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="yMZ-xm-IMp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="yMZ-xm-IMp">
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -159,6 +159,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="profilePic" destination="orT-MF-uBj" id="FdR-bn-EcK"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e6c-C1-Asg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -186,16 +189,6 @@
                                 <rect key="frame" x="156" y="166.66666666666663" width="80" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Save and Exit" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qp2-eK-3PY">
-                                <rect key="frame" x="132" y="566" width="139" height="29"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="139" id="Py1-wp-YDe"/>
-                                    <constraint firstAttribute="height" constant="29" id="lPl-ug-1vI"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Nickname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="c75-40-5vv">
                                 <rect key="frame" x="46" y="322" width="300" height="34"/>
                                 <constraints>
@@ -237,7 +230,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Upload Profile Picture"/>
                                 <connections>
-                                    <segue destination="C6w-uv-s0a" kind="show" id="RDs-BO-Lb1"/>
+                                    <action selector="uploadPhotoButtonTapped:" destination="Rzo-hG-RSl" eventType="touchUpInside" id="70w-HG-3Ef"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile Settings" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kuZ-tD-8SW">
@@ -246,19 +239,37 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R7c-rs-gj1">
+                                <rect key="frame" x="114.66666666666669" y="566" width="173" height="42"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain">
+                                    <attributedString key="attributedTitle">
+                                        <fragment content="Save and Exit">
+                                            <attributes>
+                                                <font key="NSFont" size="24" name="Helvetica"/>
+                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                            </attributes>
+                                        </fragment>
+                                    </attributedString>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="saveAndExitTapped:" destination="Rzo-hG-RSl" eventType="touchUpInside" id="Jq7-Pb-ZGP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="EO4-0H-APp"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="qp2-eK-3PY" firstAttribute="top" secondItem="yur-RF-Oqw" secondAttribute="bottom" constant="60" id="2zU-e4-m1m"/>
                             <constraint firstItem="c75-40-5vv" firstAttribute="top" secondItem="n6G-2S-CBi" secondAttribute="bottom" constant="20" id="5jQ-JH-dia"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="centerX" secondItem="yur-RF-Oqw" secondAttribute="centerX" id="Bac-0A-aEN"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="centerX" secondItem="Wop-EI-25m" secondAttribute="centerX" id="Cdy-Hn-8C3"/>
                             <constraint firstItem="yur-RF-Oqw" firstAttribute="top" secondItem="Wop-EI-25m" secondAttribute="bottom" constant="16" id="EJD-mG-UF4"/>
                             <constraint firstItem="cLH-sC-Bm2" firstAttribute="top" secondItem="kuZ-tD-8SW" secondAttribute="bottom" constant="20.999999999999972" id="HId-hJ-O6W"/>
+                            <constraint firstItem="R7c-rs-gj1" firstAttribute="top" secondItem="yur-RF-Oqw" secondAttribute="bottom" constant="60" id="Qua-RR-sYz"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="top" secondItem="cLH-sC-Bm2" secondAttribute="bottom" constant="18.666666666666714" id="T6f-c1-zP6"/>
                             <constraint firstItem="c75-40-5vv" firstAttribute="top" secondItem="n6G-2S-CBi" secondAttribute="bottom" constant="20" id="Wpj-0t-0we"/>
                             <constraint firstItem="7A4-tD-Q0c" firstAttribute="top" secondItem="c75-40-5vv" secondAttribute="bottom" constant="16" id="XqK-o2-p4T"/>
+                            <constraint firstItem="R7c-rs-gj1" firstAttribute="centerX" secondItem="HNF-c4-JCb" secondAttribute="centerX" id="aJd-I9-D0X"/>
                             <constraint firstItem="Wop-EI-25m" firstAttribute="top" secondItem="7A4-tD-Q0c" secondAttribute="bottom" constant="16" id="bzd-SK-IjG"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="centerX" secondItem="7A4-tD-Q0c" secondAttribute="centerX" id="dl8-Xl-YUj"/>
                             <constraint firstItem="yur-RF-Oqw" firstAttribute="top" secondItem="Wop-EI-25m" secondAttribute="bottom" constant="16" id="fmC-HF-8zJ"/>
@@ -266,12 +277,16 @@
                             <constraint firstItem="Wop-EI-25m" firstAttribute="top" secondItem="7A4-tD-Q0c" secondAttribute="bottom" constant="16" id="hCh-0h-lIq"/>
                             <constraint firstItem="kuZ-tD-8SW" firstAttribute="centerX" secondItem="HNF-c4-JCb" secondAttribute="centerX" id="iMB-1U-Vhi"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="centerX" secondItem="c75-40-5vv" secondAttribute="centerX" id="oG9-yY-ucE"/>
-                            <constraint firstItem="qp2-eK-3PY" firstAttribute="leading" secondItem="EO4-0H-APp" secondAttribute="leading" constant="132" id="pT6-Vh-ogi"/>
                             <constraint firstItem="n6G-2S-CBi" firstAttribute="centerX" secondItem="cLH-sC-Bm2" secondAttribute="centerX" id="t6V-uL-Ly3"/>
                             <constraint firstItem="7A4-tD-Q0c" firstAttribute="top" secondItem="c75-40-5vv" secondAttribute="bottom" constant="16" id="vua-mB-Sci"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="RFI-fW-v6T"/>
+                    <connections>
+                        <outlet property="nicknameTextField" destination="c75-40-5vv" id="1B7-zP-vxW"/>
+                        <outlet property="profilePic" destination="cLH-sC-Bm2" id="4W3-8J-Yrq"/>
+                        <outlet property="usernameTextField" destination="7A4-tD-Q0c" id="oOQ-6l-Hln"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6rJ-xR-oaP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -377,7 +392,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="yMZ-xm-IMp" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="vsK-1U-Jnf">
-                        <rect key="frame" x="0.0" y="124" width="402" height="44"/>
+                        <rect key="frame" x="0.0" y="62" width="402" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -399,7 +414,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

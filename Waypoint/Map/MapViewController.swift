@@ -32,7 +32,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
         profilePic.clipsToBounds = true
         profilePic.imageView?.contentMode = .scaleAspectFit
-        getProfilePic()
         refreshAllPins()
         mapView.delegate = self
         
@@ -41,6 +40,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        getProfilePic()
         refreshAllPins()
     }
     
