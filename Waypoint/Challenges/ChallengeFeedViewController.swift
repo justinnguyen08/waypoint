@@ -116,6 +116,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             
                             // get their daily challenge if it exists
                             // only get them if the logged in user has also completed that challenge
+                            print(self.didDailyChallenge)
+                            print(uid)
                             if self.didDailyChallenge{
                                 dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
                                     [weak self] (data, error) in
@@ -134,22 +136,17 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                                 }
                                                 else{
                                                     if let metadata = metadata{
-                                                        let postID: String = (metadata.customMetadata?["postID"])!
-                                                        let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1, postID: postID)
-                                                        self?.feed.append(dailyImageIntoFeed)
-                                                        self?.tableView.reloadData()
-                                                        self?.tableView.isHidden = false
-                                                        self?.noDataLabel.isHidden = true
+                                                        if let postID = metadata.customMetadata?["postID"]{
+                                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1, postID: postID)
+                                                            self?.feed.append(dailyImageIntoFeed)
+                                                            self?.tableView.reloadData()
+                                                            self?.tableView.isHidden = false
+                                                            self?.noDataLabel.isHidden = true
+                                                        }
+                                                        
                                                     }
                                                 }
                                             }
-//                                            
-//                                            
-//                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1)
-//                                            self?.feed.append(dailyImageIntoFeed)
-//                                            self?.tableView.reloadData()
-//                                            self?.tableView.isHidden = false
-//                                            self?.noDataLabel.isHidden = true
                                         }
                                     }
                                 }
@@ -177,14 +174,15 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                                     }
                                                     else{
                                                         if let metadata = metadata{
-                                                            let postID: String = metadata.customMetadata!["postID"]!
-                                                            let newFeedMainPicture = image
-                                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index,
-                                                                                              postID: postID)
-                                                            self?.feed.append(dailyImageIntoFeed)
-                                                            self?.tableView.reloadData()
-                                                            self?.tableView.isHidden = false
-                                                            self?.noDataLabel.isHidden = true
+                                                            if let postID: String = metadata.customMetadata?["postID"]{
+                                                                let newFeedMainPicture = image
+                                                                let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index,
+                                                                                                  postID: postID)
+                                                                self?.feed.append(dailyImageIntoFeed)
+                                                                self?.tableView.reloadData()
+                                                                self?.tableView.isHidden = false
+                                                                self?.noDataLabel.isHidden = true
+                                                            }
                                                         }
                                                     }
                                                 }
