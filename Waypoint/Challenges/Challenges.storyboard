@@ -150,10 +150,6 @@
                                             <action selector="flipCamera:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="PtS-oV-S5F"/>
                                         </connections>
                                     </button>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyL-XJ-Py0">
-                                        <rect key="frame" x="0.0" y="50" width="361" height="480"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8g-eg-sRd">
                                         <rect key="frame" x="155" y="537" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -175,6 +171,10 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2rG-th-7Et">
+                                        <rect key="frame" x="0.0" y="50" width="361" height="480"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -194,7 +194,7 @@
                     <connections>
                         <outlet property="backButton" destination="5XZ-f6-U2H" id="xAq-XM-Ja5"/>
                         <outlet property="cameraButton" destination="vsJ-jW-3oz" id="hUA-KG-ZZr"/>
-                        <outlet property="dailyChallengeImage" destination="CyL-XJ-Py0" id="9oa-tF-5ML"/>
+                        <outlet property="cameraDisplayView" destination="2rG-th-7Et" id="z9q-aR-Hjw"/>
                         <outlet property="dailyView" destination="DYl-vQ-VrP" id="OB4-lQ-5Fi"/>
                         <outlet property="descriptionLabel" destination="ZV6-iV-7Mf" id="rQA-RS-5S6"/>
                         <outlet property="flashButton" destination="SMD-g6-gNv" id="bMQ-D5-2yb"/>
