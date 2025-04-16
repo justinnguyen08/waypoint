@@ -154,12 +154,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                                                     }
                                                                 }
                                                             }
-                                                            
-                                                            
-                                                            
-                                                            
                                                         }
-                                                        
                                                     }
                                                 }
                                             }
