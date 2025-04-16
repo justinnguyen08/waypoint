@@ -87,6 +87,10 @@
                                 <rect key="frame" x="16" y="187" width="361" height="600"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2rG-th-7Et">
+                                        <rect key="frame" x="0.0" y="50" width="361" height="480"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Take a picture with a cat!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZV6-iV-7Mf">
                                         <rect key="frame" x="8" y="-2" width="353" height="29"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -150,10 +154,6 @@
                                             <action selector="flipCamera:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="PtS-oV-S5F"/>
                                         </connections>
                                     </button>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyL-XJ-Py0">
-                                        <rect key="frame" x="0.0" y="50" width="361" height="480"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8g-eg-sRd">
                                         <rect key="frame" x="155" y="537" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -194,7 +194,7 @@
                     <connections>
                         <outlet property="backButton" destination="5XZ-f6-U2H" id="xAq-XM-Ja5"/>
                         <outlet property="cameraButton" destination="vsJ-jW-3oz" id="hUA-KG-ZZr"/>
-                        <outlet property="dailyChallengeImage" destination="CyL-XJ-Py0" id="9oa-tF-5ML"/>
+                        <outlet property="cameraDisplayView" destination="2rG-th-7Et" id="z9q-aR-Hjw"/>
                         <outlet property="dailyView" destination="DYl-vQ-VrP" id="OB4-lQ-5Fi"/>
                         <outlet property="descriptionLabel" destination="ZV6-iV-7Mf" id="rQA-RS-5S6"/>
                         <outlet property="flashButton" destination="SMD-g6-gNv" id="bMQ-D5-2yb"/>
@@ -240,6 +240,11 @@
                                 <rect key="frame" x="16" y="192" width="361" height="636"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mBA-Id-Wwx">
+                                        <rect key="frame" x="0.0" y="42" width="361" height="498"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="heA-zB-R95">
                                         <rect key="frame" x="155" y="548" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -310,10 +315,6 @@
                                             <action selector="flipCamera:" destination="S1f-y5-uN9" eventType="touchUpInside" id="8cC-3d-yIo"/>
                                         </connections>
                                     </button>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6bd-rQ-BIP">
-                                        <rect key="frame" x="0.0" y="42" width="361" height="498"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -325,10 +326,10 @@
                     <connections>
                         <outlet property="backButton" destination="1k5-MJ-8p1" id="khb-Tf-cNd"/>
                         <outlet property="cameraButton" destination="heA-zB-R95" id="yjx-AT-XHJ"/>
+                        <outlet property="cameraDisplayView" destination="mBA-Id-Wwx" id="sgm-X1-iMV"/>
                         <outlet property="challengeDescription" destination="d6a-we-hAx" id="cXH-9t-TtC"/>
                         <outlet property="challengePoints" destination="TRG-74-JbG" id="3Xt-62-T5y"/>
                         <outlet property="flashButton" destination="Go1-bw-TAP" id="UdT-H9-fgg"/>
-                        <outlet property="monthlyChallengeImage" destination="6bd-rQ-BIP" id="zmZ-PO-z05"/>
                         <outlet property="monthlyChallengeSelectedView" destination="2H1-Kh-3tk" id="xRK-lg-z5z"/>
                         <outlet property="rotateCameraButton" destination="A5F-dl-GWx" id="Mj9-jN-Whn"/>
                         <outlet property="sendButton" destination="5WW-5k-9Yp" id="ssr-2W-tqN"/>
@@ -384,18 +385,29 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="filled" image="hand.thumbsup" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="likeButtonPressed:" destination="osd-31-4Sz" eventType="touchUpInside" id="mcj-5A-8f4"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yza-Dh-F5y">
-                                                    <rect key="frame" x="78" y="536" width="53" height="35"/>
+                                                    <rect key="frame" x="134" y="536" width="53" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="filled" image="bubble" catalog="system"/>
                                                 </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d7y-cj-Ks5">
+                                                    <rect key="frame" x="78" y="543" width="42" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="commentButton" destination="yza-Dh-F5y" id="Z3i-UL-lIK"/>
                                             <outlet property="likeButton" destination="Bxr-nK-QWm" id="R0H-x1-07U"/>
+                                            <outlet property="likeLabel" destination="d7y-cj-Ks5" id="XUy-fu-diR"/>
                                             <outlet property="mainImageView" destination="kli-hx-lIF" id="zoD-Pi-qzh"/>
                                             <outlet property="profilePictureView" destination="OyC-lt-zcR" id="nBF-pP-WWd"/>
                                             <outlet property="typeLabel" destination="ksX-dX-0oE" id="tBc-hg-8xd"/>

@@ -111,11 +111,12 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                         else if let data = data, let image = UIImage(data: data){
                             newFeedProfilePicture = image
                             var newFeedMainPicture: UIImage!
-                            let newFeedLikes = 0
                             let newFeedComments: [CommentInfo] = []
                             
                             // get their daily challenge if it exists
                             // only get them if the logged in user has also completed that challenge
+                            print(self.didDailyChallenge)
+                            print(uid)
                             if self.didDailyChallenge{
                                 dailyChallengePicRef.getData(maxSize: 10 * 1024 * 1024) {
                                     [weak self] (data, error) in
@@ -125,11 +126,43 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                     else{
                                         if let data = data, let image = UIImage(data: data){
                                             newFeedMainPicture = image
-                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1)
-                                            self?.feed.append(dailyImageIntoFeed)
-                                            self?.tableView.reloadData()
-                                            self?.tableView.isHidden = false
-                                            self?.noDataLabel.isHidden = true
+                                            
+                                            dailyChallengePicRef.getMetadata {
+                                                (metadata, error) in
+                                                if let error = error{
+                                                    print("error getting metadata!")
+                                                    return
+                                                }
+                                                else{
+                                                    if let metadata = metadata{
+                                                        if let postID = metadata.customMetadata?["postID"]{
+                                                            
+                                                            var newFeedLikes: [String] = []
+                                                            self?.db.collection("challengePosts").document(postID).getDocument() {
+                                                                (document, error) in
+                                                                if let error = error{
+                                                                    print("error getting challengePost: \(error.localizedDescription)")
+                                                                }
+                                                                else{
+                                                                    if let document = document, let data = document.data(){
+                                                                        newFeedLikes = data["likes"] as! [String]
+                                                                        let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1, postID: postID)
+                                                                        self?.feed.append(dailyImageIntoFeed)
+                                                                        self?.tableView.reloadData()
+                                                                        self?.tableView.isHidden = false
+                                                                        self?.noDataLabel.isHidden = true
+                                                                    }
+                                                                }
+                                                            }
+                                                            
+                                                            
+                                                            
+                                                            
+                                                        }
+                                                        
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -148,12 +181,40 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                         }
                                         else{
                                             if let data = data, let image = UIImage(data: data){
-                                                let newFeedMainPicture = image
-                                                let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index)
-                                                self?.feed.append(dailyImageIntoFeed)
-                                                self?.tableView.reloadData()
-                                                self?.tableView.isHidden = false
-                                                self?.noDataLabel.isHidden = true
+                                                
+                                                monthlyChallengePicRef.getMetadata {
+                                                    (metadata, error) in
+                                                    if let error = error{
+                                                        print("error getting metadata: \(error.localizedDescription)")
+                                                        return
+                                                    }
+                                                    else{
+                                                        if let metadata = metadata{
+                                                            if let postID: String = metadata.customMetadata?["postID"]{
+                                                                var newFeedLikes: [String] = []
+                                                                self?.db.collection("challengePosts").document(postID).getDocument() {
+                                                                    (document, error) in
+                                                                    if let error = error{
+                                                                        print("error getting doc: \(error.localizedDescription)")
+                                                                    }
+                                                                    else{
+                                                                        if let document = document, let data = document.data(){
+                                                                            newFeedLikes = data["likes"] as! [String]
+                                                                            let newFeedMainPicture = image
+                                                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index,
+                                                                                                              postID: postID)
+                                                                            self?.feed.append(dailyImageIntoFeed)
+                                                                            self?.tableView.reloadData()
+                                                                            self?.tableView.isHidden = false
+                                                                            self?.noDataLabel.isHidden = true
+                                                                        }
+                                                                    }
+                                                                }
+                                                                
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -169,6 +230,69 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
+    
+    func handleLike(rowIndex: Int) async -> Bool{
+        
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in")
+            return false
+        }
+        
+        let currentFeedInfo: FeedInfo = feed[rowIndex]
+        let currentPostID: String = currentFeedInfo.postID
+        let postReference = db.collection("challengePosts").document(currentPostID)
+        
+        
+        // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
+        do {
+            var didLike: Bool = false
+          let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+            let postDocument: DocumentSnapshot
+            do {
+              try postDocument = transaction.getDocument(postReference)
+            } catch let fetchError as NSError {
+              errorPointer?.pointee = fetchError
+              return false
+            }
+
+            guard var oldLikes = postDocument.data()?["likes"] as? [String] else {
+              let error = NSError(
+                domain: "AppErrorDomain",
+                code: -1,
+                userInfo: [
+                  NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                ]
+              )
+              errorPointer?.pointee = error
+              return false
+            }
+
+            // Note: this could be done without a transaction
+            //       by updating the population using FieldValue.increment()
+              if oldLikes.contains(uid){
+                  oldLikes.removeAll { $0 == uid}
+              }
+              else{
+                  oldLikes.append(uid)
+                  didLike = true
+              }
+              DispatchQueue.main.async {
+                  self.feed[rowIndex].likes = oldLikes
+                  self.tableView.reloadData()
+              }
+            transaction.updateData(["likes": oldLikes], forDocument: postReference)
+            return didLike
+          })
+            print("Transaction successfully committed!")
+            return didLike
+        } catch {
+          print("Transaction failed: \(error)")
+        }
+        return false
+    }
+    
+    
+    
     // table view specific functions (conforming)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feed.count
@@ -182,6 +306,13 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         cell.typeLabel.text = "\(cInfo.indicator!)" + "\(cInfo.indicator! == "monthly" ? " challenge \(String(cInfo.monthlyChallengeIndex))" : "")"
         cell.profilePictureView.image = cInfo.profilePicture
         cell.mainImageView.image = cInfo.mainPicture
+        cell.delegate = self
+        cell.index = indexPath.row
+        let uid = Auth.auth().currentUser?.uid
+        let isLiked = cInfo.likes.contains(uid!)
+        let imageName = isLiked ? "hand.thumbsup.fill" : "hand.thumbsup"
+        cell.likeButton.setImage(UIImage(systemName: imageName), for: .normal)
+        cell.likeLabel.text = String(cInfo.likes.count)
         return cell
     }
 }
