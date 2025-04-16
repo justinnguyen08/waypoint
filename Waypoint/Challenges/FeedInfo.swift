@@ -22,13 +22,13 @@ class FeedInfo{
     var indicator: String!
     var profilePicture: UIImage!
     var mainPicture: UIImage!
-    var likes: Int!
+    var likes: [String]!
     var comments: [CommentInfo]!
     var uid: String!
     var monthlyChallengeIndex: Int!
     var postID: String!
     
-    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: Int!, comments: [CommentInfo]!, uid: String!, monthlyChallngeIndex: Int!, postID: String!) {
+    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: [String]!, comments: [CommentInfo]!, uid: String!, monthlyChallngeIndex: Int!, postID: String!) {
         self.username = username
         self.indicator = indicator
         self.profilePicture = profilePicture
