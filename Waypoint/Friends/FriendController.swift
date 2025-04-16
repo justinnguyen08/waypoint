@@ -34,14 +34,19 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     @IBOutlet weak var segCtrl: UISegmentedControl!
     
+    @IBOutlet weak var pendingFriendLabel: UILabel!
     @IBOutlet weak var currentFriendsView: UIView!
     @IBOutlet weak var suggestFriendView: UIView!
+    
+    @IBOutlet weak var suggestFriendsLabel: UILabel!
+    var originalSuggestedViewFrame: CGRect = .zero
     
     var filteredUsers: [User] = []
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        originalSuggestedViewFrame = suggestedFriendView.frame
         searchBar.delegate = self
         friendProfileView.delegate = self
         friendProfileView.dataSource = self
@@ -324,8 +329,26 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         if searchText.isEmpty {
             // If the search text is empty, show all users
             filteredUsers = addFriendsArray
+            pendingFriendView.isHidden = false
+            suggestFriendsLabel.isHidden = false
+            pendingFriendLabel.isHidden = false
+            pendingFriendLabel.text = "Pending Friends"
+            suggestFriendView.frame = originalSuggestedViewFrame
+            suggestedFriendView.setNeedsLayout()
+            suggestedFriendView.layoutIfNeeded()
         } else {
             // Filter the users based on the search text (case-insensitive)
+            pendingFriendView.isHidden = true
+            suggestFriendsLabel.isHidden = true
+            pendingFriendLabel.isHidden = true
+            suggestedFriendView.frame = CGRect(
+                x: suggestedFriendView.frame.origin.x,
+                y: pendingFriendView.frame.origin.y,
+                width: suggestedFriendView.frame.width,
+                height: suggestedFriendView.frame.height + pendingFriendView.frame.height
+            )
+            suggestedFriendView.setNeedsLayout()
+            suggestedFriendView.layoutIfNeeded()
             filteredUsers = addFriendsArray.filter { user in
                 return user.username.lowercased().contains(searchText.lowercased())
             }
