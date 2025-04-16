@@ -9,11 +9,21 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseStorage
 
 class SettingsViewController: UITableViewController {
     
+    @IBOutlet weak var profilePic: UIImageView!
     override func viewDidLoad() {
-        super.viewDidLoad()  
+        super.viewDidLoad()
+        profilePic.layer.cornerRadius = profilePic.frame.width / 2
+        profilePic.clipsToBounds = true
+        profilePic.contentMode = .scaleAspectFill
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getProfilePic()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -77,5 +87,32 @@ class SettingsViewController: UITableViewController {
     
     @IBAction func backButtonTapped(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    // retrieve and show profile picture
+    func getProfilePic() {
+        guard let user = Auth.auth().currentUser else {
+            print("No user logged in")
+            profilePic.image = UIImage(systemName: "person.crop.circle")
+            return
+        }
+        let userId = user.uid
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profilePicRef = storageRef.child("\(userId)/profile_pic.jpg")
+        profilePicRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] data, error in
+            if let error = error {
+                print("Error fetching profile picture: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self?.profilePic.image = UIImage(systemName: "person.crop.circle")
+                }
+                return
+            }
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.profilePic.image = image
+                }
+            }
+        }
     }
 }

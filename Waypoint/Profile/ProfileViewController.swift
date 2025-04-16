@@ -44,8 +44,30 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
         // fetch profile data
         fetchUserProfile()
+        
+        // this only currently fetches pinned images
         fetchProfileAndPinnedImages()
         fetchUserImages()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // fetch profile pic
+        if let userId = Auth.auth().currentUser?.uid {
+            
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
+            
+            fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
+            avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
+            avatarImageView.contentMode = .scaleAspectFill
+        }
+        else {
+            print("No user logged in, cannot fetch profile or pinned images")
+            avatarImageView.image = UIImage(systemName: "person.circle")
+        }
+        
     }
     
     func fetchProfileAndPinnedImages() {
@@ -55,9 +77,9 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
             
             // Fetch profile pic
-            fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
-            avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
-            avatarImageView.contentMode = .scaleAspectFill
+//            fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
+//            avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
+//            avatarImageView.contentMode = .scaleAspectFill
             
             // Fetch pinned pic
             fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
