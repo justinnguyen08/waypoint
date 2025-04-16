@@ -46,14 +46,24 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     // allows us access into the Google Firebase Firestore
     let db = Firestore.firestore()
     
-    let photoManager = ChallengePhotoManager()
+    var photoManager: ChallengePhotoManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         monthlyTableView.delegate = self
         monthlyTableView.dataSource = self
         hideAllButtons()
+    }
+    
+    // when the view appears do different things depending o nthe index
+    override func viewWillAppear(_ animated: Bool) {
         
+        // coming back from the feed ensure that we go back to daily challenge
+        if segmentControl.selectedSegmentIndex == 2 {
+            segmentControl.selectedSegmentIndex = 0
+        }
+        
+        photoManager = ChallengePhotoManager()
         photoManager.onImageCaptured = {
             image, imageData in
             self.capturedData = imageData
@@ -69,19 +79,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             self.showAfterCameraTakenButtons()
         }
         
-    }
-    
-    // when the view appears do different things depending o nthe index
-    override func viewWillAppear(_ animated: Bool) {
-        
-        // coming back from the feed ensure that we go back to daily challenge
-        if segmentControl.selectedSegmentIndex == 2 {
-            segmentControl.selectedSegmentIndex = 0
-        }
-        
         // load the user's current challenge streak, weekly score, and monthly score and update the labels
         loadUserChallengeInfo()
         dailyView.isHidden = true
+            
         
         // on the daily challenge segment
         if segmentControl.selectedSegmentIndex == 0 {
@@ -98,7 +99,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     else{
                         self.dailyView.isHidden = false
                         self.showCameraButtons()
-//                        self.setupCaptureSession(with: .back)
                         self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
                     }
                 }
@@ -108,8 +108,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // ensure that if we ever leave then we do not need the camera running anymore
     override func viewDidDisappear(_ animated: Bool) {
-//        dismissCamera()
-        photoManager.dismissCamera()
+        if photoManager != nil{
+            photoManager.dismissCamera()
+            photoManager = nil
+        }
     }
     
     // checks to see if the given date is today or not.
@@ -362,13 +364,18 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 else{
                     
                     self.uploadImage(imageData: self.capturedData!)
-                    self.photoManager.dismissCamera()
+                    if self.photoManager != nil{
+                        self.photoManager.dismissCamera()
+                        self.photoManager = nil
+                    }
                     // update the UI
                     DispatchQueue.main.async {
                         if let imageData = self.capturedData, let image = UIImage(data: imageData) {
-                            self.cameraDisplayView.layer.contents = image
-                            self.cameraDisplayView.contentMode = .scaleAspectFill
-                            self.cameraDisplayView.clipsToBounds = true
+                            self.cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
+                            let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
+                            imageView.image = image
+                            imageView.contentMode = .scaleAspectFill
+                            self.cameraDisplayView.addSubview(imageView)
                             self.cameraDisplayView.isHidden = false
                         }
                         self.hideAllButtons()
@@ -508,6 +515,22 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     else{
                         self.showCameraButtons()
+                        self.photoManager = ChallengePhotoManager()
+                        self.photoManager.onImageCaptured = {
+                            image, imageData in
+                            self.capturedData = imageData
+                            self.timestamp = Date()
+                            
+                            self.cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
+                            let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
+                            imageView.image = image
+                            imageView.contentMode = .scaleAspectFill
+                            imageView.clipsToBounds = true
+                            self.cameraDisplayView.addSubview(imageView)
+                            
+                            self.showAfterCameraTakenButtons()
+                        }
+                        
                         self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
                     }
                 }
@@ -516,7 +539,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             monthlyView.isHidden = true
             view.bringSubviewToFront(dailyView)
         case 1: // monthly view
-            photoManager.dismissCamera()
+            if photoManager != nil{
+                photoManager.dismissCamera()
+                photoManager = nil
+            }
             monthlyView.isHidden = false
             dailyView.isHidden = true
             loadChallenges {
@@ -524,7 +550,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             view.bringSubviewToFront(monthlyView)
         case 2: // segue to feed page
-            photoManager.dismissCamera()
+            if photoManager != nil{
+                photoManager.dismissCamera()
+                photoManager = nil
+            }
             monthlyView.isHidden = true
             dailyView.isHidden = true
             performSegue(withIdentifier: "ChallengeFeedSegue", sender: self)

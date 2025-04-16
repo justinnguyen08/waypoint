@@ -69,12 +69,24 @@ class ChallengePhotoManager: NSObject, AVCapturePhotoCaptureDelegate{
         }
     }
     
-    func dismissCamera(){
-        session?.stopRunning()
-        session = nil
-        preview?.removeFromSuperlayer()
-        preview = nil
+    func dismissCamera() {
+        DispatchQueue.main.async {
+            
+            self.session?.stopRunning()
+            self.session = nil
+
+            // Remove preview
+            self.preview?.removeFromSuperlayer()
+            self.preview = nil
+
+            // Nil out everything to release camera resources
+            self.session = nil
+            self.photoOutput = nil
+            self.device = nil
+        }
     }
+
+
     
     func toggleFlash() -> Bool{
         self.flashMode = (self.flashMode == .off) ? .on : .off
