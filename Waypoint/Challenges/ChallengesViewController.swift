@@ -15,7 +15,6 @@ import FirebaseAuth
 
 class ChallengesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AVCapturePhotoCaptureDelegate {
     
-
     @IBOutlet weak var dailyView: UIView!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var streakLabel: UILabel!
@@ -173,6 +172,11 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     else{
                         print("Deleted \(item.name)")
+                        
+                    // TODO: delete from firestore
+                        
+                        
+                        
                     }
                 }
             }
@@ -408,11 +412,15 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let storage = Storage.storage()
         let storageRef = storage.reference()
         
+        let postRef = self.db.collection("challengePosts").document()
+        let postID = postRef.documentID
+        
         let imageRef = storageRef.child("\(uid)/challenges/dailyChallenge/\(dailyChallenge.id!).jpg")
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)",
-                                   "id": String(dailyChallenge.id)]
+                                   "id": String(dailyChallenge.id),
+                                   "postID" : postID]
 
         imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
             if let error = error {
@@ -425,7 +433,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 else {
                     self.db.collection("users").document(uid).updateData(["getDailyChallenge" : Date().timeIntervalSince1970])
-        
+                    
+                    let postData: [String: Any] = ["imageURL" : url?.absoluteString, "userID" : uid, "time": Date().timeIntervalSince1970, "likes" : [], "comments" : []]
+                    postRef.setData(postData)
+                    
                     // after updating, update information
                     self.updateChallengePoints(points: self.dailyChallenge.points)
                     self.updateStreak()

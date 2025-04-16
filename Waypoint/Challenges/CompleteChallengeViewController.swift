@@ -126,10 +126,13 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         
         let imageRef = storageRef.child("\(userId)/challenges/monthlyChallenges/\(index!).jpg")
         
+        let postRef = self.db.collection("challengePosts").document()
+        let postID = postRef.documentID
+        
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)",
-                                   "id": String(index!)]
+                                   "id": String(index!), "postID" : postID]
 
         imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
             if let error = error {
@@ -142,6 +145,10 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                 }
                 else{
                     // update the user document information for the monthly challenge status
+                    
+                    let postData: [String: Any] = ["imageURL" : url?.absoluteString, "userID" : userId, "time": Date().timeIntervalSince1970, "likes" : [], "comments" : []]
+                    postRef.setData(postData)
+                    
                     self.db.collection("users").document(userId).getDocument{
                         (document, error) in
                         if let error = error{
