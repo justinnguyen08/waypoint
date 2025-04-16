@@ -125,11 +125,31 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                     else{
                                         if let data = data, let image = UIImage(data: data){
                                             newFeedMainPicture = image
-                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1)
-                                            self?.feed.append(dailyImageIntoFeed)
-                                            self?.tableView.reloadData()
-                                            self?.tableView.isHidden = false
-                                            self?.noDataLabel.isHidden = true
+                                            
+                                            dailyChallengePicRef.getMetadata {
+                                                (metadata, error) in
+                                                if let error = error{
+                                                    print("error getting metadata!")
+                                                    return
+                                                }
+                                                else{
+                                                    if let metadata = metadata{
+                                                        let postID: String = (metadata.customMetadata?["postID"])!
+                                                        let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1, postID: postID)
+                                                        self?.feed.append(dailyImageIntoFeed)
+                                                        self?.tableView.reloadData()
+                                                        self?.tableView.isHidden = false
+                                                        self?.noDataLabel.isHidden = true
+                                                    }
+                                                }
+                                            }
+//                                            
+//                                            
+//                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "daily", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: -1)
+//                                            self?.feed.append(dailyImageIntoFeed)
+//                                            self?.tableView.reloadData()
+//                                            self?.tableView.isHidden = false
+//                                            self?.noDataLabel.isHidden = true
                                         }
                                     }
                                 }
@@ -148,12 +168,26 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                                         }
                                         else{
                                             if let data = data, let image = UIImage(data: data){
-                                                let newFeedMainPicture = image
-                                                let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index)
-                                                self?.feed.append(dailyImageIntoFeed)
-                                                self?.tableView.reloadData()
-                                                self?.tableView.isHidden = false
-                                                self?.noDataLabel.isHidden = true
+                                                
+                                                monthlyChallengePicRef.getMetadata {
+                                                    (metadata, error) in
+                                                    if let error = error{
+                                                        print("error getting metadata: \(error.localizedDescription)")
+                                                        return
+                                                    }
+                                                    else{
+                                                        if let metadata = metadata{
+                                                            let postID: String = metadata.customMetadata!["postID"]!
+                                                            let newFeedMainPicture = image
+                                                            let dailyImageIntoFeed = FeedInfo(username: newFeedUsername, indicator: "monthly", profilePicture: newFeedProfilePicture, mainPicture: newFeedMainPicture, likes: newFeedLikes, comments: newFeedComments, uid: uid, monthlyChallngeIndex: index,
+                                                                                              postID: postID)
+                                                            self?.feed.append(dailyImageIntoFeed)
+                                                            self?.tableView.reloadData()
+                                                            self?.tableView.isHidden = false
+                                                            self?.noDataLabel.isHidden = true
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -169,6 +203,63 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
+    
+    func handleLike(rowIndex: Int) async{
+        
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in")
+            return
+        }
+        
+        let currentFeedInfo: FeedInfo = feed[rowIndex]
+        let currentPostID: String = currentFeedInfo.postID
+        let postReference = db.collection("challengePosts").document(currentPostID)
+        // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
+        do {
+          let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+            let postDocument: DocumentSnapshot
+            do {
+              try postDocument = transaction.getDocument(postReference)
+            } catch let fetchError as NSError {
+              errorPointer?.pointee = fetchError
+              return nil
+            }
+
+            guard var oldLikes = postDocument.data()?["likes"] as? [String] else {
+              let error = NSError(
+                domain: "AppErrorDomain",
+                code: -1,
+                userInfo: [
+                  NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                ]
+              )
+              errorPointer?.pointee = error
+              return nil
+            }
+
+            // Note: this could be done without a transaction
+            //       by updating the population using FieldValue.increment()
+              
+              if oldLikes.contains(uid){
+                  oldLikes.removeAll { $0 == uid}
+              }
+              else{
+                  oldLikes.append(uid)
+              }
+            
+            transaction.updateData(["likes": oldLikes], forDocument: postReference)
+            return nil
+          })
+          print("Transaction successfully committed!")
+        } catch {
+          print("Transaction failed: \(error)")
+        }
+        
+        
+    }
+    
+    
+    
     // table view specific functions (conforming)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feed.count
@@ -182,6 +273,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         cell.typeLabel.text = "\(cInfo.indicator!)" + "\(cInfo.indicator! == "monthly" ? " challenge \(String(cInfo.monthlyChallengeIndex))" : "")"
         cell.profilePictureView.image = cInfo.profilePicture
         cell.mainImageView.image = cInfo.mainPicture
+        cell.delegate = self
+        cell.index = indexPath.row
         return cell
     }
 }

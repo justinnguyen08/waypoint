@@ -18,6 +18,8 @@ class FeedTableViewCell: UITableViewCell {
     @IBOutlet weak var mainImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
+    var delegate: ChallengeFeedViewController!
+    var index: Int!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,7 +27,6 @@ class FeedTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
     }
     
     // ensure that the cell actually can display everything
@@ -34,4 +35,11 @@ class FeedTableViewCell: UITableViewCell {
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
     }
+    
+    @IBAction func likeButtonPressed(_ sender: Any) {
+        Task { @MainActor in
+            await delegate.handleLike(rowIndex: index)
+        }
+    }
+    
 }

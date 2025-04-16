@@ -385,6 +385,9 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="filled" image="hand.thumbsup" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="likeButtonPressed:" destination="osd-31-4Sz" eventType="touchUpInside" id="mcj-5A-8f4"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yza-Dh-F5y">
                                                     <rect key="frame" x="78" y="536" width="53" height="35"/>
