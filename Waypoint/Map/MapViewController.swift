@@ -111,7 +111,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 }
             }
             // update to firebase
-            if let imageData = mapSnapshot.jpegData(compressionQuality: 0.8) {
+            if let imageData = mapSnapshot.jpegData(compressionQuality: 1) {
                 let metadata = StorageMetadata()
                 metadata.contentType = "image/jpeg"
                 mapImageRef.putData(imageData, metadata: metadata) { metadata, error in

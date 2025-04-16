@@ -194,6 +194,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             image = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
         }
         
+        self.capturedData = image.jpegData(compressionQuality: 1)
         // capture and display still image
         DispatchQueue.main.async {
             self.session?.stopRunning()
@@ -274,14 +275,28 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         present(alert, animated: true)
     }
     
+    private func readableDate(from date: Date) -> String {
+        let fmt = DateFormatter()
+        // user’s timezone
+        fmt.calendar = Calendar.current
+        fmt.timeZone = .current
+        fmt.locale   = Locale(identifier: "en_US_POSIX")
+        // e.g. 2025‑04‑17
+        fmt.dateFormat = "yyyy-MM-dd"
+        return fmt.string(from: date)
+    }
+    
     // upload picture and its metadata to firebase
     func uploadImage(imageData: Data, postType: String) {
-        guard let user = Auth.auth().currentUser else { return }
+        guard let user = Auth.auth().currentUser,
+              let time = timestamp else { return }
         let userId = user.uid
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let imageRef = storageRef.child("\(userId)/all_pics/\(timestamp!.timeIntervalSince1970).jpg")
-        let dailyImageRef = storageRef.child("\(userId)/\(postType)")
+        let storage = Storage.storage().reference()
+        let date = readableDate(from: time)
+//        let seconds = Int(timestamp.timeIntervalSince1970)    // 1713361203
+//        let fileName = "\(seconds)_\(postType)"
+        let imageRef = storage.child("\(userId)/\(date)/\(postType)")
+        let dailyImageRef = storage.child("\(userId)/\(postType)")
 
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
