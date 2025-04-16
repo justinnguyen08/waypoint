@@ -17,13 +17,21 @@ class FeedTableViewCell: UITableViewCell {
     @IBOutlet weak var typeLabel: UILabel!
     @IBOutlet weak var mainImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
+    
+    @IBOutlet weak var likeLabel: UILabel!
+    
+    
     @IBOutlet weak var commentButton: UIButton!
     var delegate: ChallengeFeedViewController!
+    var likes: [String]!
     var index: Int!
+    var uid: String!
     
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -34,11 +42,19 @@ class FeedTableViewCell: UITableViewCell {
         super.layoutSubviews()
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        
     }
     
     @IBAction func likeButtonPressed(_ sender: Any) {
+        // XCode suggested this task monstrosity
         Task { @MainActor in
-            await delegate.handleLike(rowIndex: index)
+            let status: Bool = await delegate.handleLike(rowIndex: index)
+            if status{
+                likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+            }
+            else{
+                likeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
+            }
         }
     }
     

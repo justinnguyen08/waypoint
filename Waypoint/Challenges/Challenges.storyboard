@@ -390,16 +390,24 @@
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yza-Dh-F5y">
-                                                    <rect key="frame" x="78" y="536" width="53" height="35"/>
+                                                    <rect key="frame" x="134" y="536" width="53" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="filled" image="bubble" catalog="system"/>
                                                 </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d7y-cj-Ks5">
+                                                    <rect key="frame" x="78" y="543" width="42" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="commentButton" destination="yza-Dh-F5y" id="Z3i-UL-lIK"/>
                                             <outlet property="likeButton" destination="Bxr-nK-QWm" id="R0H-x1-07U"/>
+                                            <outlet property="likeLabel" destination="d7y-cj-Ks5" id="XUy-fu-diR"/>
                                             <outlet property="mainImageView" destination="kli-hx-lIF" id="zoD-Pi-qzh"/>
                                             <outlet property="profilePictureView" destination="OyC-lt-zcR" id="nBF-pP-WWd"/>
                                             <outlet property="typeLabel" destination="ksX-dX-0oE" id="tBc-hg-8xd"/>
