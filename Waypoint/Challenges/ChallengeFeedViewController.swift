@@ -421,6 +421,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     
     
+    
     // table view specific functions (conforming)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feed.count
