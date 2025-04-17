@@ -9,13 +9,6 @@
 
 import UIKit
 
-// every coment will have this information
-public struct CommentInfo{
-    var profilePicture: UIImage!
-    var comment: String!
-    var likes: Int!
-}
-
 // handle feed information
 class FeedInfo{
     var username: String!
@@ -23,12 +16,12 @@ class FeedInfo{
     var profilePicture: UIImage!
     var mainPicture: UIImage!
     var likes: [String]!
-    var comments: [CommentInfo]!
+    var comments: [[String : Any]]!
     var uid: String!
     var monthlyChallengeIndex: Int!
     var postID: String!
     
-    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: [String]!, comments: [CommentInfo]!, uid: String!, monthlyChallngeIndex: Int!, postID: String!) {
+    init(username: String!, indicator: String!, profilePicture: UIImage!, mainPicture: UIImage!, likes: [String]!, comments: [[String : Any]]!, uid: String!, monthlyChallngeIndex: Int!, postID: String!) {
         self.username = username
         self.indicator = indicator
         self.profilePicture = profilePicture
@@ -39,4 +32,22 @@ class FeedInfo{
         self.monthlyChallengeIndex = monthlyChallngeIndex
         self.postID = postID
     }
+    
+    func describe() {
+        print("""
+        🔎 FeedInfo Debug:
+        ------------------
+        Username: \(username ?? "nil")
+        Indicator: \(indicator ?? "nil")
+        UID: \(uid ?? "nil")
+        PostID: \(postID ?? "nil")
+        Monthly Challenge Index: \(monthlyChallengeIndex ?? -1)
+        Likes Count: \(likes?.count ?? 0)
+        Comments Count: \(comments?.count ?? 0)
+        Profile Picture: \(profilePicture != nil ? "✅" : "❌")
+        Main Picture: \(mainPicture != nil ? "✅" : "❌")
+        ------------------
+        """)
+    }
+
 }
