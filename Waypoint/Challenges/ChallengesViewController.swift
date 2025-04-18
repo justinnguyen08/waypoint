@@ -173,7 +173,22 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     else{
                         print("Deleted \(item.name)")
                         
-                    // TODO: delete from firestore
+                        // TODO: delete from firestore
+                        
+                        dailyChallengeRef.getMetadata() {
+                            (metadata, error) in
+                            if let error = error{
+                                print("error getting photo metadata!")
+                                return
+                            }
+                            else{
+                                if let metadata = metadata, let customMetadata = metadata.customMetadata, let postID = customMetadata["postID"]{
+                                    self.db.collection("challengePosts").document(postID).delete()
+                                }
+                            }
+                        }
+                        
+                        
                         
                         
                         
