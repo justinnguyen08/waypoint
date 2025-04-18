@@ -15,13 +15,15 @@ class CommentInfo{
     var comment: String!
     var likes: [String]!
     var username: String!
+    var timestamp: Double!
     
-    init(uid: String!, profilePicture: UIImage!, comment: String!, likes: [String]!, username: String!) {
+    init(uid: String!, profilePicture: UIImage!, comment: String!, likes: [String]!, username: String!, timestamp: Double!) {
         self.uid = uid
         self.profilePicture = profilePicture
         self.comment = comment
         self.likes = likes
         self.username = username
+        self.timestamp = timestamp
     }
 
 }

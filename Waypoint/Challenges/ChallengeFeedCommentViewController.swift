@@ -35,7 +35,17 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         // https://www.youtube.com/watch?v=O4tP7egAV1I
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        let tableTap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tableTap.cancelsTouchesInView = false
+        commentTable.addGestureRecognizer(tableTap)
+
     }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     
     // https://www.youtube.com/watch?v=O4tP7egAV1I
     // when the keyboard appears, move the view higher
@@ -59,6 +69,13 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         profilePictureView.image = profilePicture
+        commentTable.isHidden = true
+        Task{
+            let newComments = await prevVC.getNewData(index: index)
+            self.allComments = newComments
+            self.commentTable.reloadData()
+            self.commentTable.isHidden = false
+        }
     }
     
     // when the comment button is pressed then go up the chain to post a comment
@@ -67,13 +84,23 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         Task {
             // post the actual comment to the firebase
             await prevVC.postComment(commentText: commentTextField.text ?? "", postID: postID, index: index)
+            let newComments = await prevVC.getNewData(index: index)
+            self.allComments = newComments
             self.commentTextField.text = ""
+            self.commentTable.reloadData()
         }
+    }
+    
+    func manualReload(){
+        commentTable.reloadData()
     }
     
     // when the comment button is pressed then go up the chain to like a comment!
     func handleCommentLike(commentIndex: Int) async -> Bool{
         let result = await prevVC.handleCommentLike(postID: postID, rowIndex: index, commentIndex: commentIndex)
+        let newComments = await prevVC.getNewData(index: index)
+        self.allComments = newComments
+        self.commentTable.reloadData()
         return result
     }
     
@@ -98,6 +125,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as! CommentTableViewCell
         
         let commentInfo = allComments[indexPath.row]
+        print("number of likes: \(String(commentInfo.likes.count))")
         
         cell.commentTextLabel.text = commentInfo.comment
         cell.commentProfilePicture.image = commentInfo.profilePicture
@@ -109,10 +137,13 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let uid = Auth.auth().currentUser?.uid ?? ""
         if commentInfo.likes.contains(uid){
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+            print("turning on!")
         }
         else{
+            print("turning off!")
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
         }
+        
     
         return cell
     }

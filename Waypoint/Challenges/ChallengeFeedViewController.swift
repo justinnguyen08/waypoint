@@ -83,6 +83,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     
     // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
+    // https://www.avanderlee.com/concurrency/task-groups-in-swift/
     func loadTableInformation2(){
         let currentMomentInTime = Date()
         let weekdayIndex = Calendar.current.component(.weekday, from: currentMomentInTime)
@@ -153,6 +154,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     taskGroup.addTask {
                         if await self.didDailyChallenge, let postID = dailyChallengeMetadata?["postID"]{
                             dailyChallengePhotoComments = await self.manager.getChallengePostComments(postID: postID)
+                            dailyChallengePhotoComments!.sort{
+                                $0["timestamp"] as? TimeInterval ?? 0 < $1["timestamp"] as? TimeInterval ?? 0
+                            }
                         }
                     }
                 }
@@ -184,8 +188,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                        let profilePicture = profilePicture,
                        let mainPicture = dailyChallengePhoto,
                        let likes = dailyChallengePhotoLikes,
-                       let comments = dailyChallengePhotoComments,
+                       var comments = dailyChallengePhotoComments,
                        let postID = dailyChallengeMetadata?["postID"]{
+                        comments.sort{
+                            ($0["timetamp"] as? TimeInterval ?? 0) > ($1["timestamp"] as? TimeInterval ?? 0)
+                        }
                         let dailyChallengeFeed = FeedInfo(username: userData?["username"] as? String, indicator: "daily", profilePicture: profilePicture, mainPicture: dailyChallengePhoto, likes: dailyChallengePhotoLikes, comments: dailyChallengePhotoComments, uid: uid, monthlyChallngeIndex: -1, postID: dailyChallengeMetadata?["postID"])
                         self.feed.append(dailyChallengeFeed)
                     }
@@ -197,8 +204,13 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                            let profilePicture = profilePicture,
                            let mainPicture = monthlyChallengePhotos[index - 1],
                            let likes = monthlyChallengePhotosLikes[index - 1],
-                           let comments = monthlyChallengePhotosComments[index - 1],
+                           var comments = monthlyChallengePhotosComments[index - 1],
                            let postID = monthlyChallengeMetadata[index - 1]?["postID"]{
+                            
+                            comments.sort{
+                                ($0["timetamp"] as? TimeInterval ?? 0) > ($1["timestamp"] as? TimeInterval ?? 0)
+                            }
+                            
                             let monthlyChallengeFeed = FeedInfo(username: userData?["username"] as? String, indicator: "monthly", profilePicture: profilePicture, mainPicture: monthlyChallengePhotos[index - 1], likes: monthlyChallengePhotosLikes[index - 1], comments: monthlyChallengePhotosComments[index - 1], uid: uid, monthlyChallngeIndex: index, postID: monthlyChallengeMetadata[index - 1]?["postID"])
                             self.feed.append(monthlyChallengeFeed)
                         }
@@ -395,7 +407,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     return
                 }
                 
-                let newComment = ["comment" : commentText, "likes" : [], "uid" : uid]
+                let newComment = ["comment" : commentText, "likes" : [], "uid" : uid, "timestamp" : Date().timeIntervalSince1970]
                 
                 oldComments.append(newComment)
                 
@@ -457,6 +469,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                   oldLikes.append(uid)
                   didLike = true
               }
+              
               DispatchQueue.main.async {
                   self.feed[rowIndex].likes = oldLikes
                   self.tableView.reloadData()
@@ -535,6 +548,80 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return false
     }
     
+    // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
+    // https://www.avanderlee.com/concurrency/task-groups-in-swift/
+    func getNewData(index: Int) async -> [CommentInfo]{
+
+        guard let postID = feed[index].postID else {
+            return []
+        }
+        
+        let postRef = db.collection("challengePosts").document(postID)
+        var rawComments: [[String : Any]] = []
+        do{
+            let document = try await postRef.getDocument()
+            if document.exists{
+                if let data = document.data(){
+                    rawComments = data["comments"] as! [[String : Any]]
+                    rawComments.sort{
+                        $0["timestamp"] as? TimeInterval ?? 0 < $1["timestamp"] as? TimeInterval ?? 0
+                    }
+                }
+            }
+        }
+        catch{
+            
+        }
+        
+        var loadedComments: [CommentInfo] = []
+        
+        await withTaskGroup(of: CommentInfo?.self) { group in
+            for comment in rawComments{
+                group.addTask{
+                    guard let commentUID = comment["uid"] as? String else{
+                        print("Cannot get uid for comment!")
+                        return nil
+                    }
+                    
+                    guard let commentText = comment["comment"] as? String else{
+                        print("Cannot get uid for comment!")
+                        return nil
+                    }
+                    
+                    guard let likes = comment["likes"] as? [String] else{
+                        print("Cannot get uid for comment!")
+                        return nil
+                    }
+                    
+                    guard let timestamp = comment["timestamp"] as? Double else{
+                        print("Cannot get timestamp for comment!")
+                        return nil
+                    }
+                    
+                    let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
+                    let userDoc = await self.manager.getUserDocumentData(uid: commentUID)
+                
+                    guard let username = userDoc?["username"] as? String else{
+                        print("Cannot get username for comment!")
+                        return nil
+                    }
+                    
+                    return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username, timestamp: timestamp)
+                }
+            }
+            
+            for await result in group{
+                if let commentInfo = result{
+                    loadedComments.append(commentInfo)
+                }
+            }
+        }
+        return loadedComments.sorted { $0.timestamp < $1.timestamp
+        }
+    }
+    
+    // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
+    // https://www.avanderlee.com/concurrency/task-groups-in-swift/
     // handles going into the view by getting the comments ready!
     func handleCommentSegue(index: Int){
         let cInfo = feed[index]
@@ -559,6 +646,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             return nil
                         }
                         
+                        guard let timestamp = comment["timestamp"] as? Double else{
+                            print("Cannot get timestamp for comment!")
+                            return nil
+                        }
+                        
                         let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
                         let userDoc = await self.manager.getUserDocumentData(uid: commentUID)
                     
@@ -567,7 +659,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             return nil
                         }
                         
-                        return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username)
+                        return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username, timestamp: timestamp)
                     }
                 }
                 
@@ -583,7 +675,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             
             self.performSegue(withIdentifier: "commentSegue", sender: self)
         }
-        
     }
     
     // table view specific functions (conforming)
@@ -623,9 +714,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             nextVC.prevVC = self
             let cInfo = feed[willClickCellAt]
             nextVC.profilePicture = cInfo.profilePicture
-            nextVC.allComments = pendingComments.sorted(by: { one, two in
-                one.likes.count > two.likes.count
-            })
+            nextVC.allComments = pendingComments
+            nextVC.allComments.sort{
+                $0.timestamp < $1.timestamp
+            }
             nextVC.postID = cInfo.postID
             nextVC.index = willClickCellAt
         }

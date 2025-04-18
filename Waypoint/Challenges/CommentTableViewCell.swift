@@ -25,13 +25,8 @@ class CommentTableViewCell: UITableViewCell {
     @IBAction func commentLikeButtonPressed(_ sender: Any) {
         // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
         Task{
-            let status = await delegate.handleCommentLike(commentIndex: self.commentIndex)
-            if status{
-                self.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
-            }
-            else{
-                self.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
-            }
+            let _ = await delegate.handleCommentLike(commentIndex: self.commentIndex)
+            self.delegate.manualReload()
         }
     }
     
