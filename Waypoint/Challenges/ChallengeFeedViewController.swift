@@ -23,13 +23,15 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     var didDailyChallenge: Bool = false
     var didMonthChallenge: [Bool] = [false, false, false, false, false]
     
+    var willClickCellAt: Int!
+    var pendingComments: [CommentInfo] = []
+    
     // allows us access into the Google Firebase Firestore
     let db = Firestore.firestore()
     let manager = FirebaseManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -96,7 +98,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             var monthlyChallengeMetadata = [[String: String]?](repeating: nil, count: 5)
             var monthlyChallengePhotosLikes =  [[String]?](repeating: nil, count: 5)
             var monthlyChallengePhotosComments = [[[String : Any]]?](repeating: nil, count: 5)
-            
+            // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
             Task{
                 await withTaskGroup(of: Void.self) { taskGroup in
                     // first get the user document
@@ -358,9 +360,61 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
 //        }
 //    }
     
-    
-    func handleLike(rowIndex: Int) async -> Bool{
+    // logic for posting a comment!
+    func postComment(commentText: String, postID: String, index: Int) async {
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in")
+            return
+        }
+        guard !commentText.isEmpty else{
+            return
+        }
         
+        let postReference = db.collection("challengePosts").document(postID)
+        
+        do{
+            let _ = try await db.runTransaction { transaction, errorPointer -> Any? in
+                let postDocument: DocumentSnapshot
+                do{
+                    try postDocument = transaction.getDocument(postReference)
+                }
+                catch let fetchError as NSError{
+                    errorPointer?.pointee = fetchError
+                    return
+                }
+                
+                guard var oldComments = postDocument.data()?["comments"] as? [[String : Any]] else{
+                    let error = NSError(
+                      domain: "AppErrorDomain",
+                      code: -1,
+                      userInfo: [
+                        NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                      ]
+                    )
+                    errorPointer?.pointee = error
+                    return
+                }
+                
+                let newComment = ["comment" : commentText, "likes" : [], "uid" : uid]
+                
+                oldComments.append(newComment)
+                
+                DispatchQueue.main.async {
+                    self.feed[index].comments = oldComments
+                    self.tableView.reloadData()
+                }
+                transaction.updateData(["comments": oldComments], forDocument: postReference)
+                return
+            }
+        }
+        catch{
+            print("Transaction failed!")
+        }
+        return
+    }
+    
+    // handle liking a post from the feed
+    func handleLike(rowIndex: Int) async -> Bool{
         guard let uid = Auth.auth().currentUser?.uid else{
             print("User is not logged in")
             return false
@@ -369,7 +423,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         let currentFeedInfo: FeedInfo = feed[rowIndex]
         let currentPostID: String = currentFeedInfo.postID
         let postReference = db.collection("challengePosts").document(currentPostID)
-        
         
         // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
         do {
@@ -419,21 +472,133 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return false
     }
     
+    // handles comment like from a specific post
+    func handleCommentLike(postID: String, rowIndex: Int, commentIndex: Int) async -> Bool{
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("User is not logged in")
+            return false
+        }
+        
+        let postReference = db.collection("challengePosts").document(postID)
+        
+        // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
+        do {
+            var didLike: Bool = false
+            let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+                let postDocument: DocumentSnapshot
+                do {
+                  try postDocument = transaction.getDocument(postReference)
+                }
+                catch let fetchError as NSError {
+                  errorPointer?.pointee = fetchError
+                  return false
+                }
+
+                guard var comments = postDocument.data()?["comments"] as? [[String: Any]],
+                      var oldLikes = comments[commentIndex]["likes"] as? [String]
+                else {
+                  let error = NSError(
+                    domain: "AppErrorDomain",
+                    code: -1,
+                    userInfo: [
+                      NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                    ]
+                  )
+                  errorPointer?.pointee = error
+                  return false
+                }
+
+                // Note: this could be done without a transaction
+                //       by updating the population using FieldValue.increment()
+                if oldLikes.contains(uid){
+                      oldLikes.removeAll { $0 == uid}
+                }
+                else{
+                    oldLikes.append(uid)
+                    didLike = true
+                }
+                DispatchQueue.main.async {
+                    self.feed[rowIndex].likes = oldLikes
+                    self.tableView.reloadData()
+                }
+                
+                comments[commentIndex]["likes"] = oldLikes
+                
+                transaction.updateData(["comments" : comments], forDocument: postReference)
+                return didLike
+          })
+            print("Transaction successfully committed!")
+            return didLike
+        } catch {
+          print("Transaction failed: \(error)")
+        }
+        return false
+    }
     
-    
+    // handles going into the view by getting the comments ready!
+    func handleCommentSegue(index: Int){
+        let cInfo = feed[index]
+        var loadedComments: [CommentInfo] = []
+        // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
+        Task{
+            await withTaskGroup(of: CommentInfo?.self) { group in
+                for comment in cInfo.comments{
+                    group.addTask{
+                        guard let commentUID = comment["uid"] as? String else{
+                            print("Cannot get uid for comment!")
+                            return nil
+                        }
+                        
+                        guard let commentText = comment["comment"] as? String else{
+                            print("Cannot get uid for comment!")
+                            return nil
+                        }
+                        
+                        guard let likes = comment["likes"] as? [String] else{
+                            print("Cannot get uid for comment!")
+                            return nil
+                        }
+                        
+                        let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
+                        let userDoc = await self.manager.getUserDocumentData(uid: commentUID)
+                    
+                        guard let username = userDoc?["username"] as? String else{
+                            print("Cannot get username for comment!")
+                            return nil
+                        }
+                        
+                        return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username)
+                    }
+                }
+                
+                for await result in group{
+                    if let commentInfo = result{
+                        loadedComments.append(commentInfo)
+                    }
+                }
+            }
+            
+            self.pendingComments = loadedComments
+            self.willClickCellAt = index
+            
+            self.performSegue(withIdentifier: "commentSegue", sender: self)
+        }
+        
+    }
     
     // table view specific functions (conforming)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feed.count
     }
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        willClickCellAt = indexPath.row
+        return indexPath
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         let cInfo = feed[indexPath.row]
-        cInfo.describe()
-        
-        
-        
         
         cell.selectionStyle = .none
         cell.usernameLabel.text = cInfo.username
@@ -447,6 +612,22 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         let imageName = isLiked ? "hand.thumbsup.fill" : "hand.thumbsup"
         cell.likeButton.setImage(UIImage(systemName: imageName), for: .normal)
         cell.likeLabel.text = String(cInfo.likes.count)
+        cell.commentLabel.text = String(cInfo.comments.count)
         return cell
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "commentSegue",
+           let nextVC = segue.destination as? ChallengeFeedCommentViewController{
+            nextVC.prevVC = self
+            let cInfo = feed[willClickCellAt]
+            nextVC.profilePicture = cInfo.profilePicture
+            nextVC.allComments = pendingComments.sorted(by: { one, two in
+                one.likes.count > two.likes.count
+            })
+            nextVC.postID = cInfo.postID
+            nextVC.index = willClickCellAt
+        }
     }
 }
