@@ -553,6 +553,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     func getNewData(index: Int) async -> [CommentInfo]{
 
         guard let postID = feed[index].postID else {
+            print("no valid post id for this feed post!")
             return []
         }
         
@@ -570,7 +571,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
         }
         catch{
-            
+            print("error getting lated data from storage")
+            return []
         }
         
         var loadedComments: [CommentInfo] = []
@@ -616,8 +618,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 }
             }
         }
-        return loadedComments.sorted { $0.timestamp < $1.timestamp
-        }
+        return loadedComments.sorted { $0.timestamp < $1.timestamp }
     }
     
     // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
