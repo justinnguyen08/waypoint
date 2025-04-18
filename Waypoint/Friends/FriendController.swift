@@ -45,6 +45,9 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
         super.viewDidLoad()
         originalSuggestedViewFrame = suggestedFriendView.frame
         searchBar.delegate = self
@@ -92,12 +95,35 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return
         }
         
+        let currentPendingFriendRequests = pendingFriendsArray.count
+        print(currentPendingFriendRequests)
+        
         // Loads all the data but makes sure that one happens after the other as they
         // depend on each other
         suggestedFriend {
             self.getCurrentFriend(uid: uid) {
                 self.pendingFriends(uid: uid) {
                     addFriendsArray.removeAll { user in
+                        print(pendingFriendsArray.count)
+                        if pendingFriendsArray.count > currentPendingFriendRequests {
+                            let content = UNMutableNotificationContent()
+                            content.title = "New Friend Request"
+                            content.body = "\(pendingFriendsArray.last!.username) wants to connect with you"
+                            content.sound = UNNotificationSound.default
+                            
+                            let trigger = UNTimeIntervalNotificationTrigger (
+                                timeInterval: 8.0,
+                                repeats: false
+                            )
+                            
+                            let request = UNNotificationRequest(
+                                identifier: "myNotification",
+                                content: content,
+                                trigger: trigger
+                            )
+                            
+                            UNUserNotificationCenter.current().add(request)
+                        }
                         // makes sure that the users that are not in pending and are already your friend
                         return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
                         pendingFriendsArray.contains(where: { $0.uid == user.uid })
@@ -371,6 +397,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     // Helps to dismiss the keyboard when you click out of it
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
