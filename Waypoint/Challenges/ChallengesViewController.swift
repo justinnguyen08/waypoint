@@ -17,9 +17,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     @IBOutlet weak var dailyView: UIView!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var streakLabel: UILabel!
-    @IBOutlet weak var weeklyChallengeScore: UILabel!
-    @IBOutlet weak var monthlyChallengeScore: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
     @IBOutlet weak var flashButton: UIButton!
     @IBOutlet weak var cameraButton: UIButton!
@@ -78,8 +75,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             self.showAfterCameraTakenButtons()
         }
         
-        // load the user's current challenge streak, weekly score, and monthly score and update the labels
-        loadUserChallengeInfo()
         dailyView.isHidden = true
             
         
@@ -320,27 +315,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
     }
     
-    // get user's current challenge streak, weekly score, and monthly score and display thme
-    func loadUserChallengeInfo(){
-        guard let uid = Auth.auth().currentUser?.uid else{
-            print("User is not logged in")
-            return
-        }
-        
-        db.collection("users").document(uid).getDocument() {
-            (document, error) in
-            if let error = error{
-                print("Error occured getting a user document: \(error.localizedDescription)")
-            }
-        
-            if let document = document, let data = document.data(){
-                self.streakLabel.text = "Streak: \(String(data["challengeStreak"] as? Int ?? 0))"
-                self.weeklyChallengeScore.text = "W: \(String(data["weeklyChallengeScore"] as? Int ?? 0))"
-                self.monthlyChallengeScore.text = "M: \(String(data["monthlyChallengeScore"] as? Int ?? 0))"
-            }
-        }
-    }
-    
     // turn the flash on or off for the camera
     @IBAction func flashButtonPressed(_ sender: Any) {
         if photoManager.toggleFlash(){
@@ -412,6 +386,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // resume the camera session
     func resumeCamera(){
+        self.cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
         photoManager.setupCaptureSession(with: .back, view: cameraDisplayView)
         showCameraButtons()
         capturedData = nil
@@ -484,7 +459,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 
                 self.db.collection("users").document(uid).updateData(["weeklyChallengeScore" : currentWeeklyPoints + points, "monthlyChallengeScore" : currentMonthlyPoints + points])
-                self.loadUserChallengeInfo()
             }
         }
     }
@@ -522,7 +496,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
                 
                 self.db.collection("users").document(uid).updateData(["lastChallengeCompletedDate" : Date().timeIntervalSince1970])
-                self.loadUserChallengeInfo()
             }
         }
     }
@@ -575,14 +548,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.monthlyTableView.reloadData()
             }
             view.bringSubviewToFront(monthlyView)
-        case 2: // segue to feed page
-            if photoManager != nil{
-                photoManager.dismissCamera()
-                photoManager = nil
-            }
-            monthlyView.isHidden = true
-            dailyView.isHidden = true
-            performSegue(withIdentifier: "ChallengeFeedSegue", sender: self)
         default:
             print("should never get here")
         }
