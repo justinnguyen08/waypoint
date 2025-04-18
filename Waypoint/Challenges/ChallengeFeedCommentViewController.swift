@@ -69,13 +69,17 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         profilePictureView.image = profilePicture
-        commentTable.isHidden = true
-        Task{
-            let newComments = await prevVC.getNewData(index: index)
-            self.allComments = newComments
-            self.commentTable.reloadData()
-            self.commentTable.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        var toReplaceComments : [[String : Any]] = []
+        for comment in allComments{
+            let toAdd: [String : Any] = ["uid" : comment.uid, "comment" : comment.comment, "likes" : comment.likes, "timestamp" : comment.timestamp]
+            toReplaceComments.append(toAdd)
         }
+        prevVC.feed[index].comments = toReplaceComments
+        prevVC.tableView.reloadRows(at: [IndexPath(row: self.index, section: 0)], with: .automatic)
     }
     
     // when the comment button is pressed then go up the chain to post a comment
@@ -100,7 +104,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let result = await prevVC.handleCommentLike(postID: postID, rowIndex: index, commentIndex: commentIndex)
         let newComments = await prevVC.getNewData(index: index)
         self.allComments = newComments
-        self.commentTable.reloadData()
+        self.commentTable.reloadRows(at: [IndexPath(row: commentIndex, section: 0)], with: .automatic)
         return result
     }
     
@@ -125,8 +129,6 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as! CommentTableViewCell
         
         let commentInfo = allComments[indexPath.row]
-        print("number of likes: \(String(commentInfo.likes.count))")
-        
         cell.commentTextLabel.text = commentInfo.comment
         cell.commentProfilePicture.image = commentInfo.profilePicture
         cell.commentLikeCountLabel.text = String(commentInfo.likes.count)
@@ -137,10 +139,8 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let uid = Auth.auth().currentUser?.uid ?? ""
         if commentInfo.likes.contains(uid){
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
-            print("turning on!")
         }
         else{
-            print("turning off!")
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
         }
         
