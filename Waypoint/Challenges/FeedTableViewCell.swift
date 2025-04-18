@@ -20,6 +20,7 @@ class FeedTableViewCell: UITableViewCell {
     
     @IBOutlet weak var likeLabel: UILabel!
     
+    @IBOutlet weak var commentLabel: UILabel!
     
     @IBOutlet weak var commentButton: UIButton!
     var delegate: ChallengeFeedViewController!
@@ -31,8 +32,6 @@ class FeedTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
     
-    
-
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
@@ -43,6 +42,10 @@ class FeedTableViewCell: UITableViewCell {
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         
+    }
+    
+    @IBAction func commentButtonPressed(_ sender: Any) {
+        delegate.handleCommentSegue(index: index)
     }
     
     @IBAction func likeButtonPressed(_ sender: Any) {
