@@ -275,7 +275,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         present(alert, animated: true)
     }
     
-    private func readableDate(from date: Date) -> String {
+    func readableDate(from date: Date) -> String {
         let fmt = DateFormatter()
         // user’s timezone
         fmt.calendar = Calendar.current
@@ -293,8 +293,6 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         let userId = user.uid
         let storage = Storage.storage().reference()
         let date = readableDate(from: time)
-//        let seconds = Int(timestamp.timeIntervalSince1970)    // 1713361203
-//        let fileName = "\(seconds)_\(postType)"
         let imageRef = storage.child("\(userId)/\(date)/\(postType)")
         let dailyImageRef = storage.child("\(userId)/\(postType)")
 
