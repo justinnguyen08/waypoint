@@ -77,12 +77,12 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         dailyView.isHidden = true
             
-        
         // on the daily challenge segment
         if segmentControl.selectedSegmentIndex == 0 {
             // get the current date and load daily/monthly challenges
             // time doesn't start til 1970
             currentDateSince1970 = Date().timeIntervalSince1970
+            cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
             loadChallenges{
                 self.monthlyTableView.reloadData()
                 self.deleteDailyChallenge{
@@ -160,33 +160,37 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 return
             }
             for item in result!.items {
+                
+                let name = item.name
+                
+                let dailyChallengeImageRef = storageRef.child("\(userId)/challenges/dailyChallenge/\(name)")
+                
+                // TODO: delete from firestore
+                dailyChallengeImageRef.getMetadata() {
+                    (metadata, error) in
+                    if let error = error{
+                        print("error getting photo metadata! :\(error.localizedDescription)")
+                        return
+                    }
+                    else{
+                        if let metadata = metadata, let customMetadata = metadata.customMetadata, let postID = customMetadata["postID"]{
+                            self.db.collection("challengePosts").document(postID).delete { error in
+                                if let error = error{
+                                    print("error: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                
                 item.delete {
                     (error) in
                     if let error = error {
                         print("Failed to delete \(item.name): \(error)")
                     }
                     else{
-                        print("Deleted \(item.name)")
-                        
-                        // TODO: delete from firestore
-                        
-                        dailyChallengeRef.getMetadata() {
-                            (metadata, error) in
-                            if let error = error{
-                                print("error getting photo metadata!")
-                                return
-                            }
-                            else{
-                                if let metadata = metadata, let customMetadata = metadata.customMetadata, let postID = customMetadata["postID"]{
-                                    self.db.collection("challengePosts").document(postID).delete()
-                                }
-                            }
-                        }
-                        
-                        
-                        
-                        
-                        
+                        print("Deleted \(name)")
                     }
                 }
             }

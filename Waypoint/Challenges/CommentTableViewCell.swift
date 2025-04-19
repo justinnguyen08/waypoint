@@ -26,7 +26,6 @@ class CommentTableViewCell: UITableViewCell {
         // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
         Task{
             let _ = await delegate.handleCommentLike(commentIndex: self.commentIndex)
-            self.delegate.manualReload()
         }
     }
     
