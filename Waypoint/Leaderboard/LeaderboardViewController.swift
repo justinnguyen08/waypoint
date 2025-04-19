@@ -24,7 +24,6 @@ struct LeaderboardEntry{
 class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var scopeSegment: UISegmentedControl!
-    @IBOutlet weak var dateSegment: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     
     var currentLeaderboardToDisplay: [LeaderboardEntry] = []
@@ -33,9 +32,13 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     
     // store all UIDs that we care about
     var allUIds: [String] = []
-    
-    // allows us access into the Google Firebase Firestore
     let db = Firestore.firestore()
+    let manager = FirebaseManager()
+    
+    var profilePictureCache: [String : UIImage] = [:]
+    var usernameCache: [String : String] = [:]
+    
+    var currentDateScope = "weekly"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +46,6 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.dataSource = self
         tableView.delegate = self
         scopeSegment.isHidden = true
-        dateSegment.isHidden = true
         tableView.isHidden = true
     }
     
@@ -52,7 +54,6 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         getAllUsers {
             self.loadInformation{
                 self.scopeSegment.isHidden = false
-                self.dateSegment.isHidden = false
                 self.tableView.isHidden = false
                 // because our default segment is friends we do this
                 self.currentLeaderboardToDisplay = []
@@ -63,7 +64,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 self.tableView.reloadData()
                 self.scopeSegment.selectedSegmentIndex = 0
-                self.dateSegment.selectedSegmentIndex = 0
+                self.currentDateScope = "weekly"
             }
         }
     }
@@ -84,6 +85,20 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             }
             self.allUIds = fetchedUIDs
             handler()
+        }
+    }
+    
+    
+    func loadInformation2(){
+        self.mockLeaderboard = []
+        self.currentLeaderboardToDisplay = []
+        
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("user is not logged in!")
+            return
+        }
+        Task{
+            async let userData = self.manager
         }
     }
     
@@ -247,7 +262,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         let currentEntry = currentLeaderboardToDisplay[indexPath.row]
         cell.username.text = currentEntry.username
         cell.place.text = String(indexPath.row + 1)
-        cell.points.text = String(dateSegment.selectedSegmentIndex == 0 ? currentEntry.weeklyScore : currentEntry.monthlyScore)
+        cell.points.text = String(currentDateScope == "weekly" ? currentEntry.weeklyScore : currentEntry.monthlyScore)
         if scopeSegment.selectedSegmentIndex == 1{
             cell.location.text = currentEntry.location
         }
@@ -270,7 +285,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         else{ // Global
             currentLeaderboardToDisplay = mockLeaderboard
         }
-        if dateSegment.selectedSegmentIndex == 0{ // Weekly
+        if currentDateScope == "weekly" { // Weekly
             currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
         }
         else{ // Monthly
@@ -279,14 +294,29 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.reloadData()
     }
     
-    // change between weekly and monthly scores
-    @IBAction func onDateChange(_ sender: Any) {
-        if dateSegment.selectedSegmentIndex == 0{ // Weekly
-            currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
-        }
-        else{ // Monthly
-            currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
-        }
-        tableView.reloadData()
+    
+    
+    @IBAction func filterTapped(_ sender: Any) {
+        
+        let controller = UIAlertController(
+            title: "Alert Controller",
+            message: "Weekly or Monthly!",
+            preferredStyle: .actionSheet)
+        
+        
+        controller.addAction(UIAlertAction(title: "Weekly", style: .default, handler: { _ in
+            self.currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
+            self.currentDateScope = "weekly"
+            self.tableView.reloadData()
+        }))
+        
+        controller.addAction(UIAlertAction(title: "Monthly", style: .default, handler: { _ in
+            self.currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
+            self.currentDateScope = "monthly"
+            self.tableView.reloadData()
+        }))
+        
+        present(controller, animated: true)
     }
+    
 }
