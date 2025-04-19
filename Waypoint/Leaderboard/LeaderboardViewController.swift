@@ -14,6 +14,8 @@ import CoreLocation
 
 // every leaderboard entry will have this format
 struct LeaderboardEntry{
+    let uid: String
+    let profilePicture: UIImage
     let username: String
     let weeklyScore: Int
     let monthlyScore: Int
@@ -35,9 +37,6 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     let db = Firestore.firestore()
     let manager = FirebaseManager()
     
-    var profilePictureCache: [String : UIImage] = [:]
-    var usernameCache: [String : String] = [:]
-    
     var currentDateScope = "weekly"
 
     override func viewDidLoad() {
@@ -47,12 +46,78 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.delegate = self
         scopeSegment.isHidden = true
         tableView.isHidden = true
+        
+        scopeSegment.layer.cornerRadius = 16
+        scopeSegment.clipsToBounds = true
     }
     
     // load the users and update the leaderboard
     override func viewWillAppear(_ animated: Bool) {
         getAllUsers {
-            self.loadInformation{
+            self.loadTableInformation()
+        }
+    }
+    
+    // get every user that has an account in the app
+    func getAllUsers(handler: @escaping () -> Void){
+        db.collection("users").getDocuments {
+            (snapshot, error) in
+            if let error = error{
+                print("Error fetching users: \(error.localizedDescription)")
+                return
+            }
+            var fetchedUIDs: [String] = []
+            for document in snapshot!.documents{
+                if document.documentID != "example"{
+                    fetchedUIDs.append(document.documentID)
+                    
+                }
+            }
+            self.allUIds = fetchedUIDs
+            handler()
+        }
+    }
+
+    func loadTableInformation(){
+        self.mockLeaderboard = []
+        self.currentLeaderboardToDisplay = []
+        
+        guard let uid = Auth.auth().currentUser?.uid else{
+            print("user is not logged in!")
+            return
+        }
+        Task{
+            let currentUserData = await self.manager.getUserDocumentData(uid: uid)
+            
+            var friends = currentUserData?["friends"] as? [[String : Any]] ?? []
+            let username = currentUserData?["username"] as? String ?? ""
+            
+            guard !username.isEmpty else{
+                return
+            }
+            
+            friends.append(["uid" : uid, "username" : username])
+            
+            let allInfo = await withTaskGroup(of: LeaderboardEntry.self) { group in
+                for uid in allUIds{
+                    group.addTask{
+                        await self.getChallengesInformation(uid: uid, friends: friends)
+                    }
+                }
+                var results: [LeaderboardEntry] = []
+                for await result in group{
+                    results.append(result)
+                }
+                
+                return results
+            }
+            
+            self.mockLeaderboard = allInfo
+            self.mockLeaderboard.sort{
+                $0.weeklyScore > $1.weeklyScore
+            }
+            
+            DispatchQueue.main.async {
                 self.scopeSegment.isHidden = false
                 self.tableView.isHidden = false
                 // because our default segment is friends we do this
@@ -69,186 +134,36 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    // get every user that has an account in the app
-    func getAllUsers(handler: @escaping () -> Void){
-        db.collection("users").getDocuments {
-            (snapshot, error) in
-            if let error = error{
-                print("Error fetching users: \(error.localizedDescription)")
-                return
-            }
-            var fetchedUIDs: [String] = []
-            for document in snapshot!.documents{
-                if document.documentID != "example"{
-                    fetchedUIDs.append(document.documentID)
-                }
-            }
-            self.allUIds = fetchedUIDs
-            handler()
-        }
-    }
-    
-    
-    func loadInformation2(){
-        self.mockLeaderboard = []
-        self.currentLeaderboardToDisplay = []
+    func getChallengesInformation(uid: String, friends: [[String : Any]]) async -> LeaderboardEntry{
+        async let userDataTask = manager.getUserDocumentData(uid: uid)
+        async let profilePictureTask = manager.getProfilePicture(uid: uid)
         
-        guard let uid = Auth.auth().currentUser?.uid else{
-            print("user is not logged in!")
-            return
-        }
-        Task{
-            async let userData = self.manager
-        }
-    }
-    
-    // load the information and update the table
-    func loadInformation(handler: @escaping () -> Void) {
-        self.mockLeaderboard = []
-        self.currentLeaderboardToDisplay = []
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("User is not logged in!")
-            return
-        }
-        var currentUserUsername: String = ""
-        var currentUserWeeklyScore: Int = 0
-        var currentUserMonthlyScore: Int = 0
-        var currentUserFriends: [[String: Any]] = []
+        let userData = await userDataTask
+        let profilePicture: UIImage = await profilePictureTask ?? UIImage(systemName: "person.fill")!
+        let username = userData?["username"] ?? "unknown user"
+        let weeklyScore = userData?["weeklyChallengeScore"] ?? 0
+        let monthlyScore = userData?["monthlyChallengeScore"] ?? 0
+        let location = userData?["location"] as? GeoPoint ?? GeoPoint(latitude: 0, longitude: 0)
         
-        db.collection("users").document(uid).getDocument {
-            (document, error) in
-            if let error = error {
-                print("Error getting current user information: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let data = document?.data() else {
-                print("Failed to get data from document")
-                return
-            }
-
-            guard let friends = data["friends"] as? [[String: Any]] else {
-                print("Missing or invalid 'friends' field")
-                return
-            }
-
-            guard let weeklyScore = data["weeklyChallengeScore"] as? Int else {
-                print("Missing or invalid 'weeklyChallengeScore' field")
-                return
-            }
-
-            guard let monthlyScore = data["monthlyChallengeScore"] as? Int else {
-                print("Missing or invalid 'monthlyChallengeScore' field")
-                return
-            }
-
-            guard let username = data["username"] as? String else {
-                print("Missing or invalid 'username' field")
-                return
-            }
-
-            guard let location = data["location"] as? GeoPoint else {
-                print("Missing or invalid 'location' field")
-                return
-            }
-
-            
-            currentUserFriends = friends
-            currentUserWeeklyScore = weeklyScore
-            currentUserMonthlyScore = monthlyScore
-            currentUserUsername = username
-            
-            // reverse geocode location snippet inspired from 
-            // https://developer.apple.com/documentation/corelocation/clgeocoder
-            // https://developer.apple.com/documentation/corelocation/clplacemark
-            // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
-            let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
-            CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
-                if let error = error {
-                    print("Error in reverse geocoding: \(error.localizedDescription)")
-                    return
-                }
-                if let placemark = placemarks?[0],
-                   let city = placemark.locality {
-                    self.mockLeaderboard.append(LeaderboardEntry(
-                    username: currentUserUsername,
-                    weeklyScore: currentUserWeeklyScore,
-                    monthlyScore: currentUserMonthlyScore,
-                    isFriend: true,
-                    location: city))
-                    handler()
-                } else {
-                    self.mockLeaderboard.append(LeaderboardEntry(
-                    username: currentUserUsername,
-                    weeklyScore: currentUserWeeklyScore,
-                    monthlyScore: currentUserMonthlyScore,
-                    isFriend: true,
-                    location: "n/a"))
-                    handler()
-                }
-            }
-
-            // get information from all users except ourselves
-            for otherUID in self.allUIds {
-                if uid != otherUID {
-                    var isFriend = false
-                    for entry in currentUserFriends {
-                        if let friendUID = entry["uid"] as? String, friendUID == otherUID {
-                            isFriend = true
-                            break
-                        }
-                    }
-                    
-                    self.db.collection("users").document(otherUID).getDocument { (document, error) in
-                        if let error = error {
-                            print("Error getting other user information: \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        guard let innerData = document?.data(),
-                              let otherUsername = innerData["username"] as? String,
-                              let otherWeeklyScore = innerData["weeklyChallengeScore"] as? Int,
-                              let otherMonthlyScore = innerData["monthlyChallengeScore"] as? Int,
-                              let otherLocation = innerData["location"] as? GeoPoint
-                                
-                        else {
-                            print("Other user document \(otherUID) is missing required fields or has incorrect types")
-                            return
-                        }
-                        
-                        // reverse geocode location snippet inspired from
-                        // https://developer.apple.com/documentation/corelocation/clgeocoder
-                        // https://developer.apple.com/documentation/corelocation/clplacemark
-                        // https://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhandler-closure
-                        let swiftLocation = CLLocation(latitude: otherLocation.latitude, longitude: otherLocation.longitude)
-                        CLGeocoder().reverseGeocodeLocation(swiftLocation) { (placemarks, error) in
-                            if let error = error {
-                                print("Error in reverse geocoding: \(error.localizedDescription)")
-                                return
-                            }
-                            if let placemark = placemarks?[0],
-                               let city = placemark.locality {
-                                self.mockLeaderboard.append(LeaderboardEntry(
-                                username: otherUsername,
-                                weeklyScore: otherWeeklyScore,
-                                monthlyScore: otherMonthlyScore,
-                                isFriend: isFriend,
-                                location: city))
-                                handler()
-                            } else {
-                                self.mockLeaderboard.append(LeaderboardEntry(
-                                username: otherUsername,
-                                weeklyScore: otherWeeklyScore,
-                                monthlyScore: otherMonthlyScore,
-                                isFriend: isFriend,
-                                location: "n/a"))
-                                handler()
-                            }
-                        }
-                    }
-                }
-            }
+        
+        // reverse geocode location snippet inspired from
+        // https://developer.apple.com/documentation/corelocation/clgeocoder
+        // https://developer.apple.com/documentation/corelocation/clplacemark
+        let swiftLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+        async let cityNameTask = CLGeocoder().reverseGeocodeLocation(swiftLocation)
+        var cityName: String?
+        
+        do{
+            cityName = try await cityNameTask.first?.locality
         }
+        catch{
+            cityName = "Austin"
+        }
+        
+        let isFriend = friends.contains { entry in
+            entry["uid"] as! String == uid
+        }
+        return LeaderboardEntry(uid: uid, profilePicture: profilePicture, username: username as! String, weeklyScore: weeklyScore as! Int , monthlyScore: monthlyScore as! Int, isFriend: isFriend, location: cityName!)
     }
     
     // table view function
@@ -260,6 +175,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: leaderboardCellIdentifier, for: indexPath) as! LeaderboardViewCell
         let currentEntry = currentLeaderboardToDisplay[indexPath.row]
+        cell.profilePic.image = currentEntry.profilePicture
         cell.username.text = currentEntry.username
         cell.place.text = String(indexPath.row + 1)
         cell.points.text = String(currentDateScope == "weekly" ? currentEntry.weeklyScore : currentEntry.monthlyScore)
