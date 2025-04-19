@@ -73,8 +73,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             let dailyChallengeMetadata = await dailyChallengeMetadataTask
             
             if let postID = dailyChallengeMetadata?["postID"]{
-                async let likesTask = manager.getChallengePostLikes(postID: postID)
-                async let commentsTask = manager.getChallengePostComments(postID: postID)
+                async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
+                async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                 
                 let likes = await likesTask
                 var comments = await commentsTask
@@ -96,8 +96,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 let monthlyChallengeMetadata = await monthlyChallengeMetadataTask
                 
                 if let postID = monthlyChallengeMetadata?["postID"]{
-                    async let likesTask = manager.getChallengePostLikes(postID: postID)
-                    async let commentsTask = manager.getChallengePostComments(postID: postID)
+                    async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
+                    async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                     
                     let likes = await likesTask
                     var comments = await commentsTask
