@@ -34,6 +34,8 @@ class FullPhotoViewController: UIViewController {
     
     let manager = FirebaseManager()
     let db = Firestore.firestore()
+    
+    var uid: String?
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -62,6 +64,7 @@ class FullPhotoViewController: UIViewController {
                     print("no user with this post!")
                     return
                 }
+                self.uid = uid
                 
                 // get the username from the userID
                 let userData = await self.manager.getUserDocumentData(uid: uid)
@@ -154,7 +157,69 @@ class FullPhotoViewController: UIViewController {
         }
     }
     
+    func handleLike() async -> Bool{
+        let postReference = db.collection("mapPosts").document(postID!)
+        
+        // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
+        do {
+            var didLike: Bool = false
+          let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+            let postDocument: DocumentSnapshot
+            do {
+              try postDocument = transaction.getDocument(postReference)
+            } catch let fetchError as NSError {
+              errorPointer?.pointee = fetchError
+              return false
+            }
+
+            guard var oldLikes = postDocument.data()?["likes"] as? [String] else {
+              let error = NSError(
+                domain: "AppErrorDomain",
+                code: -1,
+                userInfo: [
+                  NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                ]
+              )
+              errorPointer?.pointee = error
+              return false
+            }
+
+            // Note: this could be done without a transaction
+            //       by updating the population using FieldValue.increment()
+              if oldLikes.contains(self.uid!){
+                  oldLikes.removeAll { $0 == self.uid! }
+              }
+              else{
+                  oldLikes.append(self.uid!)
+                  didLike = true
+              }
+              
+              DispatchQueue.main.async {
+                  self.likes = oldLikes
+                  if didLike{
+                      self.likeButton.setTitle("\(self.likes.count)", for: .normal)
+                      self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+                  }
+                  else{
+                      self.likeButton.setTitle("\(self.likes.count)", for: .normal)
+                      self.likeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
+                  }
+              }
+            transaction.updateData(["likes": oldLikes], forDocument: postReference)
+            return didLike
+          })
+            print("Transaction successfully committed!")
+            return didLike
+        } catch {
+          print("Transaction failed: \(error)")
+        }
+        return false
+    }
+    
     @IBAction func likeButtonPressed(_ sender: Any) {
+        Task{
+           let _ = await handleLike()
+        }
     }
     
     @IBAction func commentButtonPressed(_ sender: Any) {
