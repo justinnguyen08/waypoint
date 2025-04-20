@@ -23,16 +23,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var dailyAnnotation: PhotoPost?
     var posted: Bool = false
     var flushTimer: Timer?
+//    var targetDate: String = readableDate(from: Date())
     
     let manager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        profilePic.layer.cornerRadius = profilePic.frame.width / 2
-        profilePic.clipsToBounds = true
-        profilePic.imageView?.contentMode = .scaleAspectFit
-        refreshAllPins()
+        if let button = profilePic {
+            button.layer.cornerRadius = button.frame.width / 2
+            button.clipsToBounds = true
+            button.imageView?.contentMode = .scaleAspectFit
+        }
+        refreshAllPins(date: readableDate(from: Date()))
         mapView.delegate = self
         
         scheduleDailyFlush()
@@ -41,7 +44,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getProfilePic()
-        refreshAllPins()
+        refreshAllPins(date: readableDate(from: Date()))
     }
     
     // retrieve and show profile picture
@@ -159,44 +162,43 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     // retrieve daily pic and its metadata from Firebase, add annotation to map according to coordinates
-    private func showDailyPic(for uid: String) {
-        let dailyRef = Storage.storage().reference().child("\(uid)/daily_pic.jpg")
-        // retrieve metadata from daily pic
+    private func showDailyPic(for uid: String, date: String) {
+        let dailyRef = Storage.storage().reference()
+                       .child("\(uid)/\(date)/daily_pic.jpg")
+
         dailyRef.getMetadata { [weak self] metaResult in
             guard let self = self else { return }
             switch metaResult {
             case .failure(let error):
-                print("Error retrieving metadata: \(error.localizedDescription)")
+                print("No daily for \(uid) on \(date): \(error.localizedDescription)")
                 return
             case .success(let metadata):
                 guard
                     let custom = metadata.customMetadata,
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
-                    let lat = Double(latStr),
-                    let lon = Double(lonStr)
+                    let lat    = Double(latStr),
+                    let lon    = Double(lonStr)
                 else { return }
-                
+
                 let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                // download daily picture
+
                 dailyRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] dataResult in
                     guard let self = self else { return }
                     switch dataResult {
                     case .failure(let error):
-                        print("Error downloading daily picture: \(error.localizedDescription)")
-                        return
+                        print("Download error: \(error.localizedDescription)")
                     case .success(let data):
                         guard let img = UIImage(data: data) else { return }
+
                         DispatchQueue.main.async {
+                            // clear any old annotation for this uid if present
                             if let old = self.userAnnotations[uid] {
                                 self.mapView.removeAnnotation(old)
                             }
                             let post = PhotoPost(coordinate: coord, image: img)
-                            
-                            // add photo to map
                             self.mapView.addAnnotation(post)
                             self.userAnnotations[uid] = post
-                            print("Total pins on map: \(self.userAnnotations.count)")
                         }
                     }
                 }
@@ -205,36 +207,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     // very similar to dailyPic, just retrieving from different location in Firebase Storage
-    private func showPinnedPic(for uid: String) {
-        let pinnedRef = Storage.storage().reference().child("\(uid)/pinned_pic.jpg")
+    private func showPinnedPic(for uid: String, date: String, pinnedToday: Bool = false) {
+        
+        let path = pinnedToday ? "\(uid)/pinned_pic.jpg" : "\(uid)/\(date)/pinned_pic.jpg"
+        let pinnedRef = Storage.storage().reference().child(path)
+
         pinnedRef.getMetadata { [weak self] metaResult in
             guard let self = self else { return }
             switch metaResult {
             case .failure(let error):
-                print("Error retrieving pinned metadata: \(error.localizedDescription)")
-                return
+                if !pinnedToday {
+                    print("No dated pin; looking for root pin …")
+                    self.showPinnedPic(for: uid, date: date, pinnedToday: true)
+
+                } else {
+                    print("Pinned‑metadata error: \(error.localizedDescription)")
+                }
             case .success(let metadata):
                 guard
                     let custom = metadata.customMetadata,
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
-                    let lat = Double(latStr),
-                    let lon = Double(lonStr)
+                    let lat    = Double(latStr),
+                    let lon    = Double(lonStr)
                 else { return }
+
                 let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+
                 pinnedRef.getData(maxSize: 10 * 1024 * 1024) { [weak self] dataResult in
                     guard let self = self else { return }
                     switch dataResult {
                     case .failure(let error):
-                        print("Error downloading pinned picture: \(error.localizedDescription)")
-                        return
+                        print("Download error: \(error.localizedDescription)")
                     case .success(let data):
                         guard let img = UIImage(data: data) else { return }
+
                         DispatchQueue.main.async {
                             let post = PhotoPost(coordinate: coord, image: img)
                             self.mapView.addAnnotation(post)
                             self.pinnedAnnotation = post
-                            print("Pinned pic added/updated for user \(uid)")
                         }
                     }
                 }
@@ -243,7 +254,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     // show all pins on map for user. includes pinned and daily pictures, for user and all added friends
-    func refreshAllPins() {
+    func refreshAllPins(date: String) {
+        mapView.removeAnnotations(mapView.annotations)
+        userAnnotations.removeAll()
+        pinnedAnnotation = nil
+        
         guard let me = Auth.auth().currentUser else { return }
         let users = Firestore.firestore().collection("users")
         users.document(me.uid).getDocument { [weak self] snap, error in
@@ -253,11 +268,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 return
             }
             let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? []).compactMap { $0["uid"] as? String }
-            self.showDailyPic(for: me.uid)
-            self.showPinnedPic(for: me.uid)
+            self.showDailyPic(for: me.uid, date: date)
+            self.showPinnedPic(for: me.uid, date: date)
             for uid in friendUIDs {
-                self.showDailyPic(for: uid)
-                self.showPinnedPic(for: uid)
+                self.showDailyPic(for: uid, date: date)
+                self.showPinnedPic(for: uid, date: date)
             }
             var allAnnotations = Array(self.userAnnotations.values)
             if let pinned = self.pinnedAnnotation {
@@ -303,6 +318,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
             span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         )
+    }
+    
+    func readableDate(from date: Date) -> String {
+        let fmt = DateFormatter()
+        // user’s timezone
+        fmt.calendar = Calendar.current
+        fmt.timeZone = .current
+        fmt.locale   = Locale(identifier: "en_US_POSIX")
+        // e.g. 2025‑04‑17
+        fmt.dateFormat = "yyyy-MM-dd"
+        return fmt.string(from: date)
     }
     
     // open up full photo view when photo annotation on map is tapped
