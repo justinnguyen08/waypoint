@@ -47,165 +47,70 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         noDataLabel.isHidden = false
         feed.removeAll()
         getAllUsers{
-            self.loadTableInformation2()
+            self.loadTableInformation()
         }
-        
     }
     
-    func getChallengesFromUser(uid: String, weekdayIndex: Int) async {
-        var profilePicture: UIImage?
-        var userData: [String: Any]?
-        var dailyChallengePhoto: UIImage?
-        var dailyChallengeMetadata: [String: String]?
-        var dailyChallengePhotoLikes: [String]?
-        var dailyChallengePhotoComments: [[String : Any]]?
-        var monthlyChallengePhotos = [UIImage?](repeating: nil, count: 5)
-        var monthlyChallengeMetadata = [[String: String]?](repeating: nil, count: 5)
-        var monthlyChallengePhotosLikes =  [[String]?](repeating: nil, count: 5)
-        var monthlyChallengePhotosComments = [[[String : Any]]?](repeating: nil, count: 5)
-        // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
-        await withTaskGroup(of: Void.self) { taskGroup in
-            // first get the user document
-            taskGroup.addTask {
-                userData = await self.manager.getUserDocumentData(uid: uid)
-            }
-            // get their profile picture
-            taskGroup.addTask{
-                profilePicture = await self.manager.getProfilePicture(uid: uid)
-            }
+    // https://anasaman-p.medium.com/understanding-async-let-in-swift-unlocking-concurrency-with-ease-3d25473a16db
+    func getChallengesFromUser(uid: String, weekdayIndex: Int) async -> [FeedInfo]{
+        async let userDataTask = manager.getUserDocumentData(uid: uid)
+        async let profilePicTask = manager.getProfilePicture(uid: uid)
+        let userData = await userDataTask
+        let profilePicture = await profilePicTask
+        let username = userData?["username"] as? String ?? "unknown"
+        
+        profilePicCache[uid] = profilePicture
+        usernameCache[uid] = username
+        
+        var results: [FeedInfo] = []
+        if didDailyChallenge{
+            let dailyPath = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
             
-            // get their daily challenge if we have done it
-            if self.didDailyChallenge{
-                // get the photo
-                taskGroup.addTask {
-                    let path = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
-                    dailyChallengePhoto = await self.manager.getChallengePicture(path: path)
-                }
-                // get the metadata of the photo
-                taskGroup.addTask {
-                    let path = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
-                    dailyChallengeMetadata = await self.manager.getImageMetadata(path: path)
-                }
-            }
+            async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
+            async let dailyChallengeMetadataTask = manager.getImageMetadata(path: dailyPath)
             
-            // go through each of the 5 monthly challenges
-            for index in 1..<6{
-                let path = "\(uid)/challenges/monthlyChallenges/\(index - 1).jpg"
-                // only check if we did it ourselves
-                if self.didMonthChallenge[index - 1]{
-                    // get the photo
-                    taskGroup.addTask {
-                        monthlyChallengePhotos[index - 1] = await self.manager.getChallengePicture(path: path)
-                    }
-                    
-                    // get the metadata
-                    taskGroup.addTask{
-                        monthlyChallengeMetadata[index - 1] = await self.manager.getImageMetadata(path: path)
-                    }
+            let dailyChallengeImage = await dailyChallengeImageTask
+            let dailyChallengeMetadata = await dailyChallengeMetadataTask
+            
+            if let postID = dailyChallengeMetadata?["postID"]{
+                async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
+                async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
+                
+                let likes = await likesTask
+                var comments = await commentsTask
+                comments?.sort{
+                    ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                 }
-            }
-        }
-        
-        await withTaskGroup(of: Void.self){ taskGroup in
-            // get the likes of the daily photo
-            taskGroup.addTask {
-                if await self.didDailyChallenge, let postID = dailyChallengeMetadata?["postID"]{
-                    dailyChallengePhotoLikes = await self.manager.getChallengePostLikes(postID: postID)
-                }
-            }
-            // get the comments of the daily photo
-            taskGroup.addTask {
-                if await self.didDailyChallenge, let postID = dailyChallengeMetadata?["postID"]{
-                    dailyChallengePhotoComments = await self.manager.getChallengePostComments(postID: postID)
-                    dailyChallengePhotoComments!.sort{
-                        $0["timestamp"] as? TimeInterval ?? 0 < $1["timestamp"] as? TimeInterval ?? 0
-                    }
-                    
-                    for comment in dailyChallengePhotoComments!{
-                        if let commentUID = comment["uid"] as? String,
-                           let commentUserData = await self.manager.getUserDocumentData(uid: commentUID),
-                           let username = commentUserData["username"] as? String,
-                           let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
-                        {
-                            DispatchQueue.main.async {
-                                self.profilePicCache[commentUID] = profilePicture
-                                self.usernameCache[commentUID] = username
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        await withTaskGroup(of: Void.self) { taskGroup in
-            for index in 1..<6{
-                if self.didMonthChallenge[index - 1]{
-                    // get the likes
-                    taskGroup.addTask{
-                        guard let postID = monthlyChallengeMetadata[index - 1]?["postID"]! else{
-                            return
-                        }
-                        monthlyChallengePhotosLikes[index - 1] = await self.manager.getChallengePostLikes(postID: postID)
-                    }
-                    
-                    
-                    taskGroup.addTask{
-                        guard let postID = monthlyChallengeMetadata[index - 1]?["postID"]! else{
-                            return
-                        }
-                        monthlyChallengePhotosComments[index - 1] = await self.manager.getChallengePostComments(postID: postID)
-                        
-                        for comment in monthlyChallengePhotosComments[index - 1]!{
-                            if let commentUID = comment["uid"] as? String,
-                               let commentUserData = await self.manager.getUserDocumentData(uid: commentUID),
-                               let username = commentUserData["username"] as? String,
-                               let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
-                            {
-                                DispatchQueue.main.async {
-                                    self.profilePicCache[commentUID] = profilePicture
-                                    self.usernameCache[commentUID] = username
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        if self.didDailyChallenge{
-            if let username = userData?["username"],
-               let profilePicture = profilePicture,
-               let mainPicture = dailyChallengePhoto,
-               let likes = dailyChallengePhotoLikes,
-               var comments = dailyChallengePhotoComments,
-               let postID = dailyChallengeMetadata?["postID"]{
-                comments.sort{
-                    ($0["timestamp"] as? TimeInterval ?? 0) > ($1["timestamp"] as? TimeInterval ?? 0)
-                }
-                let dailyChallengeFeed = FeedInfo(username: userData?["username"] as? String, indicator: "daily", profilePicture: profilePicture, mainPicture: dailyChallengePhoto, likes: dailyChallengePhotoLikes, comments: dailyChallengePhotoComments, uid: uid, monthlyChallngeIndex: -1, postID: dailyChallengeMetadata?["postID"])
-                self.feed.append(dailyChallengeFeed)
+                results.append(FeedInfo(username: username, indicator: "daily", profilePicture: profilePicture, mainPicture: dailyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: -1, postID: postID))
             }
         }
         
         for index in 1..<6{
-            if self.didMonthChallenge[index - 1]{
-                if let username = userData?["username"],
-                   let profilePicture = profilePicture,
-                   let mainPicture = monthlyChallengePhotos[index - 1],
-                   let likes = monthlyChallengePhotosLikes[index - 1],
-                   var comments = monthlyChallengePhotosComments[index - 1],
-                   let postID = monthlyChallengeMetadata[index - 1]?["postID"]{
+            if didMonthChallenge[index - 1]{
+                let monthlyPath = "\(uid)/challenges/monthlyChallenges/\(index - 1).jpg"
+                
+                async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
+                async let monthlyChallengeMetadataTask = manager.getImageMetadata(path: monthlyPath)
+                
+                let monthlyChallengeImage = await monthlyChallengeImageTask
+                let monthlyChallengeMetadata = await monthlyChallengeMetadataTask
+                
+                if let postID = monthlyChallengeMetadata?["postID"]{
+                    async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
+                    async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                     
-                    comments.sort{
-                        ($0["timetamp"] as? TimeInterval ?? 0) > ($1["timestamp"] as? TimeInterval ?? 0)
+                    let likes = await likesTask
+                    var comments = await commentsTask
+                    comments?.sort{
+                        ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                     }
                     
-                    let monthlyChallengeFeed = FeedInfo(username: userData?["username"] as? String, indicator: "monthly", profilePicture: profilePicture, mainPicture: monthlyChallengePhotos[index - 1], likes: monthlyChallengePhotosLikes[index - 1], comments: monthlyChallengePhotosComments[index - 1], uid: uid, monthlyChallngeIndex: index, postID: monthlyChallengeMetadata[index - 1]?["postID"])
-                    self.feed.append(monthlyChallengeFeed)
+                    results.append(FeedInfo(username: userData?["username"] as? String, indicator: "monthly", profilePicture: profilePicture, mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
                 }
-                
             }
         }
+        
+        return results
     }
     
     // get all of the current user's friends and set up which challenge photos to look for
@@ -246,18 +151,24 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
     // https://www.avanderlee.com/concurrency/task-groups-in-swift/
-    func loadTableInformation2(){
+    func loadTableInformation(){
         let currentMomentInTime = Date()
         let weekdayIndex = Calendar.current.component(.weekday, from: currentMomentInTime)
-        
         Task{
-            await withTaskGroup(of: Void.self) { group in
+            let allFeeds = await withTaskGroup(of: [FeedInfo].self) { group in
                 for uid in allUIds{
                     group.addTask {
                         await self.getChallengesFromUser(uid: uid, weekdayIndex: weekdayIndex)
                     }
                 }
+                var combined: [FeedInfo] = []
+                for await result in group{
+                    combined.append(contentsOf: result)
+                }
+                return combined
             }
+            
+            self.feed = allFeeds
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -448,7 +359,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
     // https://www.avanderlee.com/concurrency/task-groups-in-swift/
     func getNewData(index: Int) async -> [CommentInfo]{
-
         guard let postID = feed[index].postID else {
             print("no valid post id for this feed post!")
             return []
@@ -497,15 +407,15 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                         return nil
                     }
                     
-                    let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
-                    let userDoc = await self.manager.getUserDocumentData(uid: commentUID)
-                
-                    guard let username = userDoc?["username"] as? String else{
+                    async let profilePictureTask = self.manager.getProfilePicture(uid: commentUID)
+                    async let userDocTask = self.manager.getUserDocumentData(uid: commentUID)
+                    
+                    guard let username = await userDocTask?["username"] as? String else{
                         print("Cannot get username for comment!")
                         return nil
                     }
                     
-                    return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username, timestamp: timestamp)
+                    return CommentInfo(uid: commentUID, profilePicture: await profilePictureTask, comment: commentText, likes: likes, username: username, timestamp: timestamp)
                 }
             }
             
@@ -539,57 +449,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         self.willClickCellAt = index
 
         self.performSegue(withIdentifier: "commentSegue", sender: self)
-
-        
-//        // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
-//        Task{
-//            await withTaskGroup(of: CommentInfo?.self) { group in
-//                for comment in cInfo.comments{
-//                    group.addTask{
-//                        guard let commentUID = comment["uid"] as? String else{
-//                            print("Cannot get uid for comment!")
-//                            return nil
-//                        }
-//                        
-//                        guard let commentText = comment["comment"] as? String else{
-//                            print("Cannot get uid for comment!")
-//                            return nil
-//                        }
-//                        
-//                        guard let likes = comment["likes"] as? [String] else{
-//                            print("Cannot get uid for comment!")
-//                            return nil
-//                        }
-//                        
-//                        guard let timestamp = comment["timestamp"] as? Double else{
-//                            print("Cannot get timestamp for comment!")
-//                            return nil
-//                        }
-//                        
-//                        let profilePicture = await self.manager.getProfilePicture(uid: commentUID)
-//                        let userDoc = await self.manager.getUserDocumentData(uid: commentUID)
-//                    
-//                        guard let username = userDoc?["username"] as? String else{
-//                            print("Cannot get username for comment!")
-//                            return nil
-//                        }
-//                        
-//                        return CommentInfo(uid: commentUID, profilePicture: profilePicture, comment: commentText, likes: likes, username: username, timestamp: timestamp)
-//                    }
-//                }
-//                
-//                for await result in group{
-//                    if let commentInfo = result{
-//                        loadedComments.append(commentInfo)
-//                    }
-//                }
-//            }
-//            
-//            self.pendingComments = loadedComments
-//            self.willClickCellAt = index
-//            
-//            self.performSegue(withIdentifier: "commentSegue", sender: self)
-//        }
     }
     
     // table view specific functions (conforming)

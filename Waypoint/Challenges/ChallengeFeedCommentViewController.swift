@@ -75,7 +75,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         super.viewWillDisappear(animated)
         var toReplaceComments : [[String : Any]] = []
         for comment in allComments{
-            let toAdd: [String : Any] = ["uid" : comment.uid, "comment" : comment.comment, "likes" : comment.likes, "timestamp" : comment.timestamp]
+            let toAdd: [String : Any] = ["uid" : comment.uid!, "comment" : comment.comment!, "likes" : comment.likes!, "timestamp" : comment.timestamp!]
             toReplaceComments.append(toAdd)
         }
         prevVC.feed[index].comments = toReplaceComments
@@ -85,27 +85,68 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
     // when the comment button is pressed then go up the chain to post a comment
     @IBAction func commentButtonPressed(_ sender: Any) {
        // https://www.swiftbysundell.com/articles/connecting-async-await-with-other-swift-code/
+        guard let text = commentTextField.text else{
+            return
+        }
+        guard !text.isEmpty else{
+            return
+        }
+        guard let uid = Auth.auth().currentUser?.uid else{
+            return
+        }
+        // build a new comment and insert it into the table now
+        let newComment = CommentInfo(uid: uid, profilePicture: profilePicture, comment: text, likes: [], username: prevVC.usernameCache[uid] ?? "You", timestamp: Date().timeIntervalSince1970)
+        
+        allComments.append(newComment)
+        commentTable.insertRows(at: [IndexPath(row: allComments.count - 1, section: 0)], with: .automatic)
+        commentTextField.text = ""
+        
+        // also insert it so that when we refresh the page we get that comment too
+        prevVC.feed[index].comments.append(["uid" : uid, "comment" : text, "likes" : [], "timestamp" : newComment.timestamp!])
+        prevVC.tableView.reloadRows(at: [IndexPath(row: index, section: 9)], with: .automatic)
+        
         Task {
             // post the actual comment to the firebase
-            await prevVC.postComment(commentText: commentTextField.text ?? "", postID: postID, index: index)
-            let newComments = await prevVC.getNewData(index: index)
-            self.allComments = newComments
-            self.commentTextField.text = ""
-            self.commentTable.reloadData()
+            await prevVC.postComment(commentText: text, postID: postID, index: index)
         }
     }
     
-    func manualReload(){
-        commentTable.reloadData()
-    }
+    
+
     
     // when the comment button is pressed then go up the chain to like a comment!
     func handleCommentLike(commentIndex: Int) async -> Bool{
-        let result = await prevVC.handleCommentLike(postID: postID, rowIndex: index, commentIndex: commentIndex)
-        let newComments = await prevVC.getNewData(index: index)
-        self.allComments = newComments
-        self.commentTable.reloadRows(at: [IndexPath(row: commentIndex, section: 0)], with: .automatic)
-        return result
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return false
+        }
+        
+        var likes = allComments[commentIndex].likes!
+        let currentLiked = likes.contains(uid)
+        
+        if currentLiked{
+            likes.removeAll { $0 == uid }
+        }
+        else{
+            likes.append(uid)
+        }
+        allComments[commentIndex].likes = likes
+        
+        if let cell = commentTable.cellForRow(at: IndexPath(row: commentIndex, section: 0)) as? CommentTableViewCell{
+            let imageName = likes.contains(uid) ? "hand.thumbsup.fill" : "hand.thumbsup"
+            cell.commentLikeButton.setImage(UIImage(systemName: imageName), for: .normal)
+            cell.commentLikeCountLabel.text = "\(likes.count)"
+        }
+        
+        
+        // reload this row
+        commentTable.reloadRows(at: [IndexPath(row: commentIndex, section: 0)], with: .automatic)
+        
+        prevVC.feed[index].comments[commentIndex]["likes"] = likes
+        prevVC.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+        
+        // actually enter into database
+        let _ = await prevVC.handleCommentLike(postID: postID, rowIndex: index, commentIndex: commentIndex)
+        return !currentLiked
     }
     
     // table view functions

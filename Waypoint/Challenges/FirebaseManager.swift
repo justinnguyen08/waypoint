@@ -14,8 +14,7 @@ class FirebaseManager{
     
     let storageRef = Storage.storage().reference()
     let db = Firestore.firestore()
-    
-    
+
     func getImageMetadata(path: String) async -> [String: String]?{
         let imageRef = storageRef.child(path)
         do{
@@ -91,8 +90,8 @@ class FirebaseManager{
         return nil
     }
     
-    func getChallengePostLikes(postID: String) async -> [String]?{
-        let postRef = db.collection("challengePosts").document(postID)
+    func getPostLikes(collection: String, postID: String) async -> [String]?{
+        let postRef = db.collection(collection).document(postID)
         
         do{
             let document = try await postRef.getDocument()
@@ -106,9 +105,8 @@ class FirebaseManager{
         return nil
     }
     
-    func getChallengePostComments(postID: String) async -> [[String : Any]]? {
-        let postRef = db.collection("challengePosts").document(postID)
-        
+    func getPostComments(collection: String, postID: String) async -> [[String : Any]]? {
+        let postRef = db.collection(collection).document(postID)
         do{
             let document = try await postRef.getDocument()
             if document.exists{
@@ -121,11 +119,4 @@ class FirebaseManager{
         }
         return nil
     }
-        
-    
-    
 }
-
-
-
-
