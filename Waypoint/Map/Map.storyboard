@@ -201,6 +201,7 @@
                                 <buttonConfiguration key="configuration" style="filled" image="bubble" catalog="system" title="Button"/>
                                 <connections>
                                     <action selector="commentButtonPressed:" destination="iFw-o8-cML" eventType="touchUpInside" id="JO0-Fq-evp"/>
+                                    <segue destination="4LX-ox-m58" kind="show" identifier="MapCommentSegue" id="ly2-Md-cO8"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -235,7 +236,6 @@
                         <outlet property="taggedButton" destination="HZK-dn-d6V" id="IwI-UK-7y4"/>
                         <outlet property="usernameLabel" destination="oI9-RB-sSr" id="lf1-C0-XgQ"/>
                         <segue destination="uka-gZ-028" kind="showDetail" identifier="mapTaggedSegue" id="jqY-py-In9"/>
-                        <segue destination="4LX-ox-m58" kind="showDetail" id="PNJ-5H-acC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Oxb-J7-guG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -301,12 +301,115 @@
             <objects>
                 <viewController id="4LX-ox-m58" customClass="MapCommentsViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5oU-xy-1qq">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="864"/>
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="349-ze-I2w">
+                                <rect key="frame" x="16" y="122" width="370" height="611"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MapCommentCell" id="y3h-05-PM3" customClass="MapCommentsTableViewCell" customModule="Waypoint" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="370" height="43.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="y3h-05-PM3" id="RLf-UQ-oZE">
+                                            <rect key="frame" x="0.0" y="0.0" width="370" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H1z-Vb-7xk">
+                                                    <rect key="frame" x="20" y="0.0" width="45" height="45"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d1Y-RG-UTv">
+                                                    <rect key="frame" x="270" y="-2" width="45" height="45"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="hand.thumbsup" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="commentLikeButtonPressed:" destination="y3h-05-PM3" eventType="touchUpInside" id="L2l-qE-Ld5"/>
+                                                    </connections>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ten-ET-UuZ">
+                                                    <rect key="frame" x="319" y="10" width="42" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEg-9m-fJP">
+                                                    <rect key="frame" x="69" y="0.0" width="42" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wee-g5-x0p">
+                                                    <rect key="frame" x="69" y="22" width="242" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="commentLikeButton" destination="d1Y-RG-UTv" id="lD5-B3-pug"/>
+                                            <outlet property="commentLikeCountLabel" destination="Ten-ET-UuZ" id="5b9-wv-P1K"/>
+                                            <outlet property="commentProfilePicture" destination="H1z-Vb-7xk" id="az1-Uk-ZVa"/>
+                                            <outlet property="commentTextLabel" destination="wee-g5-x0p" id="JL6-SS-fY9"/>
+                                            <outlet property="usernameLabel" destination="CEg-9m-fJP" id="AtG-80-NvP"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ppR-L2-Zx4">
+                                <rect key="frame" x="16" y="729" width="370" height="90"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r7a-Qm-eWV">
+                                        <rect key="frame" x="20" y="20" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EHX-lN-6Gm">
+                                        <rect key="frame" x="78" y="28" width="229" height="34"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fMf-7z-v4z">
+                                        <rect key="frame" x="312" y="28" width="49" height="35"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="paperplane.fill" catalog="system"/>
+                                        <connections>
+                                            <action selector="commentButtonPressed:" destination="4LX-ox-m58" eventType="touchUpInside" id="NLR-V6-0A8"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="rtD-Lf-gaA"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="G4b-UM-F9l"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="G4b-UM-F9l" firstAttribute="bottom" secondItem="ppR-L2-Zx4" secondAttribute="bottom" constant="21" id="3hn-hZ-4yD"/>
+                            <constraint firstItem="349-ze-I2w" firstAttribute="leading" secondItem="G4b-UM-F9l" secondAttribute="leading" constant="16" id="GoT-qA-o2w"/>
+                            <constraint firstItem="G4b-UM-F9l" firstAttribute="trailing" secondItem="349-ze-I2w" secondAttribute="trailing" constant="16" id="RRC-HI-zwd"/>
+                            <constraint firstItem="ppR-L2-Zx4" firstAttribute="leading" secondItem="G4b-UM-F9l" secondAttribute="leading" constant="16" id="YbX-Ua-aTj"/>
+                            <constraint firstItem="G4b-UM-F9l" firstAttribute="trailing" secondItem="ppR-L2-Zx4" secondAttribute="trailing" constant="16" id="bid-k5-l9f"/>
+                            <constraint firstItem="ppR-L2-Zx4" firstAttribute="top" secondItem="349-ze-I2w" secondAttribute="bottom" constant="-4" id="vW6-Gh-Z5M"/>
+                            <constraint firstItem="349-ze-I2w" firstAttribute="top" secondItem="G4b-UM-F9l" secondAttribute="top" constant="16" id="vnR-0w-l0z"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="baZ-0e-Lnc"/>
+                    <connections>
+                        <outlet property="commentTable" destination="349-ze-I2w" id="cXK-ER-n7k"/>
+                        <outlet property="commentTextField" destination="EHX-lN-6Gm" id="t05-Ie-9Ip"/>
+                        <outlet property="postCommentButton" destination="fMf-7z-v4z" id="Bcl-W3-HOC"/>
+                        <outlet property="profilePictureView" destination="r7a-Qm-eWV" id="t1z-ae-Am0"/>
+                        <outlet property="sendCommentView" destination="ppR-L2-Zx4" id="wws-la-nlJ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v7a-Co-n7j" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -347,6 +450,7 @@
         <image name="gear" catalog="system" width="128" height="122"/>
         <image name="hand.thumbsup" catalog="system" width="123" height="128"/>
         <image name="mappin.circle" catalog="system" width="128" height="123"/>
+        <image name="paperplane.fill" catalog="system" width="128" height="119"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

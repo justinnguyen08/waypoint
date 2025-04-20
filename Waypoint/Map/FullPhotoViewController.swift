@@ -27,6 +27,7 @@ class FullPhotoViewController: UIViewController {
     
     var likes: [String] = []
     var comments: [CommentInfo] = []
+    var toConvertComments: [[String : Any]] = []
     var tagged: [String] = []
     var profilePicture: UIImage?
     var locationName: String?
@@ -85,7 +86,7 @@ class FullPhotoViewController: UIViewController {
                 async let cityNameTask = CLGeocoder().reverseGeocodeLocation(swiftLocation)
                 
                 // get the current user profile picture
-                async let profilePicture = self.manager.getProfilePicture(uid: uid)
+                async let profilePictureTask = self.manager.getProfilePicture(uid: uid)
                 
                 // get the likes and comments and tagged
                 async let likesTask = self.manager.getPostLikes(collection: "mapPosts", postID: postID)
@@ -100,6 +101,7 @@ class FullPhotoViewController: UIViewController {
                 self.locationName = try await cityNameTask.first?.locality ?? "Austin"
                 self.likes = await likesTask ?? []
                 self.tagged = await taggedTask ?? []
+                self.profilePicture = await profilePictureTask
                 // get comments here
                 guard let tempComments = await commentsTask else{
                     print("no comments")
@@ -218,6 +220,147 @@ class FullPhotoViewController: UIViewController {
         return false
     }
     
+    // logic for posting a comment!
+    func postComment(commentText: String, postID: String) async {
+        guard !commentText.isEmpty else{
+            return
+        }
+        print("attempting to post comment to: \(postID)")
+        let postReference = db.collection("mapPosts").document(postID)
+        
+        do{
+            let _ = try await db.runTransaction { transaction, errorPointer -> Any? in
+                let postDocument: DocumentSnapshot
+                do{
+                    try postDocument = transaction.getDocument(postReference)
+                }
+                catch let fetchError as NSError{
+                    errorPointer?.pointee = fetchError
+                    return
+                }
+                
+                guard var oldComments = postDocument.data()?["comments"] as? [[String : Any]] else{
+                    let error = NSError(
+                      domain: "AppErrorDomain",
+                      code: -1,
+                      userInfo: [
+                        NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                      ]
+                    )
+                    errorPointer?.pointee = error
+                    return
+                }
+                
+                let newComment = ["comment" : commentText, "likes" : [], "uid" : self.uid!, "timestamp" : Date().timeIntervalSince1970]
+                
+                oldComments.append(newComment)
+                self.toConvertComments = oldComments
+                
+                
+                transaction.updateData(["comments": oldComments], forDocument: postReference)
+                return
+            }
+        }
+        catch{
+            print("Transaction failed: \(error.localizedDescription)")
+        }
+        await convertComments()
+        return
+    }
+    
+    
+    func convertComments() async{
+        await withTaskGroup(of: CommentInfo?.self) { group in
+            for entry in self.toConvertComments{
+                group.addTask{
+                    guard let uid = entry["uid"] as? String else{
+                        return nil
+                    }
+                    async let profilePictureTask = self.manager.getProfilePicture(uid: uid)
+                    async let userDataTask = self.manager.getUserDocumentData(uid: uid)
+                    
+                    guard let userData = await userDataTask else{
+                        return nil
+                    }
+                    
+                    guard let username = userData["username"] else{
+                        return nil
+                    }
+                    
+                    guard let profilePicture = await profilePictureTask else{
+                        return nil
+                    }
+                    return CommentInfo(uid: uid, profilePicture: profilePicture, comment: entry["comment"] as? String, likes: entry["likes"] as? [String], username: username as? String, timestamp: entry["timestamp"] as? TimeInterval)
+                }
+            }
+            self.comments = []
+            for await result in group{
+                if let result = result{
+                    self.comments.append(result)
+                }
+            }
+            DispatchQueue.main.async{
+                self.commentButton.setTitle("\(self.comments.count)", for: .normal)
+            }
+        }
+    }
+    
+    func handleCommentLike(postID: String, commentIndex: Int) async -> Bool{
+        let postReference = db.collection("mapPosts").document(postID)
+        
+        // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
+        do {
+            var didLike: Bool = false
+            let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+                let postDocument: DocumentSnapshot
+                do {
+                  try postDocument = transaction.getDocument(postReference)
+                }
+                catch let fetchError as NSError {
+                  errorPointer?.pointee = fetchError
+                  return false
+                }
+
+                guard var comments = postDocument.data()?["comments"] as? [[String: Any]],
+                      var oldLikes = comments[commentIndex]["likes"] as? [String]
+                else {
+                  let error = NSError(
+                    domain: "AppErrorDomain",
+                    code: -1,
+                    userInfo: [
+                      NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                    ]
+                  )
+                  errorPointer?.pointee = error
+                  return false
+                }
+
+                // Note: this could be done without a transaction
+                //       by updating the population using FieldValue.increment()
+                if oldLikes.contains(self.uid!){
+                    oldLikes.removeAll { $0 == self.uid! }
+                }
+                else{
+                    oldLikes.append(self.uid!)
+                    didLike = true
+                }
+                comments[commentIndex]["likes"] = oldLikes
+                DispatchQueue.main.async {
+                    self.comments[commentIndex].likes = oldLikes
+                }
+                
+                transaction.updateData(["comments" : comments], forDocument: postReference)
+                return didLike
+          })
+            print("Transaction successfully committed!")
+            return didLike
+        } catch {
+          print("Transaction failed: \(error)")
+        }
+        return false
+    }
+    
+    
     @IBAction func likeButtonPressed(_ sender: Any) {
         Task{
             let _ = await handleLike()
@@ -277,9 +420,13 @@ class FullPhotoViewController: UIViewController {
             if let sheet = nextVC.presentationController as? UISheetPresentationController{
                 sheet.detents = [.medium()]
             }
-            
             nextVC.allTagged = self.pendingTagged
-            
+        }
+        else if segue.identifier == "MapCommentSegue", let nextVC = segue.destination as? MapCommentsViewController{
+            nextVC.allComments = comments
+            nextVC.prevVC = self
+            nextVC.postID = postID
+            nextVC.profilePicture = profilePicture
         }
     }
 }
