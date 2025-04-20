@@ -19,7 +19,7 @@ class FullPhotoViewController: UIViewController {
     @IBOutlet weak var commentButton: UIButton!
     
     @IBOutlet weak var taggedButton: UIButton!
-        
+    
     var photo: UIImage?
     var postID: String?
     var location: CLLocationCoordinate2D?
@@ -36,9 +36,11 @@ class FullPhotoViewController: UIViewController {
     let db = Firestore.firestore()
     
     var uid: String?
+    
+    var pendingTagged: [TaggedEntry] = []
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         photoView.contentMode = .scaleAspectFit
         photoView.image = photo
@@ -120,7 +122,7 @@ class FullPhotoViewController: UIViewController {
                                 print("This user data has no username!")
                                 return nil
                             }
-                        
+                            
                             let commentProfilePicture = await self.manager.getProfilePicture(uid: commentUID)
                             let commentText = comment["comment"] as? String ?? ""
                             let likes = comment["likes"] as? [String] ?? []
@@ -163,82 +165,121 @@ class FullPhotoViewController: UIViewController {
         // copied from https://firebase.google.com/docs/firestore/manage-data/transactions
         do {
             var didLike: Bool = false
-          let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
-            let postDocument: DocumentSnapshot
-            do {
-              try postDocument = transaction.getDocument(postReference)
-            } catch let fetchError as NSError {
-              errorPointer?.pointee = fetchError
-              return false
-            }
-
-            guard var oldLikes = postDocument.data()?["likes"] as? [String] else {
-              let error = NSError(
-                domain: "AppErrorDomain",
-                code: -1,
-                userInfo: [
-                  NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
-                ]
-              )
-              errorPointer?.pointee = error
-              return false
-            }
-
-            // Note: this could be done without a transaction
-            //       by updating the population using FieldValue.increment()
-              if oldLikes.contains(self.uid!){
-                  oldLikes.removeAll { $0 == self.uid! }
-              }
-              else{
-                  oldLikes.append(self.uid!)
-                  didLike = true
-              }
-              
-              DispatchQueue.main.async {
-                  self.likes = oldLikes
-                  if didLike{
-                      self.likeButton.setTitle("\(self.likes.count)", for: .normal)
-                      self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
-                  }
-                  else{
-                      self.likeButton.setTitle("\(self.likes.count)", for: .normal)
-                      self.likeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
-                  }
-              }
-            transaction.updateData(["likes": oldLikes], forDocument: postReference)
-            return didLike
-          })
+            let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+                let postDocument: DocumentSnapshot
+                do {
+                    try postDocument = transaction.getDocument(postReference)
+                } catch let fetchError as NSError {
+                    errorPointer?.pointee = fetchError
+                    return false
+                }
+                
+                guard var oldLikes = postDocument.data()?["likes"] as? [String] else {
+                    let error = NSError(
+                        domain: "AppErrorDomain",
+                        code: -1,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                        ]
+                    )
+                    errorPointer?.pointee = error
+                    return false
+                }
+                
+                // Note: this could be done without a transaction
+                //       by updating the population using FieldValue.increment()
+                if oldLikes.contains(self.uid!){
+                    oldLikes.removeAll { $0 == self.uid! }
+                }
+                else{
+                    oldLikes.append(self.uid!)
+                    didLike = true
+                }
+                
+                DispatchQueue.main.async {
+                    self.likes = oldLikes
+                    if didLike{
+                        self.likeButton.setTitle("\(self.likes.count)", for: .normal)
+                        self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+                    }
+                    else{
+                        self.likeButton.setTitle("\(self.likes.count)", for: .normal)
+                        self.likeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
+                    }
+                }
+                transaction.updateData(["likes": oldLikes], forDocument: postReference)
+                return didLike
+            })
             print("Transaction successfully committed!")
             return didLike
         } catch {
-          print("Transaction failed: \(error)")
+            print("Transaction failed: \(error)")
         }
         return false
     }
     
     @IBAction func likeButtonPressed(_ sender: Any) {
         Task{
-           let _ = await handleLike()
+            let _ = await handleLike()
         }
     }
     
     @IBAction func commentButtonPressed(_ sender: Any) {
+        
     }
     
     
     @IBAction func taggedButtonPressed(_ sender: Any) {
+        Task{
+            await withTaskGroup(of: TaggedEntry?.self) { group in
+                for entry in self.tagged{
+                    group.addTask{
+                        // get the username and profile picture of every uid
+                        async let userDataTask = self.manager.getUserDocumentData(uid: entry)
+                        async let profilePictureTask = self.manager.getProfilePicture(uid: entry)
+                        
+                        guard let taggedUserData = await userDataTask else{
+                            return nil
+                        }
+                        
+                        guard let taggedUsername = taggedUserData["username"] as? String else{
+                            return nil
+                        }
+                        
+                        guard let taggedProfilePicture = await profilePictureTask else{
+                            return nil
+                        }
+                        
+                        return TaggedEntry(profilePicture: taggedProfilePicture, username: taggedUsername, uid: entry)
+                    }
+                }
+                var willBeAdded: [TaggedEntry] = []
+                for await result in group{
+                    if let taggedResult = result{
+                        willBeAdded.append(taggedResult)
+                    }
+                }
+                
+                self.pendingTagged = willBeAdded
+                
+                DispatchQueue.main.async{
+                    self.performSegue(withIdentifier: "mapTaggedSegue", sender: self)
+                }
+            }
+            
+        }
+    
     }
     
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "mapTaggedSegue", let nextVC = segue.destination as? MapTaggedViewController{
+            // https://www.youtube.com/watch?v=lZQUk8gz4wc
+            if let sheet = nextVC.presentationController as? UISheetPresentationController{
+                sheet.detents = [.medium()]
+            }
+            
+            nextVC.allTagged = self.pendingTagged
+            
+        }
     }
-    */
-
 }
