@@ -38,6 +38,11 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     
     let db = Firestore.firestore()
     
+    var postRef: Any!
+    var postID: String!
+    
+    var doDelete = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -84,10 +89,15 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     
     // Start live camera session, request access to camera if needed
     func setupCaptureSession(with position: AVCaptureDevice.Position) {
+        if postID == nil{
+            postRef = Firestore.firestore().collection("mapPosts").document()
+            postID = (postRef as AnyObject).documentID
+        }
         guard let newDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
             print("Camera unavailable for position \(position.rawValue)")
             return
         }
+        doDelete = true
         self.device = newDevice
         do {
             let input = try AVCaptureDeviceInput(device: self.device!)
@@ -167,6 +177,9 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
         validPicture = true
+        
+        let postData: [String : Any] = ["imageURL" : "", "userID" : Auth.auth().currentUser?.uid, "time" : 0, "likes" : [], "comments" : [], "tagged" : []]
+        (self.postRef as AnyObject).setData(postData)
     }
     
     // set image to whatever's currently on screen
@@ -231,6 +244,14 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         tagFriendsButton.isHidden = true
         self.tabBarController?.tabBar.isHidden = false
         flipButton.isHidden = false
+        if doDelete{
+            print("DELETING: \(postID)")
+            db.collection("mapPosts").document(postID).delete { error in
+                if let error = error{
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
+        }
         setupCaptureSession(with: position)
         validPicture = false
         capturedData = nil
@@ -296,16 +317,20 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         let imageRef = storage.child("\(userId)/\(date)/\(postType)")
         let dailyImageRef = storage.child("\(userId)/\(postType)")
 
+        doDelete = false
+        let tempPostID = postID
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         if let currLocation = location {
             metadata.customMetadata = [
                 "timestamp": "\(timestamp!.timeIntervalSince1970)",
                 "latitude": "\(currLocation.coordinate.latitude)",
-                "longitude": "\(currLocation.coordinate.longitude)"
+                "longitude": "\(currLocation.coordinate.longitude)",
+                "postID": postID
+                
             ]
         } else {
-            metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)"]
+            metadata.customMetadata = ["timestamp": "\(timestamp!.timeIntervalSince1970)", "postID" : postID]
         }
 
         imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
@@ -318,6 +343,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                     print("Failed to download: \(error.localizedDescription)")
                 } else if let downloadURL = url {
                     print("Image uploaded successfully: \(downloadURL.absoluteString)")
+                    self.db.collection("mapPosts").document(tempPostID!).updateData(["time" : Date().timeIntervalSince1970, "imageURL" : downloadURL.absoluteString])
                 }
             }
         }
@@ -358,6 +384,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                                 self.db.collection("users").document(userId).updateData(["streak" : 1])
                             }
                             self.db.collection("users").document(userId).updateData(["lastDailyPhotoDate" : Date().timeIntervalSince1970])
+                            self.db.collection("mapPosts").document(tempPostID!).updateData(["time" : Date().timeIntervalSince1970, "imageURL" : downloadURL.absoluteString])
                             
                         }
                     }
@@ -365,6 +392,18 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                     
                 }
             }
+        }
+        postID = nil
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "tagSegue", let nextVC = segue.destination as? TagFriendsViewController{
+            guard let uid = Auth.auth().currentUser?.uid else{
+                return
+            }
+            nextVC.uid = uid
+            nextVC.delegate = self
+            nextVC.postID = postID
         }
     }
 }

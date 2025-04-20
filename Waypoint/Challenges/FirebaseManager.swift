@@ -119,4 +119,10 @@ class FirebaseManager{
         }
         return nil
     }
+    
+    func getFriendsList(uid: String) async -> [[String : Any]]? {
+        let userData: [String : Any]? = await getUserDocumentData(uid: uid)
+        let friends: [[String : Any]]? = userData?["friends"] as? [[String : Any]]
+        return friends
+    }
 }
