@@ -178,7 +178,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
                     let lat    = Double(latStr),
-                    let lon    = Double(lonStr)
+                    let lon    = Double(lonStr),
+                    let postID = custom["postID"]
                 else { return }
 
                 let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
@@ -196,7 +197,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                             if let old = self.userAnnotations[uid] {
                                 self.mapView.removeAnnotation(old)
                             }
-                            let post = PhotoPost(coordinate: coord, image: img)
+                            let post = PhotoPost(coordinate: coord, image: img, postID: postID)
                             self.mapView.addAnnotation(post)
                             self.userAnnotations[uid] = post
                         }
@@ -229,7 +230,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
                     let lat    = Double(latStr),
-                    let lon    = Double(lonStr)
+                    let lon    = Double(lonStr),
+                    let postID = custom["postID"]
                 else { return }
 
                 let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
@@ -243,7 +245,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         guard let img = UIImage(data: data) else { return }
 
                         DispatchQueue.main.async {
-                            let post = PhotoPost(coordinate: coord, image: img)
+                            let post = PhotoPost(coordinate: coord, image: img, postID: postID)
                             self.mapView.addAnnotation(post)
                             self.pinnedAnnotation = post
                         }
@@ -344,6 +346,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             return
         }
         fullPhotoView.photo = photo
+        fullPhotoView.postID = annotation.postID
+        fullPhotoView.location = annotation.coordinate
         self.present(fullPhotoView, animated: true, completion: nil)
     }
     
