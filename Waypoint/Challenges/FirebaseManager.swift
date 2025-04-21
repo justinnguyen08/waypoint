@@ -119,4 +119,25 @@ class FirebaseManager{
         }
         return nil
     }
+    
+    func getPostTagged(collection: String, postID: String) async -> [String]?{
+        let postRef = db.collection(collection).document(postID)
+        
+        do{
+            let document = try await postRef.getDocument()
+            if document.exists{
+                let dataDescription = document.data()
+                return dataDescription?["tagged"] as? [String]
+            }
+        }
+        catch{
+            print("Error catching challenge post document: \(postID)")        }
+        return nil
+    }
+    
+    func getFriendsList(uid: String) async -> [[String : Any]]? {
+        let userData: [String : Any]? = await getUserDocumentData(uid: uid)
+        let friends: [[String : Any]]? = userData?["friends"] as? [[String : Any]]
+        return friends
+    }
 }
