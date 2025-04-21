@@ -189,10 +189,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
-                if self.feed.count > 0{
-                    self.tableView.isHidden = false
-//                    self.noDataLabel.isHidden = true
-                    self.hideSpinner()
+                self.tableView.isHidden = false
+                self.hideSpinner()
+                if self.feed.count == 0{
+                    self.noDataLabel.isHidden = true
                 }
             }
         }
