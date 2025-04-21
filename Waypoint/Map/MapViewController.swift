@@ -270,9 +270,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 return
             }
             let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? []).compactMap { $0["uid"] as? String }
-            self.showDailyPic(for: me.uid, date: date)
-            self.showPinnedPic(for: me.uid, date: date)
-            for uid in friendUIDs {
+            let allUIDs = [me.uid] + friendUIDs
+
+//            self.showDailyPic(for: me.uid, date: date)
+//            self.showPinnedPic(for: me.uid, date: date)
+            for uid in allUIDs {
                 self.showDailyPic(for: uid, date: date)
                 self.findPinnedPic(for: uid, date: date) {
                     self.showPinnedPic(for: uid, date: date)
@@ -288,8 +290,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func findPinnedPic(for uid: String, date: String, completion: @escaping () -> Void) {
         let storage = Storage.storage()
-        let datedRef  = storage.reference().child("\(uid)/\(date)/pinned_pic.jpg")
-        let rootRef   = storage.reference().child("\(uid)/pinned_pic.jpg")
+        let datedRef = storage.reference().child("\(uid)/\(date)/pinned_pic.jpg")
+        let rootRef = storage.reference().child("\(uid)/pinned_pic.jpg")
 
         datedRef.getMetadata { metaResult in
             switch metaResult {
