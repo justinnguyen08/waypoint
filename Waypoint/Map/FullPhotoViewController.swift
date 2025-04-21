@@ -147,6 +147,12 @@ class FullPhotoViewController: UIViewController {
                     self.usernameLabel.text = self.username
                     self.locationLabel.text = self.locationName
                     self.likeButton.setTitle("\(self.likes.count)", for: .normal)
+                    if self.likes.contains(self.uid!){
+                        self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+                    }
+                    else{
+                        self.likeButton.setImage(UIImage(systemName: "hands.thumbsup"), for: .normal)
+                    }
                     self.commentButton.setTitle("\(self.comments.count)", for: .normal)
                     
                     self.view.bringSubviewToFront(self.likeButton)
@@ -423,6 +429,12 @@ class FullPhotoViewController: UIViewController {
             nextVC.allTagged = self.pendingTagged
         }
         else if segue.identifier == "MapCommentSegue", let nextVC = segue.destination as? MapCommentsViewController{
+            
+            if let sheet = nextVC.presentationController as? UISheetPresentationController{
+                sheet.detents = [.medium()]
+            }
+            
+            
             nextVC.allComments = comments
             nextVC.prevVC = self
             nextVC.postID = postID

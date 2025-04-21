@@ -299,7 +299,7 @@
         <!--Map Comments View Controller-->
         <scene sceneID="nGv-YM-sSL">
             <objects>
-                <viewController id="4LX-ox-m58" customClass="MapCommentsViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="pageSheet" id="4LX-ox-m58" customClass="MapCommentsViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5oU-xy-1qq">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
