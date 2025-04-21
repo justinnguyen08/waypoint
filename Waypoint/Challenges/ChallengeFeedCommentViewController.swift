@@ -69,6 +69,9 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         profilePictureView.image = profilePicture
+        profilePictureView.layer.cornerRadius = profilePictureView.frame.width / 2
+        profilePictureView.clipsToBounds = true
+        profilePictureView.contentMode = .scaleAspectFill
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -172,6 +175,9 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         let commentInfo = allComments[indexPath.row]
         cell.commentTextLabel.text = commentInfo.comment
         cell.commentProfilePicture.image = commentInfo.profilePicture
+        cell.commentProfilePicture.layer.cornerRadius = cell.commentProfilePicture.frame.width / 2
+        cell.commentProfilePicture.clipsToBounds = true
+        cell.commentProfilePicture.contentMode = .scaleAspectFill
         cell.commentLikeCountLabel.text = String(commentInfo.likes.count)
         cell.delegate = self
         cell.commentIndex = indexPath.row

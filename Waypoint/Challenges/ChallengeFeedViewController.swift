@@ -26,6 +26,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     var willClickCellAt: Int!
     var pendingComments: [CommentInfo] = []
     
+    // https://www.hackingwithswift.com/example-code/uikit/how-to-use-uiactivityindicatorview-to-show-a-spinner-when-work-is-happening
+    var spinner = UIActivityIndicatorView(style: .large)
     
     
     // allows us access into the Google Firebase Firestore
@@ -44,11 +46,26 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     // When the view appears, recreate the feed
     override func viewWillAppear(_ animated: Bool) {
         tableView.isHidden = true
-        noDataLabel.isHidden = false
+        noDataLabel.isHidden = true
+        showSpinner()
         feed.removeAll()
         getAllUsers{
             self.loadTableInformation()
         }
+    }
+    
+    func showSpinner(){
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        view.addSubview(spinner)
+
+        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    func hideSpinner(){
+        spinner.stopAnimating()
+        spinner.removeFromSuperview()
     }
     
     // https://anasaman-p.medium.com/understanding-async-let-in-swift-unlocking-concurrency-with-ease-3d25473a16db
@@ -174,7 +191,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 self.tableView.reloadData()
                 if self.feed.count > 0{
                     self.tableView.isHidden = false
-                    self.noDataLabel.isHidden = true
+//                    self.noDataLabel.isHidden = true
+                    self.hideSpinner()
                 }
             }
         }
@@ -469,6 +487,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         cell.usernameLabel.text = cInfo.username
         cell.typeLabel.text = "\(cInfo.indicator!)" + "\(cInfo.indicator! == "monthly" ? " challenge \(String(cInfo.monthlyChallengeIndex))" : "")"
         cell.profilePictureView.image = cInfo.profilePicture
+        cell.profilePictureView.layer.cornerRadius = cell.profilePictureView.frame.width / 2
+        cell.profilePictureView.clipsToBounds = true
+        cell.profilePictureView.contentMode = .scaleAspectFill
         cell.mainImageView.image = cInfo.mainPicture
         cell.delegate = self
         cell.index = indexPath.row
