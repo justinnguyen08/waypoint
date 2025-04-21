@@ -316,6 +316,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         let date = readableDate(from: time)
         let imageRef = storage.child("\(userId)/\(date)/\(postType)")
         let dailyImageRef = storage.child("\(userId)/\(postType)")
+        let allPicsRef = storage.child("\(userId)/all_pics/\(Int(time.timeIntervalSince1970)).jpg")
 
         doDelete = false
         let tempPostID = postID
@@ -390,6 +391,18 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                     }
                     
                     
+                }
+            }
+        }
+        
+        allPicsRef.putData(imageData, metadata: metadata) { (_, error) in
+            if let error = error {
+                print("Upload error (all_pics): \(error)")
+                return
+            }
+            allPicsRef.downloadURL { (url, error) in
+                if let url = url {
+                    print("Also added to all_pics: \(url.absoluteString)")
                 }
             }
         }
