@@ -12,7 +12,12 @@ import CoreLocation
 class FullPhotoViewController: UIViewController {
     
     @IBOutlet weak var photoView: UIImageView!
+    
+    @IBOutlet weak var profilePictureView: UIImageView!
+    
     @IBOutlet weak var usernameLabel: UILabel!
+    
+    
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
     
@@ -146,6 +151,7 @@ class FullPhotoViewController: UIViewController {
                 DispatchQueue.main.async{
                     self.usernameLabel.text = self.username
                     self.locationLabel.text = self.locationName
+                    self.profilePictureView.image = self.profilePicture
                     self.likeButton.setTitle("\(self.likes.count)", for: .normal)
                     if self.likes.contains(self.uid!){
                         self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)

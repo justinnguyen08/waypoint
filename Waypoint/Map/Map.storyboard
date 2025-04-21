@@ -159,13 +159,13 @@
                                 <rect key="frame" x="16" y="237.33333333333331" width="370" height="602.66666666666674"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oI9-RB-sSr">
-                                <rect key="frame" x="61" y="149" width="91" height="25.333333333333343"/>
+                                <rect key="frame" x="100" y="149" width="286" height="25.333333333333343"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oto-UY-eHR">
-                                <rect key="frame" x="61" y="211.33333333333334" width="91" height="24"/>
+                                <rect key="frame" x="100" y="211.33333333333334" width="286" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -204,26 +204,33 @@
                                     <segue destination="4LX-ox-m58" kind="show" identifier="MapCommentSegue" id="ly2-Md-cO8"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wiL-rK-tDH">
+                                <rect key="frame" x="16" y="136" width="50" height="50"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="UBM-AF-in9"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="oto-UY-eHR" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="61" id="6Ji-TO-nHq"/>
+                            <constraint firstItem="oto-UY-eHR" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="100" id="6Ji-TO-nHq"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="bottom" secondItem="UBM-AF-in9" secondAttribute="bottom" id="8gA-MJ-d6l"/>
-                            <constraint firstItem="oI9-RB-sSr" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="61" id="9eh-PH-ue2"/>
+                            <constraint firstItem="oI9-RB-sSr" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="100" id="9eh-PH-ue2"/>
                             <constraint firstItem="YrT-Xa-HBd" firstAttribute="leading" secondItem="hXP-5x-CtF" secondAttribute="trailing" constant="32.666666666666686" id="Bl8-uI-ZTs"/>
+                            <constraint firstItem="oI9-RB-sSr" firstAttribute="leading" secondItem="wiL-rK-tDH" secondAttribute="trailing" constant="34" id="Dft-3b-dIN"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="YW9-uI-ade" secondAttribute="trailing" constant="16" id="HGw-la-YQu"/>
+                            <constraint firstItem="wiL-rK-tDH" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="16" id="Ij6-uw-j8v"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="YrT-Xa-HBd" secondAttribute="bottom" id="KAb-K0-4c0"/>
                             <constraint firstItem="hXP-5x-CtF" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="16" id="LIe-26-aj7"/>
+                            <constraint firstItem="wiL-rK-tDH" firstAttribute="top" secondItem="UBM-AF-in9" secondAttribute="top" constant="30" id="Mh0-F5-CuX"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="16" id="NsN-Pq-lJs"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="HZK-dn-d6V" secondAttribute="trailing" constant="16" id="RHf-zr-izc"/>
                             <constraint firstItem="oI9-RB-sSr" firstAttribute="top" secondItem="UBM-AF-in9" secondAttribute="top" constant="43" id="S1d-8f-t0P"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="top" secondItem="UBM-AF-in9" secondAttribute="top" constant="131.33333333333337" id="VOq-qB-cwg"/>
                             <constraint firstItem="oto-UY-eHR" firstAttribute="top" secondItem="oI9-RB-sSr" secondAttribute="bottom" constant="37" id="VkB-HA-FOZ"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="HZK-dn-d6V" secondAttribute="bottom" constant="4" id="Xjv-67-izf"/>
-                            <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="oto-UY-eHR" secondAttribute="trailing" constant="250" id="t7m-sG-IJd"/>
+                            <constraint firstItem="YW9-uI-ade" firstAttribute="top" secondItem="wiL-rK-tDH" secondAttribute="bottom" constant="51.333333333333314" id="k9Z-pZ-rI5"/>
+                            <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="oto-UY-eHR" secondAttribute="trailing" constant="16" id="t7m-sG-IJd"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="YW9-uI-ade" secondAttribute="bottom" id="uEO-yH-Z83"/>
-                            <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="oI9-RB-sSr" secondAttribute="trailing" constant="250" id="v4K-QX-gC2"/>
+                            <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="oI9-RB-sSr" secondAttribute="trailing" constant="16" id="v4K-QX-gC2"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="hXP-5x-CtF" secondAttribute="bottom" id="wF8-cB-yHu"/>
                         </constraints>
                     </view>
@@ -233,6 +240,7 @@
                         <outlet property="likeButton" destination="hXP-5x-CtF" id="Tda-9U-P2a"/>
                         <outlet property="locationLabel" destination="oto-UY-eHR" id="M9L-FI-x1R"/>
                         <outlet property="photoView" destination="YW9-uI-ade" id="4AX-jy-4J8"/>
+                        <outlet property="profilePictureView" destination="wiL-rK-tDH" id="Cyz-t1-lHP"/>
                         <outlet property="taggedButton" destination="HZK-dn-d6V" id="IwI-UK-7y4"/>
                         <outlet property="usernameLabel" destination="oI9-RB-sSr" id="lf1-C0-XgQ"/>
                         <segue destination="uka-gZ-028" kind="showDetail" identifier="mapTaggedSegue" id="jqY-py-In9"/>
