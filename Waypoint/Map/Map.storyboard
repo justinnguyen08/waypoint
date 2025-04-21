@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7oJ-23-77c">
-                                <rect key="frame" x="0.0" y="62" width="402" height="729"/>
+                                <rect key="frame" x="0.0" y="0.0" width="402" height="791"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aJy-PT-BD7">
@@ -53,7 +53,7 @@
                         <constraints>
                             <constraint firstItem="7oJ-23-77c" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="2Pg-aq-TqY"/>
                             <constraint firstItem="aJy-PT-BD7" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="3i4-iv-m3e"/>
-                            <constraint firstItem="7oJ-23-77c" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="C5p-fS-bxD"/>
+                            <constraint firstItem="7oJ-23-77c" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="-62" id="C5p-fS-bxD"/>
                             <constraint firstItem="ecL-vq-Vsa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="68" id="T8y-HO-2Qz"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="7oJ-23-77c" secondAttribute="bottom" id="fTr-OB-cx5"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="7oJ-23-77c" secondAttribute="trailing" id="iBm-b7-XFI"/>
@@ -61,7 +61,9 @@
                             <constraint firstItem="aJy-PT-BD7" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="vkr-Kc-1e3"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" image="mappin.circle" catalog="system" id="VZ4-7I-kC5"/>
+                    <tabBarItem key="tabBarItem" title="Map" image="mappin.circle" catalog="system" id="VZ4-7I-kC5">
+                        <color key="badgeColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBarItem>
                     <connections>
                         <outlet property="mapView" destination="7oJ-23-77c" id="SRm-IL-7JR"/>
                         <outlet property="profilePic" destination="aJy-PT-BD7" id="4Um-1O-jQe"/>
