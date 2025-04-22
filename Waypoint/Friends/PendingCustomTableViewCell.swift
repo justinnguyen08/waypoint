@@ -16,6 +16,8 @@ import FirebaseAuth
 class PendingCustomTableViewCell: UITableViewCell {
     @IBOutlet weak var profilePicture: UIImageView!
     
+    @IBOutlet weak var denyButton: UIButton!
+    @IBOutlet weak var acceptButton: UIButton!
     @IBOutlet weak var pendingProfileName: UILabel!
     
     // Makes sure that when you press accept, both the target user and current user

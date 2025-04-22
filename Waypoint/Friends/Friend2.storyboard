@@ -48,9 +48,10 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9uG-Vu-1O8">
-                                                            <rect key="frame" x="20" y="5" width="43" height="34"/>
+                                                            <rect key="frame" x="20" y="5" width="40" height="34"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="43" id="oTm-J0-f5d"/>
+                                                                <constraint firstAttribute="width" constant="40" id="oTm-J0-f5d"/>
+                                                                <constraint firstAttribute="height" constant="40" id="pAU-wY-RgH"/>
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pEB-gz-QXY">
@@ -88,6 +89,7 @@
                                                 <connections>
                                                     <outlet property="customProfileName" destination="pEB-gz-QXY" id="MgW-73-L47"/>
                                                     <outlet property="profilePic" destination="9uG-Vu-1O8" id="8SY-Nk-B07"/>
+                                                    <outlet property="removeButton" destination="HUi-dN-ati" id="mII-6a-1Vh"/>
                                                     <segue destination="Vbi-4N-8tC" kind="show" identifier="removeSegue" id="eta-Ih-Qa5"/>
                                                 </connections>
                                             </tableViewCell>
@@ -175,6 +177,8 @@
                                                             </constraints>
                                                         </tableViewCellContentView>
                                                         <connections>
+                                                            <outlet property="acceptButton" destination="VFf-8L-Ncm" id="Jda-rN-UZ8"/>
+                                                            <outlet property="denyButton" destination="nPo-H9-l4W" id="WGZ-j9-Sgg"/>
                                                             <outlet property="pendingProfileName" destination="IeJ-5k-vMf" id="ieu-Bh-umN"/>
                                                             <outlet property="profilePicture" destination="b2f-jA-IqL" id="Sbj-Sx-gRz"/>
                                                             <segue destination="zvG-Yn-vun" kind="show" identifier="pendingSegue" id="QsD-Ke-uYQ"/>
@@ -203,7 +207,6 @@
                                                                     <rect key="frame" x="24" y="2" width="40" height="40"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" constant="40" id="DOD-5y-pC9"/>
-                                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="FzY-lZ-ptm"/>
                                                                         <constraint firstAttribute="height" constant="40" id="JDS-OA-WyF"/>
                                                                     </constraints>
                                                                 </imageView>
@@ -213,16 +216,12 @@
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dZU-8o-a5I">
-                                                                    <rect key="frame" x="333.33333333333331" y="4" width="54.666666666666686" height="36"/>
-                                                                    <state key="normal" title="Button"/>
-                                                                    <buttonConfiguration key="configuration" style="filled" title="Add"/>
-                                                                    <connections>
-                                                                        <action selector="addButtonPressed:" destination="mAS-nQ-17m" eventType="touchUpInside" id="qRE-6V-L5y"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sY3-KY-5YG">
-                                                                    <rect key="frame" x="315" y="4" width="87" height="35"/>
+                                                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sY3-KY-5YG">
+                                                                    <rect key="frame" x="297" y="7.6666666666666679" width="90" height="36"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="90" id="Amq-gd-0tk"/>
+                                                                        <constraint firstAttribute="height" constant="36" id="NVW-Db-HOT"/>
+                                                                    </constraints>
                                                                     <color key="tintColor" systemColor="systemGray2Color"/>
                                                                     <state key="normal" title="Button"/>
                                                                     <buttonConfiguration key="configuration" style="filled" title="Pending">
@@ -232,21 +231,32 @@
                                                                         <action selector="pendingButtonPressed:" destination="mAS-nQ-17m" eventType="touchUpInside" id="FwU-a3-oYA"/>
                                                                     </connections>
                                                                 </button>
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dZU-8o-a5I">
+                                                                    <rect key="frame" x="316" y="7" width="54.666666666666686" height="36"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="54.670000000000002" id="Gxh-6T-0sm"/>
+                                                                        <constraint firstAttribute="height" constant="36" id="a9D-Dy-Hdq"/>
+                                                                    </constraints>
+                                                                    <state key="normal" title="Button"/>
+                                                                    <buttonConfiguration key="configuration" style="filled" title="Add"/>
+                                                                    <connections>
+                                                                        <action selector="addButtonPressed:" destination="mAS-nQ-17m" eventType="touchUpInside" id="qRE-6V-L5y"/>
+                                                                    </connections>
+                                                                </button>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="dZU-8o-a5I" secondAttribute="centerY" id="1Aq-ex-DGV"/>
-                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="leading" secondItem="thO-Hv-vwJ" secondAttribute="trailing" constant="93.333333333333343" id="CZm-a5-Iau"/>
+                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="centerY" secondItem="thO-Hv-vwJ" secondAttribute="centerY" id="10N-V0-2K5"/>
+                                                                <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="dZU-8o-a5I" secondAttribute="centerY" constant="-3" id="1Aq-ex-DGV"/>
+                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="leading" secondItem="thO-Hv-vwJ" secondAttribute="trailing" constant="75.333333333333314" id="RCw-gP-CCb"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="thO-Hv-vwJ" secondAttribute="centerY" constant="-3.5" id="SYd-kJ-iH1"/>
                                                                 <constraint firstItem="thO-Hv-vwJ" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="top" constant="10.666666666666664" id="TfV-MC-KzG"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="leading" secondItem="OAI-Jo-mEs" secondAttribute="leadingMargin" constant="4" id="Y0r-AV-EM1"/>
                                                                 <constraint firstItem="thO-Hv-vwJ" firstAttribute="centerX" secondItem="OAI-Jo-mEs" secondAttribute="centerX" id="YaR-ok-6CZ"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="OAI-Jo-mEs" secondAttribute="centerY" constant="-3.5" id="cE1-D4-6z9"/>
-                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="top" secondItem="dZU-8o-a5I" secondAttribute="top" id="djo-08-KQn"/>
-                                                                <constraint firstAttribute="trailingMargin" secondItem="dZU-8o-a5I" secondAttribute="trailing" constant="-6" id="dzM-0y-mw2"/>
-                                                                <constraint firstItem="dZU-8o-a5I" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="top" constant="4" id="fWP-gu-2V1"/>
-                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="centerY" secondItem="dZU-8o-a5I" secondAttribute="centerY" id="qEJ-sb-6ym"/>
+                                                                <constraint firstAttribute="trailingMargin" secondItem="dZU-8o-a5I" secondAttribute="trailing" constant="11.333333333333314" id="dzM-0y-mw2"/>
+                                                                <constraint firstItem="dZU-8o-a5I" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="top" constant="7" id="fWP-gu-2V1"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="topMargin" constant="-9" id="tbt-rX-fIO"/>
-                                                                <constraint firstItem="dZU-8o-a5I" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="topMargin" constant="-7" id="wer-Io-FN4"/>
+                                                                <constraint firstItem="dZU-8o-a5I" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="topMargin" constant="-4" id="wer-Io-FN4"/>
                                                             </constraints>
                                                         </tableViewCellContentView>
                                                         <connections>
