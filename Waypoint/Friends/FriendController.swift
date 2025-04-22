@@ -42,6 +42,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     var originalSuggestedViewFrame: CGRect = .zero
     
     var filteredUsers: [User] = []
+    var friendFilteredUsers: [User] = []
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
@@ -83,6 +84,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                         self.friendProfileView.reloadData()
                     }
                     self.filteredUsers = addFriendsArray
+                    self.friendFilteredUsers = removeFriendsArray
                 }
             }
         }
@@ -105,10 +107,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 self.pendingFriends(uid: uid) {
                     addFriendsArray.removeAll { user in
                         print(pendingFriendsArray.count)
-                        if pendingFriendsArray.count > currentPendingFriendRequests {
+                        if pendingFriendsArray.count > currentPendingFriendRequests, let last = pendingFriendsArray.last {
                             let content = UNMutableNotificationContent()
                             content.title = "New Friend Request"
-                            content.body = "\(pendingFriendsArray.last!.username) wants to connect with you"
+                            content.body = "\(last.username) wants to connect with you"
                             content.sound = UNNotificationSound.default
                             
                             let trigger = UNTimeIntervalNotificationTrigger (
@@ -137,6 +139,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             }
         }
         filteredUsers = addFriendsArray
+        friendFilteredUsers = removeFriendsArray
     }
     
     // get all the users that are in your pending users
@@ -161,9 +164,9 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                         }
                     }
                     pendingFriendsArray = pendingList
-                    DispatchQueue.main.async {
-                        self.pendingFriendView.reloadData()
-                    }
+//                    DispatchQueue.main.async {
+//                        self.pendingFriendView.reloadData()
+//                    }
                     handler() 
                 } else {
                     print("No pending friends data found")
@@ -227,10 +230,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                         }
                     }
                     removeFriendsArray = friendsList
-                    DispatchQueue.main.async {
-                        self.friendProfileView.reloadData()
-                    }
                     handler()
+//                    DispatchQueue.main.async {
+//                        self.friendProfileView.reloadData()
+//                    }
                 } else {
                     print("No current friends data found")
                 }
@@ -243,18 +246,108 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     @IBAction func friendSegCtlrPressed(_ sender: Any) {
         // Depending on what segctrl is clicked I change the view
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("User not authenticated")
+            return
+        }
+        let currentPendingFriendRequests = pendingFriendsArray.count
         switch segCtrl.selectedSegmentIndex {
         case 0:
             suggestFriendView.isHidden = true
             currentFriendsView.isHidden = false
-            
+            suggestedFriend {
+                self.getCurrentFriend(uid: uid) {
+                    self.pendingFriends(uid: uid) {
+                        addFriendsArray.removeAll { user in
+                            print(pendingFriendsArray.count)
+                            if pendingFriendsArray.count > currentPendingFriendRequests, let last = pendingFriendsArray.last {
+                                let content = UNMutableNotificationContent()
+                                content.title = "New Friend Request"
+                                content.body = "\(last.username) wants to connect with you"
+                                content.sound = UNNotificationSound.default
+                                
+                                let trigger = UNTimeIntervalNotificationTrigger (
+                                    timeInterval: 8.0,
+                                    repeats: false
+                                )
+                                
+                                let request = UNNotificationRequest(
+                                    identifier: "myNotification",
+                                    content: content,
+                                    trigger: trigger
+                                )
+                                
+                                UNUserNotificationCenter.current().add(request)
+                            }
+                            // makes sure that the users that are not in pending and are already your friend
+                            return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
+                            pendingFriendsArray.contains(where: { $0.uid == user.uid })
+                        }
+                        DispatchQueue.main.async {
+                            self.pendingFriendView.reloadData()
+                            self.suggestedFriendView.reloadData()
+                            self.friendProfileView.reloadData()
+                        }
+                    }
+                }
+            }
+            searchBar.text = ""
+            self.filteredUsers = addFriendsArray
+            self.friendFilteredUsers = removeFriendsArray
             friendProfileView.reloadData()
         case 1:
             suggestFriendView.isHidden = false
+            searchBar.text = ""
             currentFriendsView.isHidden = true
-        
+            suggestedFriend {
+                self.getCurrentFriend(uid: uid) {
+                    self.pendingFriends(uid: uid) {
+                        addFriendsArray.removeAll { user in
+                            print(pendingFriendsArray.count)
+                            if pendingFriendsArray.count > currentPendingFriendRequests, let last = pendingFriendsArray.last {
+                                let content = UNMutableNotificationContent()
+                                content.title = "New Friend Request"
+                                content.body = "\(last.username) wants to connect with you"
+                                content.sound = UNNotificationSound.default
+                                
+                                let trigger = UNTimeIntervalNotificationTrigger (
+                                    timeInterval: 8.0,
+                                    repeats: false
+                                )
+                                
+                                let request = UNNotificationRequest(
+                                    identifier: "myNotification",
+                                    content: content,
+                                    trigger: trigger
+                                )
+                                
+                                UNUserNotificationCenter.current().add(request)
+                            }
+                            // makes sure that the users that are not in pending and are already your friend
+                            return removeFriendsArray.contains(where: { $0.uid == user.uid }) ||
+                            pendingFriendsArray.contains(where: { $0.uid == user.uid })
+                        }
+                        DispatchQueue.main.async {
+                            self.pendingFriendView.reloadData()
+                            self.suggestedFriendView.reloadData()
+                            self.friendProfileView.reloadData()
+                        }
+                    }
+                }
+            }
+            self.filteredUsers = addFriendsArray
+            self.friendFilteredUsers = removeFriendsArray
             suggestedFriendView.reloadData()
             pendingFriendView.reloadData()
+            if pendingFriendsArray.count == 0 {
+                pendingFriendView.isHidden = true
+                pendingFriendLabel.isHidden = true
+
+            } else {
+                pendingFriendView.isHidden = false
+                pendingFriendLabel.isHidden = false
+                pendingFriendLabel.text = "Pending Friends"
+            }
         default:
             print("Should Not happen")
         }
@@ -282,7 +375,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     // Get the count of the how many rows should show up
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if segCtrl?.selectedSegmentIndex == 0 {
-            return removeFriendsArray.count
+            return friendFilteredUsers.count
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             return pendingFriendsArray.count
         } else {
@@ -295,28 +388,54 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         let storage = Storage.storage()
         if segCtrl?.selectedSegmentIndex == 0 {
             let cell: RemoveTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! RemoveTableViewCell
-            cell.customProfileName.text = removeFriendsArray[indexPath.row].username
-            let profilePicRef = storage.reference().child("\(removeFriendsArray[indexPath.row].uid)/profile_pic.jpg")
+//            print(removeFriendsArray.count)
+            cell.customProfileName.text = friendFilteredUsers[indexPath.row].username
+            cell.customProfileName.font = .systemFont(ofSize: 16, weight: .semibold)
+            let profilePicRef = storage.reference().child("\(friendFilteredUsers[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
             cell.profilePic.contentMode = .scaleAspectFill
+            cell.profilePic.clipsToBounds = true
+            cell.profilePic.layer.borderColor = UIColor.lightGray.cgColor
+            cell.profilePic.layer.borderWidth = 0.5
+            cell.removeButton.layer.cornerRadius = 8
+            cell.removeButton.backgroundColor = UIColor.systemRed
+            cell.removeButton.setTitleColor(.white, for: .normal)
             return cell
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             let cell: PendingCustomTableViewCell = pendingFriendView.dequeueReusableCell(withIdentifier: "pendingCell", for: indexPath) as! PendingCustomTableViewCell
             cell.pendingProfileName.text = pendingFriendsArray[indexPath.row].username
+            cell.pendingProfileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(pendingFriendsArray[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePicture, fallback: "person.circle")
             cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
             cell.profilePicture.contentMode = .scaleAspectFill
+            cell.profilePicture.clipsToBounds = true
+            cell.profilePicture.layer.borderColor = UIColor.lightGray.cgColor
+            cell.profilePicture.layer.borderWidth = 0.5
+            cell.acceptButton.layer.cornerRadius = 8
+            cell.acceptButton.backgroundColor = UIColor.systemBlue
+            cell.acceptButton.setTitleColor(.white, for: .normal)
+            cell.denyButton.layer.cornerRadius = 8
+            cell.denyButton.backgroundColor = UIColor.systemRed
+            cell.denyButton.setTitleColor(.white, for: .normal)
             return cell
         } else {
             let cell: SuggestedCustomViewTableCell = suggestedFriendView.dequeueReusableCell(withIdentifier: "suggestCell", for: indexPath) as! SuggestedCustomViewTableCell
             cell.profileName.text = filteredUsers[indexPath.row].username
+            cell.profileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(filteredUsers[indexPath.row].uid)/profile_pic.jpg")
             fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
             cell.profilePic.contentMode = .scaleAspectFill
+            cell.profilePic.clipsToBounds = true
+            cell.profilePic.layer.borderColor = UIColor.lightGray.cgColor
+            cell.profilePic.layer.borderWidth = 0.5
             cell.updateButtonState()
+            cell.pendingButton.layer.cornerRadius = 8
+            cell.pendingButton.backgroundColor = UIColor.systemBlue
+            cell.pendingButton.setTitleColor(.white, for: .normal)
+            cell.pendingButton.layer.cornerRadius = cell.pendingButton.frame.width / 2
             return cell
         }
     }
@@ -334,12 +453,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     // Makes sure to properly handle the segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "addSegue",
-           let destinationVC = segue.destination as? AddFriendViewController,
-           let indexPath = suggestedFriendView.indexPathForSelectedRow {
-                var selectedUser: User
-                selectedUser = addFriendsArray[indexPath.row]
-                destinationVC.selectedUsernameA = selectedUser.username
+        if segue.identifier == "addSegue", let destinationVC = segue.destination as?
+            AddFriendViewController, let indexPath = suggestedFriendView.indexPathForSelectedRow {
+            var selectedUser: User
+            selectedUser = addFriendsArray[indexPath.row]
+            destinationVC.selectedUsernameA = selectedUser.username
         } else if segue.identifier == "pendingSegue", let destinationVC = segue.destination as? PendingViewController, let indexPath = pendingFriendView.indexPathForSelectedRow {
             var selectedUser: User
             selectedUser = pendingFriendsArray[indexPath.row]
@@ -352,40 +470,70 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            // If the search text is empty, show all users
-            filteredUsers = addFriendsArray
-            pendingFriendView.isHidden = false
-            suggestFriendsLabel.isHidden = false
-            pendingFriendLabel.isHidden = false
-            pendingFriendLabel.text = "Pending Friends"
-            suggestFriendView.frame = originalSuggestedViewFrame
-            suggestedFriendView.setNeedsLayout()
-            suggestedFriendView.layoutIfNeeded()
-        } else {
-            // Filter the users based on the search text (case-insensitive)
-            pendingFriendView.isHidden = true
-            suggestFriendsLabel.isHidden = true
-            pendingFriendLabel.isHidden = true
-            suggestedFriendView.frame = CGRect(
-                x: suggestedFriendView.frame.origin.x,
-                y: pendingFriendView.frame.origin.y,
-                width: suggestedFriendView.frame.width,
-                height: suggestedFriendView.frame.height + pendingFriendView.frame.height
-            )
-            suggestedFriendView.setNeedsLayout()
-            suggestedFriendView.layoutIfNeeded()
-            filteredUsers = addFriendsArray.filter { user in
-                return user.username.lowercased().contains(searchText.lowercased())
+        if segCtrl.selectedSegmentIndex == 1 {
+            if searchText.isEmpty {
+                // If the search text is empty, show all users
+                filteredUsers = addFriendsArray
+                if pendingFriendsArray.count == 0 {
+                    pendingFriendView.isHidden = true
+                    pendingFriendLabel.isHidden = false
+                    pendingFriendLabel.text = "Suggested Friends"
+                } else {
+                    pendingFriendView.isHidden = false
+                    pendingFriendLabel.isHidden = false
+                    pendingFriendLabel.text = "Pending Friends"
+                    suggestFriendView.frame = originalSuggestedViewFrame
+                    suggestedFriendView.setNeedsLayout()
+                    suggestedFriendView.layoutIfNeeded()
+                }
+            } else {
+                // Filter the users based on the search text (case-insensitive)
+                pendingFriendView.isHidden = true
+                suggestFriendsLabel.isHidden = true
+                pendingFriendLabel.isHidden = true
+                suggestedFriendView.frame = CGRect(
+                    x: suggestedFriendView.frame.origin.x,
+                    y: pendingFriendView.frame.origin.y,
+                    width: suggestedFriendView.frame.width,
+                    height: suggestedFriendView.frame.height + pendingFriendView.frame.height
+                )
+                suggestedFriendView.setNeedsLayout()
+                suggestedFriendView.layoutIfNeeded()
+                filteredUsers = addFriendsArray.filter { user in
+                    return user.username.lowercased().contains(searchText.lowercased())
+                }
             }
+            suggestedFriendView.reloadData()
+        } else {
+            if searchText.isEmpty {
+                // If the search text is empty, show all users
+                friendFilteredUsers = removeFriendsArray
+            } else {
+                // Filter the users based on the search text (case-insensitive)
+                friendFilteredUsers = removeFriendsArray.filter { user in
+                    return user.username.lowercased().contains(searchText.lowercased())
+                }
+            }
+            friendProfileView.reloadData()
         }
-        suggestedFriendView.reloadData()
     }
 
     // Clear search when cancel button is tapped
+    
+    //TODO: Not working
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         filteredUsers = addFriendsArray
+        friendFilteredUsers = removeFriendsArray
+//        print(pendingFriendsArray.count)
+        if pendingFriendsArray.count == 0 {
+            pendingFriendView.isHidden = true
+            pendingFriendLabel.isHidden = true
+        } else {
+            pendingFriendView.isHidden = false
+            pendingFriendLabel.isHidden = false
+        }
+        pendingFriendView.reloadData()
         suggestedFriendView.reloadData()
     }
     
@@ -402,6 +550,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    
 }
 
 

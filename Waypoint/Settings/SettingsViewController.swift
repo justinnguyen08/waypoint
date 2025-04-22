@@ -13,6 +13,7 @@ import FirebaseStorage
 
 class SettingsViewController: UITableViewController {
     
+    @IBOutlet weak var notificationSwitch: UISwitch!
     @IBOutlet weak var profilePic: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,7 +66,6 @@ class SettingsViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
     
     // return height of 0 for header and footer in table view
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -77,11 +77,23 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {
+        let current = UNUserNotificationCenter.current()
         if sender.isOn {
             // request notification permission if notifications are being enabled
             // will be promised in final
+            current.requestAuthorization(
+                options: [.alert, .sound, .badge]
+            ) { granted, error in
+                if granted {
+                    print("permission granted")
+                } else if let error = error {
+                    self.notificationSwitch.setOn(false, animated: true)
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
         } else {
-            // no notification permission
+            current.removeAllPendingNotificationRequests()
+            current.removeAllDeliveredNotifications()
         }
     }
     

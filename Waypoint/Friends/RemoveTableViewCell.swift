@@ -21,6 +21,7 @@ class RemoveTableViewCell: UITableViewCell {
     @IBOutlet weak var customProfileName: UILabel!
     @IBOutlet weak var profilePic: UIImageView!
     
+    @IBOutlet weak var removeButton: UIButton!
     // Removing the friend from my friends array
     @IBAction func removeButtonPressed(_ sender: Any) {
         let uniqueUsername = customProfileName.text!
