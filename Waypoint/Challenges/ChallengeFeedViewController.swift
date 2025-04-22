@@ -506,7 +506,16 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "commentSegue",
            let nextVC = segue.destination as? ChallengeFeedCommentViewController{
+            
+            if let sheet = nextVC.presentationController as? UISheetPresentationController{
+                sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
+            }
+            
+            
             nextVC.prevVC = self
+            
+            
             let cInfo = feed[willClickCellAt]
             nextVC.profilePicture = cInfo.profilePicture
             nextVC.allComments = pendingComments
