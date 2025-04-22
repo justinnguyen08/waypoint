@@ -160,6 +160,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="notificationSwitch" destination="Mln-B5-tkC" id="Nm3-ma-22c"/>
                         <outlet property="profilePic" destination="orT-MF-uBj" id="FdR-bn-EcK"/>
                     </connections>
                 </tableViewController>

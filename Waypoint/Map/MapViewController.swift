@@ -30,14 +30,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let button = profilePic {
-            button.layer.cornerRadius = button.frame.width / 2
-            button.clipsToBounds = true
-            button.imageView?.contentMode = .scaleAspectFit
-        }
+        profilePic.layer.cornerRadius = profilePic.frame.width / 2
+        profilePic.clipsToBounds = true
+        profilePic.imageView?.contentMode = .scaleAspectFit
         refreshAllPins(date: readableDate(from: Date()))
         mapView.delegate = self
-        
+        getProfilePic()
         scheduleDailyFlush()
     }
     
@@ -45,6 +43,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         super.viewWillAppear(animated)
         getProfilePic()
         refreshAllPins(date: readableDate(from: Date()))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
     }
     
     // retrieve and show profile picture
@@ -210,8 +216,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     // very similar to dailyPic, just retrieving from different location in Firebase Storage
     private func showPinnedPic(for uid: String, date: String, pinnedToday: Bool = false) {
         
-        let path = pinnedToday ? "\(uid)/pinned_pic.jpg" : "\(uid)/\(date)/pinned_pic.jpg"
-        let pinnedRef = Storage.storage().reference().child(path)
+//        let path = pinnedToday ? "\(uid)/pinned_pic.jpg" : "\(uid)/\(date)/pinned_pic.jpg"
+        let pinnedRef = Storage.storage().reference().child("\(uid)/\(date)/pinned_pic.jpg")
 
         pinnedRef.getMetadata { [weak self] metaResult in
             guard let self = self else { return }
@@ -270,17 +276,66 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 return
             }
             let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? []).compactMap { $0["uid"] as? String }
-            self.showDailyPic(for: me.uid, date: date)
-            self.showPinnedPic(for: me.uid, date: date)
-            for uid in friendUIDs {
+            let allUIDs = [me.uid] + friendUIDs
+
+//            self.showDailyPic(for: me.uid, date: date)
+//            self.showPinnedPic(for: me.uid, date: date)
+            for uid in allUIDs {
                 self.showDailyPic(for: uid, date: date)
-                self.showPinnedPic(for: uid, date: date)
+                self.findPinnedPic(for: uid, date: date) {
+                    self.showPinnedPic(for: uid, date: date)
+                }
             }
             var allAnnotations = Array(self.userAnnotations.values)
             if let pinned = self.pinnedAnnotation {
                 allAnnotations.append(pinned)
             }
             self.mapView.showAnnotations(allAnnotations, animated: true)
+        }
+    }
+    
+    func findPinnedPic(for uid: String, date: String, completion: @escaping () -> Void) {
+        let storage = Storage.storage()
+        let datedRef = storage.reference().child("\(uid)/\(date)/pinned_pic.jpg")
+        let rootRef = storage.reference().child("\(uid)/pinned_pic.jpg")
+
+        datedRef.getMetadata { metaResult in
+            switch metaResult {
+            case .success:
+                completion()
+
+            case .failure:
+                rootRef.getMetadata { rootMetaResult in
+                    switch rootMetaResult {
+                    case .failure(let error):
+                        print("No root pinned_pic to copy: \(error.localizedDescription)")
+                        completion()
+
+                    case .success(let rootMetadata):
+                        let newMeta = StorageMetadata()
+                        newMeta.contentType = rootMetadata.contentType
+                        newMeta.customMetadata = rootMetadata.customMetadata
+
+                        rootRef.getData(maxSize: 10 * 1024 * 1024) { dataResult in
+                            switch dataResult {
+                            case .failure(let err):
+                                print("Failed to download root pinned_pic: \(err.localizedDescription)")
+                                completion()
+
+                            case .success(let data):
+                                datedRef.putData(data, metadata: newMeta) { _, uploadError in
+                                    if let uploadError = uploadError {
+                                        print("Error copying pinned_pic into dated folder: \(uploadError)")
+                                    } else {
+                                        print("Dated pinned_pic created for \(date)")
+                                    }
+                                    completion()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -293,14 +348,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             context.cgContext.clip()
             image.draw(in: rect)
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

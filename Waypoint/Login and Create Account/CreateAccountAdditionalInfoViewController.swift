@@ -11,28 +11,56 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseStorage
 
-class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDelegate {
+class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nicknameTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
-    @IBOutlet weak var birthdayTextField: UITextField!
-    @IBOutlet weak var phoneNumberTextField: UITextField!
+    @IBOutlet weak var profilePic: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
     
     var validEmail: String!
     var validPassword: String!
     
+    var picker = UIImagePickerController()
+    private var selectedProfileImage: UIImage?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         nicknameTextField.delegate = self
-        // Do any additional setup after loading the view.
+        picker.delegate = self
+        profilePic.layer.cornerRadius = profilePic.frame.width / 2
+        profilePic.clipsToBounds = true
+        profilePic.contentMode = .scaleAspectFill
     }
     
     // upload profile picture
     @IBAction func uploadPhotoButtonPressed(_ sender: Any) {
-        // no functionality yet, but it is complete in profile settings
+        let alert = UIAlertController(title: "Profile Picture",
+                                          message: "Choose a source",
+                                          preferredStyle: .actionSheet)
+            
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+          alert.addAction(.init(title: "Take Photo", style: .default) { _ in
+            self.presentPicker(source: .camera)
+          })
+        }
+        alert.addAction(.init(title: "Photo Library", style: .default) { _ in
+          self.presentPicker(source: .photoLibrary)
+        })
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        
+        present(alert, animated: true)
+    }
+    
+    private func presentPicker(source: UIImagePickerController.SourceType) {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = source
+        picker.allowsEditing = true       // let user crop
+        present(picker, animated: true)
     }
     
     // create account into firebase
@@ -71,7 +99,7 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                         }
                         
                         guard let userID = Auth.auth().currentUser?.uid else { return }
-                        
+
                         let userData: [String: Any] = [
                             "friends": [],
                             "nickname": self!.nicknameTextField.text ?? "",
@@ -88,7 +116,6 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                             "location": GeoPoint(latitude: 30.2672, longitude: -97.7431),
                             "lastDailyPhotoDate": 0
                         ]
-                        
                         db.collection("users").document(userID).setData(userData) { error in
                             DispatchQueue.main.async {
                                 if let error = error {
@@ -98,11 +125,45 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                                 }
                             }
                         }
+                        guard let image = self!.selectedProfileImage,
+                              let data = image.jpegData(compressionQuality: 0.8) else {
+                              return
+                        }
+                        let ref = Storage.storage().reference().child("\(userID)/profile_pic.jpg")
+                        let meta = StorageMetadata()
+                        meta.contentType = "image/jpeg"
+                        
+                        ref.putData(data, metadata: meta) { _, error in
+                          if let error = error {
+                            print("Storage error:", error)
+                          }
+                            print("profile picture from registration uploaded")
+                        }
+                        
+                        DispatchQueue.main.async {
+                            self?.transitionToMainTab()
+                        }
                     }
                 }
         }
     }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+      
+    func imagePickerController(_ picker: UIImagePickerController,
+                                 didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        picker.dismiss(animated: true)
+        let key: UIImagePickerController.InfoKey = info[.editedImage] != nil ? .editedImage : .originalImage
+        guard let image = info[key] as? UIImage else { return }
+        
+        // preview
+        profilePic.image = image
+        
+        selectedProfileImage = image
 
+    }
     
     // Called when 'return' key pressed
     func textFieldShouldReturn(_ textField:UITextField) -> Bool {
@@ -114,4 +175,13 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
+    
+    private func transitionToMainTab() {
+      let sb = UIStoryboard(name: "Main", bundle: nil)
+      let mainTab = sb.instantiateViewController(withIdentifier: "MainTabBarController")
+      mainTab.modalPresentationStyle = .fullScreen
+      present(mainTab, animated: true, completion: nil)
+    }
 }
+
+    
