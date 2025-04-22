@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="68d-RW-xLQ">
-                                <rect key="frame" x="16" y="167" width="361" height="586"/>
+                                <rect key="frame" x="16" y="199" width="361" height="554"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeaderboardCell" id="aBj-6o-fuz" customClass="LeaderboardViewCell" customModule="Waypoint" customModuleProvider="target">
@@ -84,6 +84,20 @@
                                     <action selector="onScopeChange:" destination="Y6W-OH-hqX" eventType="valueChanged" id="T6J-lx-LrF"/>
                                 </connections>
                             </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Points" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rxp-kz-Fya">
+                                <rect key="frame" x="329" y="168" width="48" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Place" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sEw-og-Kc1">
+                                <rect key="frame" x="16" y="167" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -91,7 +105,7 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="TCh-0c-keF" secondAttribute="trailing" constant="16" id="8dc-dJ-AcV"/>
                             <constraint firstItem="TCh-0c-keF" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="GYA-if-r2i"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="68d-RW-xLQ" secondAttribute="bottom" constant="16" id="MkZ-qV-UQO"/>
-                            <constraint firstItem="68d-RW-xLQ" firstAttribute="top" secondItem="TCh-0c-keF" secondAttribute="bottom" constant="16" id="Nft-DG-qj8"/>
+                            <constraint firstItem="68d-RW-xLQ" firstAttribute="top" secondItem="TCh-0c-keF" secondAttribute="bottom" constant="48" id="Nft-DG-qj8"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="68d-RW-xLQ" secondAttribute="trailing" constant="16" id="img-C5-gAI"/>
                             <constraint firstItem="TCh-0c-keF" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="16" id="u7h-1T-zk1"/>
                             <constraint firstItem="68d-RW-xLQ" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="uYW-CB-rAQ"/>
@@ -107,6 +121,8 @@
                     </navigationItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="placeLabel" destination="sEw-og-Kc1" id="Pdu-95-0TP"/>
+                        <outlet property="pointsLabel" destination="Rxp-kz-Fya" id="Ayw-ZT-Urq"/>
                         <outlet property="scopeSegment" destination="TCh-0c-keF" id="Jdf-jl-VDH"/>
                         <outlet property="tableView" destination="68d-RW-xLQ" id="Nx9-iI-IEA"/>
                     </connections>

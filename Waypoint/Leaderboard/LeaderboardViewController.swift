@@ -28,6 +28,10 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var scopeSegment: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var placeLabel: UILabel!
+    
+    @IBOutlet weak var pointsLabel: UILabel!
+    
     var currentLeaderboardToDisplay: [LeaderboardEntry] = []
     var mockLeaderboard: [LeaderboardEntry] = []
     var leaderboardCellIdentifier = "LeaderboardCell"
@@ -38,6 +42,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     let manager = FirebaseManager()
     
     var currentDateScope = "weekly"
+    var titleLabel = UILabel()
+    
+    var spinnerManager = SpinnerManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,22 +53,25 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.delegate = self
         scopeSegment.isHidden = true
         tableView.isHidden = true
+        placeLabel.isHidden = true
+        pointsLabel.isHidden = true
         
         scopeSegment.layer.cornerRadius = 16
         scopeSegment.clipsToBounds = true
         
-        let titleLabel = UILabel()
-        titleLabel.text = "Leaderboard"
+        titleLabel.text = "Leaderboard - Weekly"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
         titleLabel.sizeToFit()
         let leftItem = UIBarButtonItem(customView: titleLabel)
         self.navigationItem.leftBarButtonItem = leftItem
+        spinnerManager.showSpinner(view: view)
     }
     
     // load the users and update the leaderboard
     override func viewWillAppear(_ animated: Bool) {
+        scopeSegment.selectedSegmentIndex = 0
         getAllUsers {
             self.loadTableInformation()
         }
@@ -129,6 +139,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             DispatchQueue.main.async {
                 self.scopeSegment.isHidden = false
                 self.tableView.isHidden = false
+                self.placeLabel.isHidden = false
+                self.pointsLabel.isHidden = false
+                
                 // because our default segment is friends we do this
                 self.currentLeaderboardToDisplay = []
                 for item in self.mockLeaderboard {
@@ -136,8 +149,8 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         self.currentLeaderboardToDisplay.append(item)
                     }
                 }
+                self.spinnerManager.hideSpinner()
                 self.tableView.reloadData()
-                self.scopeSegment.selectedSegmentIndex = 0
                 self.currentDateScope = "weekly"
             }
         }
@@ -185,6 +198,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: leaderboardCellIdentifier, for: indexPath) as! LeaderboardViewCell
         let currentEntry = currentLeaderboardToDisplay[indexPath.row]
         cell.profilePic.image = currentEntry.profilePicture
+        cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
+        cell.profilePic.contentMode = .scaleAspectFill
+        cell.profilePic.clipsToBounds = true
         cell.username.text = currentEntry.username
         cell.place.text = String(indexPath.row + 1)
         cell.points.text = String(currentDateScope == "weekly" ? currentEntry.weeklyScore : currentEntry.monthlyScore)
@@ -232,12 +248,18 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         controller.addAction(UIAlertAction(title: "Weekly", style: .default, handler: { _ in
             self.currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
             self.currentDateScope = "weekly"
+            self.titleLabel.text = "Leaderboard - Weekly"
+            let leftItem = UIBarButtonItem(customView: self.titleLabel)
+            self.navigationItem.leftBarButtonItem = leftItem
             self.tableView.reloadData()
         }))
         
         controller.addAction(UIAlertAction(title: "Monthly", style: .default, handler: { _ in
             self.currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
             self.currentDateScope = "monthly"
+            self.titleLabel.text = "Leaderboard - Monthly"
+            let leftItem = UIBarButtonItem(customView: self.titleLabel)
+            self.navigationItem.leftBarButtonItem = leftItem
             self.tableView.reloadData()
         }))
         
