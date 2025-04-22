@@ -30,14 +30,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let button = profilePic {
-            button.layer.cornerRadius = button.frame.width / 2
-            button.clipsToBounds = true
-            button.imageView?.contentMode = .scaleAspectFit
-        }
+        profilePic.layer.cornerRadius = profilePic.frame.width / 2
+        profilePic.clipsToBounds = true
+        profilePic.imageView?.contentMode = .scaleAspectFit
         refreshAllPins(date: readableDate(from: Date()))
         mapView.delegate = self
-        
+        getProfilePic()
         scheduleDailyFlush()
     }
     
@@ -45,6 +43,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         super.viewWillAppear(animated)
         getProfilePic()
         refreshAllPins(date: readableDate(from: Date()))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
     }
     
     // retrieve and show profile picture
@@ -342,14 +348,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             context.cgContext.clip()
             image.draw(in: rect)
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
