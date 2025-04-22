@@ -46,6 +46,14 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
+        let titleLabel = UILabel()
+        titleLabel.text = "FRIENDS"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        titleLabel.sizeToFit()
+        let leftItem = UIBarButtonItem(customView: titleLabel)
+        self.navigationItem.leftBarButtonItem = leftItem
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
@@ -59,10 +67,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         suggestedFriendView.delegate = self
         suggestedFriendView.dataSource = self
         searchBar.delegate = self
-        
+        pendingFriendLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        suggestFriendsLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         suggestFriendView.isHidden = true
         currentFriendsView.isHidden = false
-        
         guard let uid = Auth.auth().currentUser?.uid else {
             print("User not authenticated")
             return
@@ -346,7 +354,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             } else {
                 pendingFriendView.isHidden = false
                 pendingFriendLabel.isHidden = false
-                pendingFriendLabel.text = "Pending Friends"
+                pendingFriendLabel.text = "  Pending Friends"
             }
         default:
             print("Should Not happen")
@@ -477,11 +485,11 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 if pendingFriendsArray.count == 0 {
                     pendingFriendView.isHidden = true
                     pendingFriendLabel.isHidden = false
-                    pendingFriendLabel.text = "Suggested Friends"
+                    pendingFriendLabel.text = "  Suggested Friends"
                 } else {
                     pendingFriendView.isHidden = false
                     pendingFriendLabel.isHidden = false
-                    pendingFriendLabel.text = "Pending Friends"
+                    pendingFriendLabel.text = "  Pending Friends"
                     suggestFriendView.frame = originalSuggestedViewFrame
                     suggestedFriendView.setNeedsLayout()
                     suggestedFriendView.layoutIfNeeded()
