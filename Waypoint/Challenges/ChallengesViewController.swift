@@ -44,6 +44,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var photoManager: ChallengePhotoManager!
     
+    var spinner = UIActivityIndicatorView(style: .large)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         monthlyTableView.delegate = self
@@ -53,8 +55,20 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         makeCircle(view: flashButton)
         makeCircle(view: cameraButton)
         makeCircle(view: rotateCameraButton)
-        
-        
+    }
+    
+    func showSpinner(){
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        view.addSubview(spinner)
+
+        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    func hideSpinner(){
+        spinner.stopAnimating()
+        spinner.removeFromSuperview()
     }
     
     func makeCircle(view: UIView){
@@ -88,6 +102,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         dailyView.isHidden = true
+        showSpinner()
             
         // on the daily challenge segment
         if segmentControl.selectedSegmentIndex == 0 {
@@ -104,6 +119,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     else{
                         self.dailyView.isHidden = false
+                        self.hideSpinner()
                         self.showCameraButtons()
                         self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
                     }
@@ -271,8 +287,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                 imageView.image = image
                 imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
                 self.cameraDisplayView.addSubview(imageView)
                 self.dailyView.isHidden = false
+                hideSpinner()
             }
         }
     }

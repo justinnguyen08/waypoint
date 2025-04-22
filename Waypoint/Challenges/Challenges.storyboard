@@ -60,9 +60,11 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DYl-vQ-VrP">
                                 <rect key="frame" x="0.0" y="142" width="393" height="627"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2rG-th-7Et">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2rG-th-7Et">
                                         <rect key="frame" x="0.0" y="102" width="393" height="467"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="467" id="1pf-ve-77e"/>
+                                        </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SMD-g6-gNv">
                                         <rect key="frame" x="8" y="160" width="50" height="50"/>
@@ -106,16 +108,14 @@
                                             <action selector="backButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="FAN-V2-IbF"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Take a picture with a cat!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZV6-iV-7Mf">
-                                        <rect key="frame" x="20" y="0.0" width="353" height="67"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Take a picture with a cat!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZV6-iV-7Mf">
+                                        <rect key="frame" x="20" y="8" width="353" height="32.333333333333336"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="27"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fq4-gE-oaY">
-                                        <rect key="frame" x="24" y="75" width="345" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fq4-gE-oaY">
+                                        <rect key="frame" x="16" y="73" width="361" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -136,6 +136,17 @@
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Fq4-gE-oaY" secondAttribute="trailing" constant="16" id="0Ou-XF-7ev"/>
+                                    <constraint firstItem="2rG-th-7Et" firstAttribute="leading" secondItem="DYl-vQ-VrP" secondAttribute="leading" id="6Ye-s6-aWc"/>
+                                    <constraint firstAttribute="trailing" secondItem="ZV6-iV-7Mf" secondAttribute="trailing" constant="20" symbolic="YES" id="K3I-dK-nEs"/>
+                                    <constraint firstAttribute="bottom" secondItem="2rG-th-7Et" secondAttribute="bottom" constant="58" id="KGa-JO-ItH"/>
+                                    <constraint firstItem="ZV6-iV-7Mf" firstAttribute="leading" secondItem="DYl-vQ-VrP" secondAttribute="leading" constant="20" symbolic="YES" id="Qav-EN-mOl"/>
+                                    <constraint firstItem="Fq4-gE-oaY" firstAttribute="leading" secondItem="DYl-vQ-VrP" secondAttribute="leading" constant="16" id="kuh-P9-WdK"/>
+                                    <constraint firstItem="2rG-th-7Et" firstAttribute="top" secondItem="Fq4-gE-oaY" secondAttribute="bottom" constant="8" id="mzc-ss-Ypp"/>
+                                    <constraint firstAttribute="trailing" secondItem="2rG-th-7Et" secondAttribute="trailing" id="oiO-Oo-8PZ"/>
+                                    <constraint firstItem="ZV6-iV-7Mf" firstAttribute="top" secondItem="DYl-vQ-VrP" secondAttribute="top" constant="8" id="wWd-Bf-MhH"/>
+                                </constraints>
                             </view>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="nF5-lM-TOX">
                                 <rect key="frame" x="16" y="103" width="361" height="32"/>
