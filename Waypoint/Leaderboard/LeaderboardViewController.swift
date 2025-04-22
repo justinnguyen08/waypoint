@@ -28,6 +28,10 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var scopeSegment: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var placeLabel: UILabel!
+    
+    @IBOutlet weak var pointsLabel: UILabel!
+    
     var currentLeaderboardToDisplay: [LeaderboardEntry] = []
     var mockLeaderboard: [LeaderboardEntry] = []
     var leaderboardCellIdentifier = "LeaderboardCell"
@@ -48,6 +52,8 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.delegate = self
         scopeSegment.isHidden = true
         tableView.isHidden = true
+        placeLabel.isHidden = true
+        pointsLabel.isHidden = true
         
         scopeSegment.layer.cornerRadius = 16
         scopeSegment.clipsToBounds = true
@@ -133,6 +139,8 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             DispatchQueue.main.async {
                 self.scopeSegment.isHidden = false
                 self.tableView.isHidden = false
+                self.placeLabel.isHidden = false
+                self.pointsLabel.isHidden = false
                 
                 // because our default segment is friends we do this
                 self.currentLeaderboardToDisplay = []
