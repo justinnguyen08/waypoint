@@ -363,13 +363,16 @@
                                     <segue destination="AIW-uM-DWD" kind="embed" id="9TO-d5-rKA"/>
                                 </connections>
                             </containerView>
-                            <datePicker contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="pKC-Nb-rqC">
-                                <rect key="frame" x="0.0" y="53" width="402" height="107"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <datePicker contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="pKC-Nb-rqC">
+                                <rect key="frame" x="0.0" y="168" width="402" height="36"/>
                             </datePicker>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="oxS-w2-1ZC"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="pKC-Nb-rqC" firstAttribute="top" secondItem="oxS-w2-1ZC" secondAttribute="top" id="XzT-mS-mgN"/>
+                            <constraint firstItem="pKC-Nb-rqC" firstAttribute="centerX" secondItem="PVs-Hc-QpA" secondAttribute="centerX" id="oCp-Xv-c8g"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="y1Z-Bg-m2m"/>
                     <connections>
@@ -378,7 +381,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vum-2Y-L81" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2375" y="-903"/>
+            <point key="canvasLocation" x="2374.6268656716416" y="-903.43249427917613"/>
         </scene>
         <!--Settings-->
         <scene sceneID="NP3-J2-PzS">
