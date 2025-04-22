@@ -25,8 +25,6 @@ class SuggestedCustomViewTableCell: UITableViewCell {
     // Checks the button state, where if the user is already a friend then make it be pending and vice versa
     func updateButtonState() {
         let db = Firestore.firestore()
-        guard let currentUser = Auth.auth().currentUser else { return }
-        
         // Fetch current user's data
         db.collection("users").whereField("username", isEqualTo: profileName!.text).getDocuments{ (snapshot, error) in
             if let error = error {
@@ -44,13 +42,16 @@ class SuggestedCustomViewTableCell: UITableViewCell {
                 let alreadyPending = pendingFriends.contains { entry in
                     guard let uid = entry["uid"] as? String else { return false }
                     self.pendingButton.isHidden = false
+                    self.addButton.isHidden = true
                     return uid == Auth.auth().currentUser?.uid
                 }
                 if alreadyPending {
                     self.pendingButton.isHidden = false
+                    self.addButton.isHidden = true
                     return
                 } else {
                     self.pendingButton.isHidden = true
+                    self.addButton.isHidden = false
                 }
             }
         }

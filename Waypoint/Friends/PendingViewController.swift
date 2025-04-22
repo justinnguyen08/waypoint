@@ -15,6 +15,7 @@ import FirebaseStorage
 
 class PendingViewController: UIViewController {
     
+    @IBOutlet weak var mutualFriends: UIStackView!
     @IBOutlet weak var profilePic: UIImageView!
     @IBOutlet weak var nickname: UILabel!
     @IBOutlet weak var numberOfStreak: UILabel!
@@ -44,6 +45,7 @@ class PendingViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             print("type: \(type(of: data["friends"]))")
+            var targetFriends: [User] = []
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
@@ -56,6 +58,7 @@ class PendingViewController: UIViewController {
                 let count = friends.count
                 print("This is how many friends you have friends you have \(count)")
                 self.numberOfFriends.text = "\(count) \nfriends"
+                targetFriends = friends
             }
             
             if let streak = data["streak"] as? Int {
@@ -70,6 +73,35 @@ class PendingViewController: UIViewController {
             self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
             self.profilePic.layer.cornerRadius = self.profilePic.frame.width / 2
             self.profilePic.contentMode = .scaleAspectFill
+            
+            guard let currentUID = Auth.auth().currentUser?.uid else { return }
+            
+            db.collection("users").document(currentUID).getDocument { (currSnapshot, error) in
+                if let error = error {
+                    print("Error fetching current user: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let currData = currSnapshot?.data(),
+                      let currentFriendsData = currData["friends"] as? [[String: Any]] else {
+                    return
+                }
+                
+                var currentFriends: [User] = []
+                for friendInfo in currentFriendsData {
+                    if let uid = friendInfo["uid"] as? String,
+                       let username = friendInfo["username"] as? String {
+                        currentFriends.append(User(uid: uid, username: username))
+                    }
+                }
+                
+                // 3. Find mutual friends
+                let mutuals = self.findMutualFriends(currentUserFriends: currentFriends, targetUserFriends: targetFriends)
+                print("Mutual Friends: \(mutuals.map { $0.username })")
+                self.configureMutualFriendsView(mutuals: mutuals)
+                
+            }
+
             
         }
 
@@ -94,6 +126,7 @@ class PendingViewController: UIViewController {
             let targetUserUUID = document.documentID
             let data = document.data()
             print("type: \(type(of: data["friends"]))")
+            var targetFriends: [User] = []
             if let friendsData = data["friends"] as? [[String: Any]] {
                 var friends: [User] = []
                 for friendInfo in friendsData {
@@ -106,6 +139,7 @@ class PendingViewController: UIViewController {
                 let count = friends.count
                 print("This is how many friends you have friends you have \(count)")
                 self.numberOfFriends.text = "\(count) \nfriends"
+                targetFriends = friends
             }
             
             if let streak = data["streak"] as? Int {
@@ -116,7 +150,115 @@ class PendingViewController: UIViewController {
                 self.nickname.text = nickname
             }
             
+            let storage = Storage.storage()
+            let profilePicRef = storage.reference().child("\(targetUserUUID)/profile_pic.jpg")
+            self.fetchImage(from: profilePicRef, for: self.profilePic, fallback: "person.circle")
+            self.profilePic.layer.cornerRadius = self.profilePic.frame.width / 2
+            self.profilePic.contentMode = .scaleAspectFill
+            
+            guard let currentUID = Auth.auth().currentUser?.uid else { return }
+            
+            db.collection("users").document(currentUID).getDocument { (currSnapshot, error) in
+                if let error = error {
+                    print("Error fetching current user: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let currData = currSnapshot?.data(),
+                      let currentFriendsData = currData["friends"] as? [[String: Any]] else {
+                    return
+                }
+                
+                var currentFriends: [User] = []
+                for friendInfo in currentFriendsData {
+                    if let uid = friendInfo["uid"] as? String,
+                       let username = friendInfo["username"] as? String {
+                        currentFriends.append(User(uid: uid, username: username))
+                    }
+                }
+                
+                // 3. Find mutual friends
+                let mutuals = self.findMutualFriends(currentUserFriends: currentFriends, targetUserFriends: targetFriends)
+                print("Mutual Friends: \(mutuals.map { $0.username })")
+                self.configureMutualFriendsView(mutuals: mutuals)
+                
+            }
+            
         }
+    }
+    
+    func findMutualFriends(currentUserFriends: [User], targetUserFriends: [User]) -> [User] {
+        let currentSet = Set(currentUserFriends.map { $0.uid })
+        return targetUserFriends.filter { currentSet.contains($0.uid) }
+    }
+    
+    func configureMutualFriendsView(mutuals: [User]) {
+        mutualFriends.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        let imageStack = UIStackView()
+        imageStack.axis = .horizontal
+        imageStack.spacing = 12
+        imageStack.alignment = .center
+        imageStack.distribution = .fill
+        imageStack.translatesAutoresizingMaskIntoConstraints = false
+
+        let count = mutuals.count
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = .darkGray
+
+        if count > 3 {
+            // Show only 3 overlapping profile pics + label
+            for user in mutuals.prefix(3) {
+                let imageView = createProfileImageView()
+                imageStack.addArrangedSubview(imageView)
+
+                let ref = Storage.storage().reference().child("\(user.uid)/profile_pic.jpg")
+                fetchImage(from: ref, for: imageView, fallback: "person.circle")
+            }
+
+            label.text = "\(count)+ mutual friends here"
+            mutualFriends.addArrangedSubview(imageStack)
+            mutualFriends.addArrangedSubview(label)
+
+        } else {
+            for user in mutuals {
+                let imageView = createProfileImageView()
+                imageStack.addArrangedSubview(imageView)
+
+                let ref = Storage.storage().reference().child("\(user.uid)/profile_pic.jpg")
+                fetchImage(from: ref, for: imageView, fallback: "person.circle")
+
+                label.text = "\(user.username) is also following"
+                break // Show only 1 user with their tag line when ≤ 3
+            }
+
+            let containerStack = UIStackView()
+            containerStack.axis = .horizontal
+            containerStack.alignment = .center
+            containerStack.spacing = 12
+            containerStack.translatesAutoresizingMaskIntoConstraints = false
+
+            containerStack.addArrangedSubview(imageStack)
+            containerStack.addArrangedSubview(label)
+
+            mutualFriends.addArrangedSubview(containerStack)
+        }
+    }
+
+
+
+    func createProfileImageView() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        imageView.layer.cornerRadius = 15
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.white.cgColor
+        return imageView
     }
     
     // Fetches the image from storage to for any reference such as profile or regular pics

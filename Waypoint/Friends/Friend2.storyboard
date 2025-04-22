@@ -350,13 +350,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="5+ Mutual Friends here" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Pp-r0-oZI">
-                                <rect key="frame" x="48" y="304" width="339.33333333333326" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e6W-zF-sgU">
                                 <rect key="frame" x="26" y="231" width="87" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -397,9 +390,18 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="-10" translatesAutoresizingMaskIntoConstraints="NO" id="ZCP-Xs-PXT">
+                                <rect key="frame" x="16" y="296" width="370" height="78"/>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ick-VT-qvt"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ZCP-Xs-PXT" firstAttribute="leading" secondItem="Ick-VT-qvt" secondAttribute="leading" constant="16" id="1OE-vJ-Zqo"/>
+                            <constraint firstItem="Ick-VT-qvt" firstAttribute="trailing" secondItem="ZCP-Xs-PXT" secondAttribute="trailing" constant="16" id="G4R-3a-Ke4"/>
+                            <constraint firstItem="ZCP-Xs-PXT" firstAttribute="top" secondItem="Ick-VT-qvt" secondAttribute="top" constant="190" id="WcE-Rm-tmr"/>
+                            <constraint firstItem="Ick-VT-qvt" firstAttribute="bottom" secondItem="ZCP-Xs-PXT" secondAttribute="bottom" constant="417" id="bVH-hY-D17"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="iQs-AG-TlG">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="4h8-zG-Orf">
@@ -417,6 +419,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addButton" destination="94n-OF-GfT" id="cmq-bd-vf6"/>
+                        <outlet property="mutualFriends" destination="ZCP-Xs-PXT" id="n0u-5t-Z0G"/>
                         <outlet property="nickname" destination="dVV-8m-KOx" id="38N-4K-gtc"/>
                         <outlet property="numberForStreak" destination="XZg-Nw-mwt" id="Fdi-1B-5LB"/>
                         <outlet property="numberOfFriends" destination="nvj-aR-XJb" id="LAv-0I-BCD"/>
@@ -455,19 +458,8 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="5+ Mutual Friends here" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qeI-ee-q9y">
-                                <rect key="frame" x="48" y="318" width="339.33333333333326" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A4S-Cq-ppB">
-                                <rect key="frame" x="16" y="389" width="185" height="293"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5mj-YP-Ugi">
-                                <rect key="frame" x="209" y="389" width="188" height="293"/>
+                                <rect key="frame" x="209" y="387" width="188" height="293"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="8" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qIC-Su-xHe">
@@ -502,9 +494,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="-10" translatesAutoresizingMaskIntoConstraints="NO" id="LRW-MJ-0RZ">
+                                <rect key="frame" x="16" y="313" width="370" height="78"/>
+                            </stackView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A4S-Cq-ppB">
+                                <rect key="frame" x="8" y="387" width="185" height="293"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="qen-Ib-C1d"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="LRW-MJ-0RZ" firstAttribute="top" secondItem="qen-Ib-C1d" secondAttribute="top" constant="207" id="UlL-LF-GqD"/>
+                            <constraint firstItem="LRW-MJ-0RZ" firstAttribute="leading" secondItem="qen-Ib-C1d" secondAttribute="leading" constant="16" id="WOn-pB-gwc"/>
+                            <constraint firstItem="qen-Ib-C1d" firstAttribute="trailing" secondItem="LRW-MJ-0RZ" secondAttribute="trailing" constant="16" id="X8F-Wq-VLJ"/>
+                            <constraint firstItem="qen-Ib-C1d" firstAttribute="bottom" secondItem="LRW-MJ-0RZ" secondAttribute="bottom" constant="400" id="rJl-0e-j8H"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="lGg-4J-QJb">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="QgS-9p-pBD">
@@ -522,6 +527,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="dailyPic" destination="5mj-YP-Ugi" id="8TR-gE-gYf"/>
+                        <outlet property="mutualFriends" destination="LRW-MJ-0RZ" id="SKQ-ZX-1NK"/>
                         <outlet property="nickname" destination="EMb-BD-YVP" id="hfv-ZR-qYF"/>
                         <outlet property="numberForStreak" destination="qIC-Su-xHe" id="fqi-hm-Cxu"/>
                         <outlet property="numberOfFriends" destination="jcT-T0-oKS" id="yT5-KZ-jed"/>
@@ -564,13 +570,6 @@
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cAc-71-3ga">
                                 <rect key="frame" x="180" y="178" width="77" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="5+ Mutual Friends here" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EYW-Z1-wGH">
-                                <rect key="frame" x="48" y="322" width="339.33333333333331" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -641,9 +640,18 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="-10" translatesAutoresizingMaskIntoConstraints="NO" id="RKs-db-6s8">
+                                <rect key="frame" x="16" y="307" width="370" height="78"/>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="3yF-GY-sGm"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="RKs-db-6s8" firstAttribute="leading" secondItem="3yF-GY-sGm" secondAttribute="leading" constant="16" id="8od-TH-rth"/>
+                            <constraint firstItem="3yF-GY-sGm" firstAttribute="trailing" secondItem="RKs-db-6s8" secondAttribute="trailing" constant="16" id="9GQ-Zs-tVP"/>
+                            <constraint firstItem="3yF-GY-sGm" firstAttribute="bottom" secondItem="RKs-db-6s8" secondAttribute="bottom" constant="406" id="Bp2-GR-lWu"/>
+                            <constraint firstItem="RKs-db-6s8" firstAttribute="top" secondItem="3yF-GY-sGm" secondAttribute="top" constant="201" id="bd2-qZ-BMu"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="f2t-nd-gQv">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="gbr-Pj-vej">
@@ -660,6 +668,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="mutualFriends" destination="RKs-db-6s8" id="bfJ-da-4Ow"/>
                         <outlet property="nickname" destination="SaD-iY-uUA" id="2Ua-Vt-92J"/>
                         <outlet property="numberOfFriends" destination="t9m-BK-ScT" id="YoG-Ah-1N0"/>
                         <outlet property="numberOfStreak" destination="Ouz-gF-gES" id="OcK-U8-D7Z"/>
