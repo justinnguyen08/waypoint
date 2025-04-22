@@ -47,7 +47,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     override func viewDidLoad() {
         let titleLabel = UILabel()
-        titleLabel.text = "FRIENDS"
+        titleLabel.text = "Friends"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
@@ -470,11 +470,15 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             var selectedUser: User
             selectedUser = pendingFriendsArray[indexPath.row]
             destinationVC.selectedUsername = selectedUser.username
-        } else if segue.identifier == "removeSegue", let destinationVC = segue.destination as? RemoveViewController, let indexPath = friendProfileView.indexPathForSelectedRow {
-            var selectedUser: User
-            selectedUser = removeFriendsArray[indexPath.row]
-            destinationVC.selectedUsername = selectedUser.username
-        }
+        } else if segue.identifier == "removeSegue",
+                  let destinationVC = segue.destination as? RemoveViewController,
+                  let indexPath = friendProfileView.indexPathForSelectedRow,
+                  indexPath.row < removeFriendsArray.count {
+              
+              let selectedUser = removeFriendsArray[indexPath.row]
+              destinationVC.selectedUsername = selectedUser.username
+          }
+
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
