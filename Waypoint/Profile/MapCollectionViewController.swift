@@ -22,6 +22,7 @@ class MapCollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         datePicker.maximumDate = Date()
+        datePicker.datePickerMode = .date
         
         datePicker.addAction(
             UIAction { [weak self] _ in
