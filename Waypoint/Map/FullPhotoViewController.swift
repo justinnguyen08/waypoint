@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import CoreLocation
+import FirebaseAuth
 
 class FullPhotoViewController: UIViewController {
     
@@ -43,10 +44,16 @@ class FullPhotoViewController: UIViewController {
     
     var uid: String?
     
+    var currentUserUID: String?
+    var currentUserProfilePicture: UIImage?
+    
     var pendingTagged: [TaggedEntry] = []
+    
+    let spinner = SpinnerManager()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        spinner.showSpinner(view: view)
+        hideAll()
         // Do any additional setup after loading the view.
         photoView.contentMode = .scaleAspectFit
         photoView.image = photo
@@ -54,6 +61,9 @@ class FullPhotoViewController: UIViewController {
         
         // get the username
         Task{
+            guard let currentUserUID = Auth.auth().currentUser?.uid else{
+                return
+            }
             
             guard let postID = self.postID else{
                 print("There is no valid postID!")
@@ -93,13 +103,16 @@ class FullPhotoViewController: UIViewController {
                 // get the current user profile picture
                 async let profilePictureTask = self.manager.getProfilePicture(uid: uid)
                 
+                async let currentUserProfileTask = self.manager.getProfilePicture(uid: currentUserUID)
+                
                 // get the likes and comments and tagged
                 async let likesTask = self.manager.getPostLikes(collection: "mapPosts", postID: postID)
                 async let commentsTask = self.manager.getPostComments(collection: "mapPosts", postID: postID)
                 
                 async let taggedTask = self.manager.getPostTagged(collection: "mapPosts", postID: postID)
                 
-                
+                self.currentUserUID = currentUserUID
+                self.currentUserProfilePicture = await currentUserProfileTask
                 // build everything now!
                 
                 self.username = username
@@ -152,6 +165,9 @@ class FullPhotoViewController: UIViewController {
                     self.usernameLabel.text = self.username
                     self.locationLabel.text = self.locationName
                     self.profilePictureView.image = self.profilePicture
+                    self.profilePictureView.layer.cornerRadius = self.profilePictureView.frame.width / 2
+                    self.profilePictureView.clipsToBounds = true
+                    self.profilePictureView.contentMode = .scaleAspectFill
                     self.likeButton.setTitle("\(self.likes.count)", for: .normal)
                     if self.likes.contains(self.uid!){
                         self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
@@ -164,6 +180,8 @@ class FullPhotoViewController: UIViewController {
                     self.view.bringSubviewToFront(self.likeButton)
                     self.view.bringSubviewToFront(self.commentButton)
                     self.view.bringSubviewToFront(self.taggedButton)
+                    self.spinner.hideSpinner()
+                    self.showAll()
                 }
             }
             catch{
@@ -171,6 +189,26 @@ class FullPhotoViewController: UIViewController {
             }
             
         }
+    }
+    
+    func hideAll(){
+        profilePictureView.isHidden = true
+        usernameLabel.isHidden = true
+        locationLabel.isHidden = true
+        photoView.isHidden = true
+        likeButton.isHidden = true
+        commentButton.isHidden = true
+        taggedButton.isHidden = true
+    }
+    
+    func showAll(){
+        profilePictureView.isHidden = false
+        usernameLabel.isHidden = false
+        locationLabel.isHidden = false
+        photoView.isHidden = false
+        likeButton.isHidden = false
+        commentButton.isHidden = false
+        taggedButton.isHidden = false
     }
     
     func handleLike() async -> Bool{
@@ -202,11 +240,11 @@ class FullPhotoViewController: UIViewController {
                 
                 // Note: this could be done without a transaction
                 //       by updating the population using FieldValue.increment()
-                if oldLikes.contains(self.uid!){
-                    oldLikes.removeAll { $0 == self.uid! }
+                if oldLikes.contains(self.currentUserUID!){
+                    oldLikes.removeAll { $0 == self.currentUserUID! }
                 }
                 else{
-                    oldLikes.append(self.uid!)
+                    oldLikes.append(self.currentUserUID!)
                     didLike = true
                 }
                 
@@ -263,7 +301,7 @@ class FullPhotoViewController: UIViewController {
                     return
                 }
                 
-                let newComment = ["comment" : commentText, "likes" : [], "uid" : self.uid!, "timestamp" : Date().timeIntervalSince1970]
+                let newComment = ["comment" : commentText, "likes" : [], "uid" : self.currentUserUID!, "timestamp" : Date().timeIntervalSince1970]
                 
                 oldComments.append(newComment)
                 self.toConvertComments = oldComments
@@ -349,11 +387,11 @@ class FullPhotoViewController: UIViewController {
 
                 // Note: this could be done without a transaction
                 //       by updating the population using FieldValue.increment()
-                if oldLikes.contains(self.uid!){
-                    oldLikes.removeAll { $0 == self.uid! }
+                if oldLikes.contains(self.currentUserUID!){
+                    oldLikes.removeAll { $0 == self.currentUserUID! }
                 }
                 else{
-                    oldLikes.append(self.uid!)
+                    oldLikes.append(self.currentUserUID!)
                     didLike = true
                 }
                 comments[commentIndex]["likes"] = oldLikes
@@ -423,7 +461,6 @@ class FullPhotoViewController: UIViewController {
             }
             
         }
-    
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -446,7 +483,7 @@ class FullPhotoViewController: UIViewController {
             nextVC.allComments = comments
             nextVC.prevVC = self
             nextVC.postID = postID
-            nextVC.profilePicture = profilePicture
+            nextVC.profilePicture = currentUserProfilePicture
         }
     }
 }
