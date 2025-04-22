@@ -35,7 +35,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         profilePic.imageView?.contentMode = .scaleAspectFit
         refreshAllPins(date: readableDate(from: Date()))
         mapView.delegate = self
-        getProfilePic()
         scheduleDailyFlush()
     }
     
