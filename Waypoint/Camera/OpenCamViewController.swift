@@ -47,8 +47,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
-        capturePicButton.layer.cornerRadius = 35
+        capturePicButton.layer.cornerRadius = capturePicButton.frame.width / 2
         capturePicButton.clipsToBounds = true
         resumeLiveButton.isHidden = true
         sendPostButton.isHidden = true

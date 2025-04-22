@@ -28,6 +28,8 @@ class ProfileSettingsPageViewController: UIViewController, UIImagePickerControll
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
+        profilePic.layer.borderColor = UIColor.black.cgColor
+        profilePic.layer.borderWidth = 1
         getProfilePic()
     }
     

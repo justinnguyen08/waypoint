@@ -3,6 +3,7 @@
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,7 +21,9 @@
                                 <rect key="frame" x="0.0" y="106" width="84" height="83"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="arrow.counterclockwise.circle.fill" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="plain" image="arrow.counterclockwise.circle.fill" catalog="system">
+                                    <color key="baseForegroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <action selector="flipCamera:" destination="nZr-z4-OeM" eventType="touchUpInside" id="hpo-zj-zG7"/>
                                 </connections>
@@ -31,7 +34,9 @@
                                     <constraint firstAttribute="width" constant="88" id="oKq-Wc-FND"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title=""/>
+                                <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title="">
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="5"/>
@@ -43,55 +48,63 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwd-iE-Jvz">
                                 <rect key="frame" x="19" y="130" width="47" height="35"/>
+                                <color key="backgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system">
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <action selector="resumeLiveFeed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="Mik-E6-u24"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
-                                <rect key="frame" x="19.000000000000007" y="809" width="106.66666666666669" height="35"/>
+                                <rect key="frame" x="19" y="809" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system" title=" Tag"/>
+                                <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system">
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <segue destination="8EX-yT-KkL" kind="show" identifier="tagSegue" id="5b1-st-S4R"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
-                                <rect key="frame" x="133.66666666666669" y="809" width="134.66666666666669" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system" title=" Pin Photo"/>
-                                <connections>
-                                    <action selector="onPinPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="cZ5-iW-v9U"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
-                                <rect key="frame" x="287" y="809" width="99" height="35"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="99" id="DSi-WN-fUY"/>
-                                </constraints>
+                                <rect key="frame" x="336" y="808" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system" title=" Send"/>
+                                <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system">
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <action selector="onSendPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="I2k-nR-j6E"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
+                                <rect key="frame" x="176" y="808" width="50" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="Kup-Gi-w5R"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system">
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="onPinPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="cZ5-iW-v9U"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ham-cv-7LU"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                         <constraints>
-                            <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="vwd-iE-Jvz" secondAttribute="leading" id="6rF-bd-QDY"/>
-                            <constraint firstItem="YhB-nW-oTU" firstAttribute="leading" secondItem="iRs-lF-iDs" secondAttribute="trailing" constant="18.666666666666686" id="Ku9-e1-z5x"/>
-                            <constraint firstAttribute="bottom" secondItem="YhB-nW-oTU" secondAttribute="bottom" constant="30" id="Oh4-2o-gi1"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="ccQ-pL-FW2" secondAttribute="centerX" id="1p5-N9-a22"/>
+                            <constraint firstItem="YhB-nW-oTU" firstAttribute="bottom" secondItem="Ham-cv-7LU" secondAttribute="bottom" constant="52" id="41A-Fr-yvt"/>
                             <constraint firstAttribute="bottom" secondItem="55X-QM-QQ3" secondAttribute="bottom" constant="30" id="TPD-3L-pRw"/>
-                            <constraint firstItem="iRs-lF-iDs" firstAttribute="leading" secondItem="55X-QM-QQ3" secondAttribute="trailing" constant="8" id="WtC-N9-n64"/>
                             <constraint firstItem="YhB-nW-oTU" firstAttribute="trailing" secondItem="hM8-Ez-ZBL" secondAttribute="trailingMargin" id="Xoz-qF-Ud8"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="top" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="41" id="arb-LJ-CIP"/>
                             <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="baa-WZ-nmr"/>
-                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="iRs-lF-iDs" secondAttribute="centerX" id="d3X-mI-SFw"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="bha-cq-bj5"/>
                             <constraint firstItem="vwd-iE-Jvz" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="jNg-rs-15s"/>
                             <constraint firstItem="Ham-cv-7LU" firstAttribute="bottom" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="24" id="pfc-fG-ZGG"/>
+                            <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="sEk-VA-TOD"/>
                             <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="573" id="shz-NY-ysq"/>
-                            <constraint firstAttribute="bottom" secondItem="iRs-lF-iDs" secondAttribute="bottom" constant="30" id="sqk-Bn-ayf"/>
                             <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="24" id="xgQ-HJ-Iua"/>
                         </constraints>
                     </view>
@@ -208,6 +221,9 @@
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
         <image name="pin" catalog="system" width="116" height="128"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
+        <namedColor name="Background">
+            <color red="0.98000001907348633" green="0.97299998998641968" blue="0.9570000171661377" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
