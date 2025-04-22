@@ -75,6 +75,11 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
     }
     
+    func updateMonthlyChallenges(index: Int){
+        hasDoneMonthlyChallenges[index] = true
+        monthlyTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+    }
+    
     
     func makeCircle(view: UIView){
         view.layer.cornerRadius = view.frame.width / 2
@@ -653,6 +658,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 print("monthly challenges is nil!")
                 return
             }
+            
+            nextVC.delegate = self
             
             nextVC.challengeDescriptionText = monthlyChallenges[index].description
             nextVC.challengePointsText = String(monthlyChallenges[index].points)
