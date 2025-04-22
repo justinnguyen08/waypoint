@@ -261,7 +261,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="xKb-el-RHP">
-                                <rect key="frame" x="0.0" y="0.0" width="402" height="864"/>
+                                <rect key="frame" x="0.0" y="53" width="402" height="811"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TaggedCell" textLabel="Olf-q7-ewj" imageView="sRj-Qi-hLv" style="IBUITableViewCellStyleDefault" id="65f-1P-6C5">
@@ -287,14 +287,22 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tagged" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CrQ-Bh-fCZ">
+                                <rect key="frame" x="172.66666666666666" y="16" width="57" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LaK-cZ-IsF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="xKb-el-RHP" firstAttribute="leading" secondItem="LaK-cZ-IsF" secondAttribute="leading" id="Ghb-9E-TVB"/>
-                            <constraint firstItem="xKb-el-RHP" firstAttribute="top" secondItem="LaK-cZ-IsF" secondAttribute="top" id="IBc-KI-e5C"/>
+                            <constraint firstItem="CrQ-Bh-fCZ" firstAttribute="centerX" secondItem="Xwi-ag-cqX" secondAttribute="centerX" id="VJB-i7-hpG"/>
                             <constraint firstItem="LaK-cZ-IsF" firstAttribute="bottom" secondItem="xKb-el-RHP" secondAttribute="bottom" id="c5O-UI-Js0"/>
+                            <constraint firstItem="CrQ-Bh-fCZ" firstAttribute="top" secondItem="LaK-cZ-IsF" secondAttribute="top" constant="16" id="dFB-TZ-SBO"/>
                             <constraint firstItem="LaK-cZ-IsF" firstAttribute="trailing" secondItem="xKb-el-RHP" secondAttribute="trailing" id="xxT-PC-bYE"/>
+                            <constraint firstItem="xKb-el-RHP" firstAttribute="top" secondItem="CrQ-Bh-fCZ" secondAttribute="bottom" constant="16" id="yYk-zq-Qwl"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="4vj-wc-MaB"/>
@@ -315,7 +323,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="349-ze-I2w">
-                                <rect key="frame" x="16" y="122" width="370" height="611"/>
+                                <rect key="frame" x="16" y="159" width="370" height="574"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MapCommentCell" id="y3h-05-PM3" customClass="MapCommentsTableViewCell" customModule="Waypoint" customModuleProvider="target">
@@ -420,6 +428,12 @@
                                     <constraint firstAttribute="height" constant="90" id="rtD-Lf-gaA"/>
                                 </constraints>
                             </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Comments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xck-tm-6Fg">
+                                <rect key="frame" x="159.66666666666666" y="122" width="83" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="G4b-UM-F9l"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -427,10 +441,12 @@
                             <constraint firstItem="G4b-UM-F9l" firstAttribute="bottom" secondItem="ppR-L2-Zx4" secondAttribute="bottom" constant="21" id="3hn-hZ-4yD"/>
                             <constraint firstItem="349-ze-I2w" firstAttribute="leading" secondItem="G4b-UM-F9l" secondAttribute="leading" constant="16" id="GoT-qA-o2w"/>
                             <constraint firstItem="G4b-UM-F9l" firstAttribute="trailing" secondItem="349-ze-I2w" secondAttribute="trailing" constant="16" id="RRC-HI-zwd"/>
+                            <constraint firstItem="Xck-tm-6Fg" firstAttribute="top" secondItem="G4b-UM-F9l" secondAttribute="top" constant="16" id="WDW-mv-rJ5"/>
                             <constraint firstItem="ppR-L2-Zx4" firstAttribute="leading" secondItem="G4b-UM-F9l" secondAttribute="leading" constant="16" id="YbX-Ua-aTj"/>
                             <constraint firstItem="G4b-UM-F9l" firstAttribute="trailing" secondItem="ppR-L2-Zx4" secondAttribute="trailing" constant="16" id="bid-k5-l9f"/>
+                            <constraint firstItem="349-ze-I2w" firstAttribute="top" secondItem="Xck-tm-6Fg" secondAttribute="bottom" constant="16" id="lc6-ju-aSj"/>
+                            <constraint firstItem="Xck-tm-6Fg" firstAttribute="centerX" secondItem="5oU-xy-1qq" secondAttribute="centerX" id="ro6-JO-c9c"/>
                             <constraint firstItem="ppR-L2-Zx4" firstAttribute="top" secondItem="349-ze-I2w" secondAttribute="bottom" constant="-4" id="vW6-Gh-Z5M"/>
-                            <constraint firstItem="349-ze-I2w" firstAttribute="top" secondItem="G4b-UM-F9l" secondAttribute="top" constant="16" id="vnR-0w-l0z"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="baZ-0e-Lnc"/>
