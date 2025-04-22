@@ -34,6 +34,8 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
+        profilePic.layer.borderColor = UIColor.black.cgColor
+        profilePic.layer.borderWidth = 1
     }
     
     // upload profile picture
@@ -139,10 +141,6 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                           }
                             print("profile picture from registration uploaded")
                         }
-                        
-                        DispatchQueue.main.async {
-                            self?.transitionToMainTab()
-                        }
                     }
                 }
         }
@@ -174,13 +172,6 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
     // Called when the user clicks on the view outside of the UITextField
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
-    }
-    
-    private func transitionToMainTab() {
-      let sb = UIStoryboard(name: "Main", bundle: nil)
-      let mainTab = sb.instantiateViewController(withIdentifier: "MainTabBarController")
-      mainTab.modalPresentationStyle = .fullScreen
-      present(mainTab, animated: true, completion: nil)
     }
 }
 
