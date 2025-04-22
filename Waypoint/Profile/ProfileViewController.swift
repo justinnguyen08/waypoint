@@ -11,6 +11,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 import FirebaseStorage
+import CoreLocation
 
 class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
@@ -45,7 +46,6 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         // fetch profile data
         fetchUserProfile()
         
-        // this only currently fetches pinned images
         fetchProfileAndPinnedImages()
         fetchUserImages()
     }
@@ -229,6 +229,50 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         }
         
         return cell
+    }
+    
+    // show full photo after tapping on collection item in Profile
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let imageRef = imageReferences[indexPath.item]
+
+        imageRef.getMetadata { [weak self] metadata, error in
+            guard let self = self else { return }
+            if let error = error {
+            print("Error fetching metadata:", error)
+            return
+      }
+        let postID = metadata?.customMetadata?["postID"]
+        let latitude = metadata?.customMetadata?["latitude"]
+        let longitude = metadata?.customMetadata?["longitude"]
+        let lat = Double(latitude!)
+        let long = Double(longitude!)
+        let coord = CLLocationCoordinate2D(latitude: Double(lat!), longitude: Double(long!))
+        imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+          if let error = error {
+            print("Error downloading image:", error)
+            return
+          }
+          guard let data = data, let image = UIImage(data: data) else {
+            print("No image data")
+            return
+          }
+
+          DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Map", bundle: nil)
+            guard let fullVC = storyboard.instantiateViewController(withIdentifier: "FullPhotoViewController")
+                as? FullPhotoViewController
+            else {
+              return
+            }
+            fullVC.photo  = image
+            fullVC.postID = postID
+//            coordinates = CLLocation(latitude: latitude, longitude: longitude)
+            fullVC.location = coord
+              fullVC.modalPresentationStyle = .pageSheet
+            self.present(fullVC, animated: true, completion: nil)
+          }
+        }
+      }
     }
     
     // the next 4 collection view functions deal with spacing for displaying photos
