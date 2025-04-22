@@ -431,6 +431,7 @@ class FullPhotoViewController: UIViewController {
             // https://www.youtube.com/watch?v=lZQUk8gz4wc
             if let sheet = nextVC.presentationController as? UISheetPresentationController{
                 sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
             }
             nextVC.allTagged = self.pendingTagged
         }
@@ -438,6 +439,7 @@ class FullPhotoViewController: UIViewController {
             
             if let sheet = nextVC.presentationController as? UISheetPresentationController{
                 sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
             }
             
             

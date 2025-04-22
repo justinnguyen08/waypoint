@@ -38,10 +38,13 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        // segue for mapCollectionView
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(mapImageTapped))
-        mapCollectionView.addGestureRecognizer(tapGesture)
+        // segue for mapCollectionView and pinned images
+        let tapMapView = UITapGestureRecognizer(target: self, action: #selector(mapImageTapped))
+        mapCollectionView.addGestureRecognizer(tapMapView)
         mapCollectionView.isUserInteractionEnabled = true
+        let tapPinned = UITapGestureRecognizer(target: self, action: #selector(pinnedImageTapped))
+        pinnedImageView.addGestureRecognizer(tapPinned)
+        pinnedImageView.isUserInteractionEnabled = true
         
         // fetch profile data
         fetchUserProfile()
@@ -190,6 +193,62 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         performSegue(withIdentifier: "MapDetailSegue", sender: self)
     }
     
+    // open full pinned image view when tapped
+    @objc func pinnedImageTapped() {
+      guard let userId = Auth.auth().currentUser?.uid else { return }
+      let pinnedRef = Storage.storage().reference().child("\(userId)/pinned_pic.jpg")
+      
+      pinnedRef.getMetadata { [weak self] metadata, error in
+        guard let self = self else { return }
+        if let error = error {
+          print("Error fetching pinned metadata:", error.localizedDescription)
+          return
+        }
+        guard
+          let meta = metadata,
+          let postID = meta.customMetadata?["postID"],
+          let latitude = metadata?.customMetadata?["latitude"],
+          let longitude = metadata?.customMetadata?["longitude"],
+          let lat = Double(latitude),
+          let long = Double(longitude)
+        else {
+          print("Pinned image has no postID in metadata")
+          return
+        }
+          
+        let coord = CLLocationCoordinate2D(latitude: Double(lat), longitude: Double(long))
+        
+        pinnedRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+          if let error = error {
+            print("Error downloading pinned image:", error.localizedDescription)
+            return
+          }
+          guard
+            let data = data,
+            let image = UIImage(data: data)
+          else {
+            print("Bad image data for pinned image")
+            return
+          }
+          
+          DispatchQueue.main.async {
+            let sb = UIStoryboard(name: "Map", bundle: nil)
+            guard let fullVC = sb.instantiateViewController(withIdentifier: "FullPhotoViewController")
+                as? FullPhotoViewController
+            else {
+              print("Couldn't find FullPhotoViewController in storyboard")
+              return
+            }
+            fullVC.photo  = image
+            fullVC.postID = postID
+            fullVC.location = coord
+            fullVC.modalPresentationStyle = .pageSheet
+            self.present(fullVC, animated: true, completion: nil)
+          }
+        }
+      }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
          return imageReferences.count
     }
@@ -266,9 +325,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
             }
             fullVC.photo  = image
             fullVC.postID = postID
-//            coordinates = CLLocation(latitude: latitude, longitude: longitude)
             fullVC.location = coord
-              fullVC.modalPresentationStyle = .pageSheet
+            fullVC.modalPresentationStyle = .pageSheet
             self.present(fullVC, animated: true, completion: nil)
           }
         }
