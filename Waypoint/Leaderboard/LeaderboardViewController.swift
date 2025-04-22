@@ -42,6 +42,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     let manager = FirebaseManager()
     
     var currentDateScope = "weekly"
+    var titleLabel = UILabel()
     
     var spinnerManager = SpinnerManager()
 
@@ -58,8 +59,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         scopeSegment.layer.cornerRadius = 16
         scopeSegment.clipsToBounds = true
         
-        let titleLabel = UILabel()
-        titleLabel.text = "Leaderboard"
+        titleLabel.text = "Leaderboard - Weekly"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
@@ -248,12 +248,18 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         controller.addAction(UIAlertAction(title: "Weekly", style: .default, handler: { _ in
             self.currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
             self.currentDateScope = "weekly"
+            self.titleLabel.text = "Leaderboard - Weekly"
+            let leftItem = UIBarButtonItem(customView: self.titleLabel)
+            self.navigationItem.leftBarButtonItem = leftItem
             self.tableView.reloadData()
         }))
         
         controller.addAction(UIAlertAction(title: "Monthly", style: .default, handler: { _ in
             self.currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
             self.currentDateScope = "monthly"
+            self.titleLabel.text = "Leaderboard - Monthly"
+            let leftItem = UIBarButtonItem(customView: self.titleLabel)
+            self.navigationItem.leftBarButtonItem = leftItem
             self.tableView.reloadData()
         }))
         
