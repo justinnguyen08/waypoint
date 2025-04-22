@@ -515,9 +515,13 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             
             nextVC.prevVC = self
             
+            guard let currentUserUID = Auth.auth().currentUser?.uid else{
+                return
+            }
+            
             
             let cInfo = feed[willClickCellAt]
-            nextVC.profilePicture = cInfo.profilePicture
+            nextVC.profilePicture = profilePicCache[currentUserUID]
             nextVC.allComments = pendingComments
             nextVC.allComments.sort{
                 $0.timestamp < $1.timestamp

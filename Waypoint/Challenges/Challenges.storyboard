@@ -506,7 +506,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hbx-BD-qyj">
-                                                    <rect key="frame" x="237.66666666666666" y="10.666666666666668" width="49.333333333333343" height="34.333333333333329"/>
+                                                    <rect key="frame" x="266" y="10.666666666666668" width="21" height="34.333333333333329"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" image="hand.thumbsup" catalog="system"/>
                                                     <connections>
@@ -531,7 +531,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="db6-Ii-tHi">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="db6-Ii-tHi">
                                                     <rect key="frame" x="295" y="17" width="66" height="21.333333333333329"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -545,6 +545,7 @@
                                                 <constraint firstItem="6gQ-7W-IpK" firstAttribute="leading" secondItem="JXO-AQ-8OH" secondAttribute="trailing" constant="16" id="Bx2-t0-hnG"/>
                                                 <constraint firstItem="db6-Ii-tHi" firstAttribute="leading" secondItem="hbx-BD-qyj" secondAttribute="trailing" constant="8" id="CvL-lV-0Gd"/>
                                                 <constraint firstAttribute="bottom" secondItem="6gQ-7W-IpK" secondAttribute="bottom" id="KMK-Ih-mBo"/>
+                                                <constraint firstItem="hbx-BD-qyj" firstAttribute="leading" secondItem="6gQ-7W-IpK" secondAttribute="trailing" id="P4u-w3-7XI"/>
                                                 <constraint firstItem="68z-NW-tW2" firstAttribute="top" secondItem="xwF-AA-9BR" secondAttribute="top" id="SgP-RS-e9Q"/>
                                                 <constraint firstItem="68z-NW-tW2" firstAttribute="leading" secondItem="JXO-AQ-8OH" secondAttribute="trailing" constant="16" id="Xfg-Kp-pal"/>
                                                 <constraint firstAttribute="trailing" secondItem="hbx-BD-qyj" secondAttribute="trailing" constant="74" id="gN7-9u-6qf"/>
