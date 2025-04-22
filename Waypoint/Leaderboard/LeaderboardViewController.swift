@@ -38,6 +38,8 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     let manager = FirebaseManager()
     
     var currentDateScope = "weekly"
+    
+    var spinnerManager = SpinnerManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,10 +60,12 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         titleLabel.sizeToFit()
         let leftItem = UIBarButtonItem(customView: titleLabel)
         self.navigationItem.leftBarButtonItem = leftItem
+        spinnerManager.showSpinner(view: view)
     }
     
     // load the users and update the leaderboard
     override func viewWillAppear(_ animated: Bool) {
+        scopeSegment.selectedSegmentIndex = 0
         getAllUsers {
             self.loadTableInformation()
         }
@@ -129,6 +133,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
             DispatchQueue.main.async {
                 self.scopeSegment.isHidden = false
                 self.tableView.isHidden = false
+                
                 // because our default segment is friends we do this
                 self.currentLeaderboardToDisplay = []
                 for item in self.mockLeaderboard {
@@ -136,8 +141,8 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         self.currentLeaderboardToDisplay.append(item)
                     }
                 }
+                self.spinnerManager.hideSpinner()
                 self.tableView.reloadData()
-                self.scopeSegment.selectedSegmentIndex = 0
                 self.currentDateScope = "weekly"
             }
         }
@@ -185,6 +190,9 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: leaderboardCellIdentifier, for: indexPath) as! LeaderboardViewCell
         let currentEntry = currentLeaderboardToDisplay[indexPath.row]
         cell.profilePic.image = currentEntry.profilePicture
+        cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
+        cell.profilePic.contentMode = .scaleAspectFill
+        cell.profilePic.clipsToBounds = true
         cell.username.text = currentEntry.username
         cell.place.text = String(indexPath.row + 1)
         cell.points.text = String(currentDateScope == "weekly" ? currentEntry.weeklyScore : currentEntry.monthlyScore)

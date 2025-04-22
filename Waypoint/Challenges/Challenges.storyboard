@@ -107,7 +107,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vsJ-jW-3oz">
-                                        <rect key="frame" x="171.66666666666666" y="552" width="50" height="50"/>
+                                        <rect key="frame" x="171.66666666666666" y="557" width="50" height="45"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="0iw-kn-1Fi"/>
                                         </constraints>
@@ -189,7 +189,7 @@
                                     <constraint firstItem="Fq4-gE-oaY" firstAttribute="top" secondItem="ZV6-iV-7Mf" secondAttribute="bottom" constant="8" id="Qie-lk-3oO"/>
                                     <constraint firstItem="Fq4-gE-oaY" firstAttribute="leading" secondItem="DYl-vQ-VrP" secondAttribute="leading" constant="16" id="kuh-P9-WdK"/>
                                     <constraint firstAttribute="trailing" secondItem="2rG-th-7Et" secondAttribute="trailing" id="oiO-Oo-8PZ"/>
-                                    <constraint firstItem="vsJ-jW-3oz" firstAttribute="top" secondItem="2rG-th-7Et" secondAttribute="bottom" id="saE-sE-M3j"/>
+                                    <constraint firstItem="vsJ-jW-3oz" firstAttribute="top" secondItem="2rG-th-7Et" secondAttribute="bottom" constant="5" id="saE-sE-M3j"/>
                                     <constraint firstItem="ZV6-iV-7Mf" firstAttribute="top" secondItem="DYl-vQ-VrP" secondAttribute="top" constant="8" id="wWd-Bf-MhH"/>
                                 </constraints>
                             </view>
@@ -311,7 +311,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d6a-we-hAx">
-                                        <rect key="frame" x="20" y="8" width="353" height="32.333333333333329"/>
+                                        <rect key="frame" x="20" y="8" width="353" height="57"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <nil key="textColor"/>
