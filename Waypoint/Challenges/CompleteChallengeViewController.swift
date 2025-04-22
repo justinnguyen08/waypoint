@@ -40,6 +40,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     var photoManager: ChallengePhotoManager!
     
     let spinnerManager = SpinnerManager()
+    var delegate: ChallengesViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -182,6 +183,9 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                                 (error) in
                                 if let error = error{
                                     print("Error updating didMonthlyChallenges: \(error.localizedDescription)")
+                                }
+                                else{
+                                    self.delegate.updateMonthlyChallenges(index: self.index!)
                                 }
                             }
                         }
