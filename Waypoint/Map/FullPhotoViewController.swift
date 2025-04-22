@@ -48,9 +48,12 @@ class FullPhotoViewController: UIViewController {
     var currentUserProfilePicture: UIImage?
     
     var pendingTagged: [TaggedEntry] = []
+    
+    let spinner = SpinnerManager()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        spinner.showSpinner(view: view)
+        hideAll()
         // Do any additional setup after loading the view.
         photoView.contentMode = .scaleAspectFit
         photoView.image = photo
@@ -162,6 +165,9 @@ class FullPhotoViewController: UIViewController {
                     self.usernameLabel.text = self.username
                     self.locationLabel.text = self.locationName
                     self.profilePictureView.image = self.profilePicture
+                    self.profilePictureView.layer.cornerRadius = self.profilePictureView.frame.width / 2
+                    self.profilePictureView.clipsToBounds = true
+                    self.profilePictureView.contentMode = .scaleAspectFill
                     self.likeButton.setTitle("\(self.likes.count)", for: .normal)
                     if self.likes.contains(self.uid!){
                         self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
@@ -174,6 +180,8 @@ class FullPhotoViewController: UIViewController {
                     self.view.bringSubviewToFront(self.likeButton)
                     self.view.bringSubviewToFront(self.commentButton)
                     self.view.bringSubviewToFront(self.taggedButton)
+                    self.spinner.hideSpinner()
+                    self.showAll()
                 }
             }
             catch{
@@ -181,6 +189,26 @@ class FullPhotoViewController: UIViewController {
             }
             
         }
+    }
+    
+    func hideAll(){
+        profilePictureView.isHidden = true
+        usernameLabel.isHidden = true
+        locationLabel.isHidden = true
+        photoView.isHidden = true
+        likeButton.isHidden = true
+        commentButton.isHidden = true
+        taggedButton.isHidden = true
+    }
+    
+    func showAll(){
+        profilePictureView.isHidden = false
+        usernameLabel.isHidden = false
+        locationLabel.isHidden = false
+        photoView.isHidden = false
+        likeButton.isHidden = false
+        commentButton.isHidden = false
+        taggedButton.isHidden = false
     }
     
     func handleLike() async -> Bool{

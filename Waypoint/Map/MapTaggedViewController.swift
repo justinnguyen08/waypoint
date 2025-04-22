@@ -40,6 +40,9 @@ class MapTaggedViewController: UIViewController, UITableViewDelegate, UITableVie
         let current = allTagged[indexPath.row]
         cell.textLabel!.text = current.username
         cell.imageView?.image = current.profilePicture
+        cell.imageView?.layer.cornerRadius = (cell.imageView?.frame.width)! / 2
+        cell.imageView?.contentMode = .scaleAspectFill
+        cell.imageView?.clipsToBounds = true
         return cell
     }
     

@@ -61,6 +61,9 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         profilePictureView.image = profilePicture
+        profilePictureView.layer.cornerRadius = profilePictureView.frame.width / 2
+        profilePictureView.contentMode = .scaleAspectFill
+        profilePictureView.clipsToBounds = true
     }
     
     
@@ -152,6 +155,9 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
         let commentInfo = allComments[indexPath.row]
         cell.commentTextLabel.text = commentInfo.comment
         cell.commentProfilePicture.image = commentInfo.profilePicture
+        cell.commentProfilePicture.layer.cornerRadius = cell.commentProfilePicture.frame.width / 2
+        cell.commentProfilePicture.contentMode = .scaleAspectFill
+        cell.commentProfilePicture.clipsToBounds = true
         cell.commentLikeCountLabel.text = String(commentInfo.likes.count)
         cell.delegate = self
         cell.commentIndex = indexPath.row

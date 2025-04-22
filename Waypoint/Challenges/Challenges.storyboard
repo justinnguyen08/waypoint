@@ -532,7 +532,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="db6-Ii-tHi">
-                                                    <rect key="frame" x="295" y="17" width="66" height="21.333333333333329"/>
+                                                    <rect key="frame" x="295" y="17" width="58" height="21.333333333333329"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -540,7 +540,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="db6-Ii-tHi" firstAttribute="top" secondItem="xwF-AA-9BR" secondAttribute="top" constant="17" id="0QD-bp-07F"/>
-                                                <constraint firstAttribute="trailing" secondItem="db6-Ii-tHi" secondAttribute="trailing" id="4nn-6U-hw1"/>
+                                                <constraint firstAttribute="trailing" secondItem="db6-Ii-tHi" secondAttribute="trailing" constant="8" id="4nn-6U-hw1"/>
                                                 <constraint firstItem="hbx-BD-qyj" firstAttribute="centerY" secondItem="db6-Ii-tHi" secondAttribute="centerY" id="BSb-EZ-k7X"/>
                                                 <constraint firstItem="6gQ-7W-IpK" firstAttribute="leading" secondItem="JXO-AQ-8OH" secondAttribute="trailing" constant="16" id="Bx2-t0-hnG"/>
                                                 <constraint firstItem="db6-Ii-tHi" firstAttribute="leading" secondItem="hbx-BD-qyj" secondAttribute="trailing" constant="8" id="CvL-lV-0Gd"/>
