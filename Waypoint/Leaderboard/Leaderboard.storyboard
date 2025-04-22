@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="68d-RW-xLQ">
-                                <rect key="frame" x="16" y="158" width="361" height="595"/>
+                                <rect key="frame" x="16" y="159" width="361" height="594"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeaderboardCell" id="aBj-6o-fuz" customClass="LeaderboardViewCell" customModule="Waypoint" customModuleProvider="target">
@@ -72,7 +72,7 @@
                                 </prototypes>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Leaderboard" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iWb-Vs-sQi">
-                                <rect key="frame" x="16" y="59" width="165" height="36"/>
+                                <rect key="frame" x="114" y="59" width="165" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -86,7 +86,7 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TCh-0c-keF">
-                                <rect key="frame" x="16" y="110" width="361" height="33"/>
+                                <rect key="frame" x="16" y="111" width="361" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="3J4-eo-qt5"/>
                                 </constraints>
@@ -102,17 +102,16 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="TCh-0c-keF" firstAttribute="top" secondItem="iWb-Vs-sQi" secondAttribute="bottom" constant="15" id="2zF-Ew-UfF"/>
+                            <constraint firstItem="TCh-0c-keF" firstAttribute="top" secondItem="iWb-Vs-sQi" secondAttribute="bottom" constant="16" id="2zF-Ew-UfF"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="TCh-0c-keF" secondAttribute="trailing" constant="16" id="8dc-dJ-AcV"/>
+                            <constraint firstItem="iWb-Vs-sQi" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="BEQ-Fw-ivd"/>
                             <constraint firstItem="TCh-0c-keF" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="GYA-if-r2i"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="68d-RW-xLQ" secondAttribute="bottom" constant="16" id="MkZ-qV-UQO"/>
                             <constraint firstItem="68d-RW-xLQ" firstAttribute="top" secondItem="TCh-0c-keF" secondAttribute="bottom" constant="16" id="Nft-DG-qj8"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="x8t-vp-F3S" secondAttribute="trailing" constant="16" id="TOR-eX-gA6"/>
                             <constraint firstItem="x8t-vp-F3S" firstAttribute="centerY" secondItem="iWb-Vs-sQi" secondAttribute="centerY" id="Tsd-Eu-KYX"/>
-                            <constraint firstItem="iWb-Vs-sQi" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="bqE-pS-NMO"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="top" secondItem="x8t-vp-F3S" secondAttribute="top" constant="7" id="ctR-yx-EJC"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="68d-RW-xLQ" secondAttribute="trailing" constant="16" id="img-C5-gAI"/>
-                            <constraint firstItem="x8t-vp-F3S" firstAttribute="leading" secondItem="iWb-Vs-sQi" secondAttribute="trailing" constant="146" id="lOh-aR-trB"/>
                             <constraint firstItem="68d-RW-xLQ" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="uYW-CB-rAQ"/>
                             <constraint firstItem="iWb-Vs-sQi" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="wHF-1R-B7r"/>
                         </constraints>

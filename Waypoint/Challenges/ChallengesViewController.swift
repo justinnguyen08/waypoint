@@ -38,6 +38,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     // challanges info
     var dailyChallenge: ChallengeInfo!
     var hasDoneDailyChallenge: Bool = false
+    var hasDoneMonthlyChallenges: [Bool] = [false, false, false, false ,false]
     var monthlyChallenges: [ChallengeInfo]!
     var currentDateSince1970: TimeInterval!
     var monthlyChallengeIndex: Int!
@@ -62,6 +63,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let monthInt = Calendar.current.dateComponents([.month], from: Date()).month
         let monthStr = Calendar.current.monthSymbols[monthInt! - 1]
         monthlyLabel.text = "\(monthStr)'s Challenges"
+        
     }
     
     
@@ -333,6 +335,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                             self.monthlyChallenges.append(challenge)
                         }
                         
+                    
+                        
                         DispatchQueue.main.async{
                             self.monthlyTableView.reloadData()
                         }
@@ -400,6 +404,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                             let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                             imageView.image = image
                             imageView.contentMode = .scaleAspectFill
+                            imageView.clipsToBounds = true
                             self.cameraDisplayView.addSubview(imageView)
                             self.cameraDisplayView.isHidden = false
                         }
@@ -577,7 +582,29 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             monthlyView.isHidden = false
             dailyView.isHidden = true
             loadChallenges {
-                self.monthlyTableView.reloadData()
+                
+                guard let uid = Auth.auth().currentUser?.uid else{            self.monthlyTableView.reloadData()
+                    return
+                }
+                
+                self.db.collection("users").document(uid).getDocument{
+                    (document, error) in
+                    if let error = error{
+                        print("Error getting user's monthly challenge status: \(error.localizedDescription)")
+                        return
+                    }
+                    else{
+                        if let document = document, let data = document.data(){
+                            let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool] ?? [false ,false, false, false, false]
+                            
+                            DispatchQueue.main.async {
+                                self.hasDoneMonthlyChallenges = didMonthlyChallenges
+                                self.monthlyTableView.reloadData()
+                            }
+                            
+                        }
+                    }
+                }
             }
             view.bringSubviewToFront(monthlyView)
         default:
@@ -594,7 +621,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let cell = tableView.dequeueReusableCell(withIdentifier: "challengeCell", for: indexPath)
         
         let challenge = monthlyChallenges?[indexPath.row]
-        
+        let status = hasDoneMonthlyChallenges[indexPath.row]
+        cell.imageView?.image = status ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle")
         cell.textLabel?.text = challenge?.description
         cell.detailTextLabel?.text = "\(String(challenge?.points ?? 0)) points"
         return cell
