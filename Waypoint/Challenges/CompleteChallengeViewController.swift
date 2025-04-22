@@ -39,9 +39,16 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     
     var photoManager: ChallengePhotoManager!
     
+    let spinnerManager = SpinnerManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        makeCircle(view: rotateCameraButton)
+        makeCircle(view: flashButton)
+        makeCircle(view: cameraButton)
+        
+        
         hideAllButtons()
     }
     
@@ -65,16 +72,23 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
             
             self.showAfterCameraTakenButtons()
         }
-        
+        self.spinnerManager.showSpinner(view: view)
         getMonthlyChallengePhoto{
             if self.didDoMonthlyChallenge{
                 self.hideAllButtons()
             }
             else{
+                self.spinnerManager.hideSpinner()
                 self.showCameraButtons()
                 self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
             }
         }
+    }
+    
+    func makeCircle(view: UIView){
+        view.layer.cornerRadius = view.frame.width / 2
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -87,10 +101,10 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     // turn the flash on or off for the camera
     @IBAction func flashButtonPressed(_ sender: Any) {
         if photoManager.toggleFlash(){
-            self.flashButton.setImage(UIImage(systemName: "flashlight.on.fill"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt"), for: .normal)
         }
         else{
-            self.flashButton.setImage(UIImage(systemName: "flashlight.slash"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt.slash"), for: .normal)
         }
     }
     
@@ -112,6 +126,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     
     // resume the camera session
     func resumeCamera(){
+        self.cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
         photoManager.setupCaptureSession(with: .back, view: cameraDisplayView)
         showCameraButtons()
         capturedData = nil
@@ -248,10 +263,12 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
             if let data = data, let image = UIImage(data: data) {
                 self.didDoMonthlyChallenge = true
                 DispatchQueue.main.async {
+                    self.spinnerManager.hideSpinner()
                     self.cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
                     let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                     imageView.image = image
                     imageView.contentMode = .scaleAspectFill
+                    imageView.clipsToBounds = true
                     self.cameraDisplayView.addSubview(imageView)
                 }
             }

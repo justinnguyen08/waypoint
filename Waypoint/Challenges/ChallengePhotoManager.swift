@@ -58,6 +58,7 @@ class ChallengePhotoManager: NSObject, AVCapturePhotoCaptureDelegate{
             self.preview!.videoGravity = .resizeAspectFill
             
             self.preview!.frame = view.bounds
+            view.clipsToBounds = true
             view.layer.insertSublayer(self.preview!, at: 0)
             let queue = DispatchQueue(label: "myQueue", qos: .background)
             

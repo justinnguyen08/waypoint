@@ -28,6 +28,9 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var cameraDisplayView: UIView!
     
+    
+    @IBOutlet weak var monthlyLabel: UILabel!
+    
     // camera information
     var capturedData: Data?
     var timestamp: Date?
@@ -35,6 +38,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     // challanges info
     var dailyChallenge: ChallengeInfo!
     var hasDoneDailyChallenge: Bool = false
+    var hasDoneMonthlyChallenges: [Bool] = [false, false, false, false ,false]
     var monthlyChallenges: [ChallengeInfo]!
     var currentDateSince1970: TimeInterval!
     var monthlyChallengeIndex: Int!
@@ -44,16 +48,43 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var photoManager: ChallengePhotoManager!
     
+    let spinnerManager = SpinnerManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         monthlyTableView.delegate = self
         monthlyTableView.dataSource = self
         hideAllButtons()
+        
+        makeCircle(view: flashButton)
+        makeCircle(view: cameraButton)
+        makeCircle(view: rotateCameraButton)
+        
+        let monthInt = Calendar.current.dateComponents([.month], from: Date()).month
+        let monthStr = Calendar.current.monthSymbols[monthInt! - 1]
+        monthlyLabel.text = "\(monthStr)'s Challenges"
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Challenges"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        titleLabel.sizeToFit()
+        let leftItem = UIBarButtonItem(customView: titleLabel)
+        self.navigationItem.leftBarButtonItem = leftItem
+        
+    }
+    
+    
+    func makeCircle(view: UIView){
+        view.layer.cornerRadius = view.frame.width / 2
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true
     }
     
     // when the view appears do different things depending o nthe index
     override func viewWillAppear(_ animated: Bool) {
-        
+        super.viewWillAppear(animated)
         // coming back from the feed ensure that we go back to daily challenge
         if segmentControl.selectedSegmentIndex == 2 {
             segmentControl.selectedSegmentIndex = 0
@@ -81,6 +112,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         if segmentControl.selectedSegmentIndex == 0 {
             // get the current date and load daily/monthly challenges
             // time doesn't start til 1970
+            spinnerManager.showSpinner(view: view)
             currentDateSince1970 = Date().timeIntervalSince1970
             cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
             loadChallenges{
@@ -92,6 +124,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     else{
                         self.dailyView.isHidden = false
+                        self.spinnerManager.hideSpinner()
                         self.showCameraButtons()
                         self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
                     }
@@ -204,6 +237,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         rotateCameraButton.isHidden = false
         sendButton.isHidden = true
         backButton.isHidden = true
+        self.tabBarController?.tabBar.isHidden = false
     }
     
     // show all buttons necessary after the photo is taken
@@ -214,6 +248,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         sendButton.isHidden = false
         backButton.isHidden = false
+        self.tabBarController?.tabBar.isHidden = true
         self.view.bringSubviewToFront(self.backButton)
     }
     
@@ -253,10 +288,12 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 return
             }
             if let data = data, let image = UIImage(data: data), let self = self {
+                self.spinnerManager.hideSpinner()
                 cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
                 let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                 imageView.image = image
                 imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
                 self.cameraDisplayView.addSubview(imageView)
                 self.dailyView.isHidden = false
             }
@@ -307,6 +344,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                             self.monthlyChallenges.append(challenge)
                         }
                         
+                    
+                        
                         DispatchQueue.main.async{
                             self.monthlyTableView.reloadData()
                         }
@@ -322,10 +361,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     // turn the flash on or off for the camera
     @IBAction func flashButtonPressed(_ sender: Any) {
         if photoManager.toggleFlash(){
-            self.flashButton.setImage(UIImage(systemName: "flashlight.on.fill"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt"), for: .normal)
         }
         else{
-            self.flashButton.setImage(UIImage(systemName: "flashlight.slash"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt.slash"), for: .normal)
         }
     }
     
@@ -351,6 +390,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             return
         }
         
+        self.tabBarController?.tabBar.isHidden = false
+        
         db.collection("users").document(uid).getDocument { (document, error) in
             if let document = document, let data = document.data(),
                let lastUploadTime = data["getDailyChallenge"] as? TimeInterval{
@@ -372,6 +413,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                             let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                             imageView.image = image
                             imageView.contentMode = .scaleAspectFill
+                            imageView.clipsToBounds = true
                             self.cameraDisplayView.addSubview(imageView)
                             self.cameraDisplayView.isHidden = false
                         }
@@ -549,7 +591,29 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             monthlyView.isHidden = false
             dailyView.isHidden = true
             loadChallenges {
-                self.monthlyTableView.reloadData()
+                
+                guard let uid = Auth.auth().currentUser?.uid else{            self.monthlyTableView.reloadData()
+                    return
+                }
+                
+                self.db.collection("users").document(uid).getDocument{
+                    (document, error) in
+                    if let error = error{
+                        print("Error getting user's monthly challenge status: \(error.localizedDescription)")
+                        return
+                    }
+                    else{
+                        if let document = document, let data = document.data(){
+                            let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool] ?? [false ,false, false, false, false]
+                            
+                            DispatchQueue.main.async {
+                                self.hasDoneMonthlyChallenges = didMonthlyChallenges
+                                self.monthlyTableView.reloadData()
+                            }
+                            
+                        }
+                    }
+                }
             }
             view.bringSubviewToFront(monthlyView)
         default:
@@ -566,7 +630,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let cell = tableView.dequeueReusableCell(withIdentifier: "challengeCell", for: indexPath)
         
         let challenge = monthlyChallenges?[indexPath.row]
-        
+        let status = hasDoneMonthlyChallenges[indexPath.row]
+        cell.imageView?.image = status ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "circle")
         cell.textLabel?.text = challenge?.description
         cell.detailTextLabel?.text = "\(String(challenge?.points ?? 0)) points"
         return cell
