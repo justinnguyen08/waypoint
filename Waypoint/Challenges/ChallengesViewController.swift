@@ -28,6 +28,9 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var cameraDisplayView: UIView!
     
+    
+    @IBOutlet weak var monthlyLabel: UILabel!
+    
     // camera information
     var capturedData: Data?
     var timestamp: Date?
@@ -44,7 +47,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var photoManager: ChallengePhotoManager!
     
-    var spinner = UIActivityIndicatorView(style: .large)
+    let spinnerManager = SpinnerManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,21 +58,12 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         makeCircle(view: flashButton)
         makeCircle(view: cameraButton)
         makeCircle(view: rotateCameraButton)
+        
+        let monthInt = Calendar.current.dateComponents([.month], from: Date()).month
+        let monthStr = Calendar.current.monthSymbols[monthInt! - 1]
+        monthlyLabel.text = "\(monthStr)'s Challenges"
     }
     
-    func showSpinner(){
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        view.addSubview(spinner)
-
-        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-    }
-    
-    func hideSpinner(){
-        spinner.stopAnimating()
-        spinner.removeFromSuperview()
-    }
     
     func makeCircle(view: UIView){
         view.layer.cornerRadius = view.frame.width / 2
@@ -102,12 +96,12 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         dailyView.isHidden = true
-        showSpinner()
             
         // on the daily challenge segment
         if segmentControl.selectedSegmentIndex == 0 {
             // get the current date and load daily/monthly challenges
             // time doesn't start til 1970
+            spinnerManager.showSpinner(view: view)
             currentDateSince1970 = Date().timeIntervalSince1970
             cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
             loadChallenges{
@@ -119,7 +113,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     else{
                         self.dailyView.isHidden = false
-                        self.hideSpinner()
+                        self.spinnerManager.hideSpinner()
                         self.showCameraButtons()
                         self.photoManager.setupCaptureSession(with: .back, view: self.cameraDisplayView)
                     }
@@ -283,6 +277,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 return
             }
             if let data = data, let image = UIImage(data: data), let self = self {
+                self.spinnerManager.hideSpinner()
                 cameraDisplayView.subviews.forEach { $0.removeFromSuperview() }
                 let imageView = UIImageView(frame: self.cameraDisplayView.bounds)
                 imageView.image = image
@@ -290,7 +285,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 imageView.clipsToBounds = true
                 self.cameraDisplayView.addSubview(imageView)
                 self.dailyView.isHidden = false
-                hideSpinner()
             }
         }
     }
