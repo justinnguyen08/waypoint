@@ -17,19 +17,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Je-Sa-1ve">
-                                <rect key="frame" x="16" y="187" width="361" height="600"/>
+                                <rect key="frame" x="0.0" y="135" width="393" height="582"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="I3w-Jh-eAL">
-                                        <rect key="frame" x="0.0" y="0.0" width="361" height="614"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="582"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="challengeCell" textLabel="ibS-68-gmi" detailTextLabel="2EE-Qy-SbE" style="IBUITableViewCellStyleSubtitle" id="fQ5-o7-P4t">
-                                                <rect key="frame" x="0.0" y="50" width="361" height="43.666667938232422"/>
+                                                <rect key="frame" x="0.0" y="50" width="393" height="43.666667938232422"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fQ5-o7-P4t" id="AeA-X1-qXo">
-                                                    <rect key="frame" x="0.0" y="0.0" width="361" height="43.666667938232422"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="43.666667938232422"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ibS-68-gmi">
@@ -57,30 +57,29 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DYl-vQ-VrP">
-                                <rect key="frame" x="0.0" y="142" width="393" height="645"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DYl-vQ-VrP">
+                                <rect key="frame" x="0.0" y="142" width="393" height="627"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2rG-th-7Et">
-                                        <rect key="frame" x="0.0" y="102" width="393" height="480"/>
+                                        <rect key="frame" x="0.0" y="102" width="393" height="467"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8g-eg-sRd">
-                                        <rect key="frame" x="171" y="532" width="50" height="50"/>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SMD-g6-gNv">
+                                        <rect key="frame" x="8" y="160" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" image="paperplane.fill" catalog="system"/>
+                                        <buttonConfiguration key="configuration" style="filled" image="bolt.slash" catalog="system"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="5"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <action selector="sendPhotoButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="USX-l9-mlB"/>
+                                            <action selector="flashButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="1Q2-oH-ZDY"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vsJ-jW-3oz">
-                                        <rect key="frame" x="171" y="532" width="50" height="50"/>
+                                        <rect key="frame" x="171" y="577" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system"/>
@@ -93,22 +92,8 @@
                                             <action selector="capturePicture:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="MTz-dY-kbc"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SMD-g6-gNv">
-                                        <rect key="frame" x="8" y="532" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" image="flashlight.slash" catalog="system"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="5"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                        <connections>
-                                            <action selector="flashButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="1Q2-oH-ZDY"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5XZ-f6-U2H">
-                                        <rect key="frame" x="2" y="102" width="62" height="50"/>
+                                        <rect key="frame" x="0.0" y="102" width="62" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" image="xmark" catalog="system"/>
@@ -119,20 +104,6 @@
                                         </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="backButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="FAN-V2-IbF"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uWV-qW-0Jd">
-                                        <rect key="frame" x="335" y="532" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" image="arrow.counterclockwise.circle.fill" catalog="system"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="5"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                        <connections>
-                                            <action selector="flipCamera:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="PtS-oV-S5F"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Take a picture with a cat!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZV6-iV-7Mf">
@@ -149,12 +120,25 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uWV-qW-0Jd">
+                                        <rect key="frame" x="8" y="102" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" image="arrow.counterclockwise.circle.fill" catalog="system"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="5"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="flipCamera:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="PtS-oV-S5F"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="nF5-lM-TOX">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="nF5-lM-TOX">
                                 <rect key="frame" x="16" y="103" width="361" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Daily"/>
                                     <segment title="Monthly"/>
@@ -163,9 +147,32 @@
                                     <action selector="onSegmentChange:" destination="Y6W-OH-hqX" eventType="valueChanged" id="O8w-wp-rLe"/>
                                 </connections>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8g-eg-sRd">
+                                <rect key="frame" x="118" y="752" width="157" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="paperplane.fill" catalog="system" imagePlacement="trailing" title="SEND" imagePadding="48"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="sendPhotoButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="USX-l9-mlB"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="DYl-vQ-VrP" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="0eX-IW-zNe"/>
+                            <constraint firstItem="DYl-vQ-VrP" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" id="LhS-ho-Wc1"/>
+                            <constraint firstItem="DYl-vQ-VrP" firstAttribute="top" secondItem="nF5-lM-TOX" secondAttribute="bottom" constant="8" id="PQL-0v-c40"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="DYl-vQ-VrP" secondAttribute="trailing" id="T4G-IN-CZF"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="nF5-lM-TOX" secondAttribute="trailing" constant="16" id="UuD-Va-8cy"/>
+                            <constraint firstItem="nF5-lM-TOX" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="aKY-Gq-ZnN"/>
+                            <constraint firstItem="nF5-lM-TOX" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="jUF-28-npl"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="nGz-p6-kiy" userLabel="Okay">
                         <barButtonItem key="rightBarButtonItem" title="Feed" id="nE3-vm-Jda">
@@ -568,6 +575,7 @@
     </scenes>
     <resources>
         <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="bolt.slash" catalog="system" width="98" height="128"/>
         <image name="bubble" catalog="system" width="128" height="110"/>
         <image name="camera" catalog="system" width="128" height="93"/>
         <image name="figure.run" catalog="system" width="115" height="128"/>

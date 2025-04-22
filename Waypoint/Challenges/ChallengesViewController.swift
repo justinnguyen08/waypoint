@@ -49,11 +49,23 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         monthlyTableView.delegate = self
         monthlyTableView.dataSource = self
         hideAllButtons()
+        
+        makeCircle(view: flashButton)
+        makeCircle(view: cameraButton)
+        makeCircle(view: rotateCameraButton)
+        
+        
+    }
+    
+    func makeCircle(view: UIView){
+        view.layer.cornerRadius = view.frame.width / 2
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true
     }
     
     // when the view appears do different things depending o nthe index
     override func viewWillAppear(_ animated: Bool) {
-        
+        super.viewWillAppear(animated)
         // coming back from the feed ensure that we go back to daily challenge
         if segmentControl.selectedSegmentIndex == 2 {
             segmentControl.selectedSegmentIndex = 0
@@ -204,6 +216,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         rotateCameraButton.isHidden = false
         sendButton.isHidden = true
         backButton.isHidden = true
+        self.tabBarController?.tabBar.isHidden = false
     }
     
     // show all buttons necessary after the photo is taken
@@ -214,6 +227,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         sendButton.isHidden = false
         backButton.isHidden = false
+        self.tabBarController?.tabBar.isHidden = true
         self.view.bringSubviewToFront(self.backButton)
     }
     
@@ -322,10 +336,10 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
     // turn the flash on or off for the camera
     @IBAction func flashButtonPressed(_ sender: Any) {
         if photoManager.toggleFlash(){
-            self.flashButton.setImage(UIImage(systemName: "flashlight.on.fill"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt"), for: .normal)
         }
         else{
-            self.flashButton.setImage(UIImage(systemName: "flashlight.slash"), for: .normal)
+            self.flashButton.setImage(UIImage(systemName: "bolt.slash"), for: .normal)
         }
     }
     
@@ -350,6 +364,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             print("User is not logged in!")
             return
         }
+        
+        self.tabBarController?.tabBar.isHidden = false
         
         db.collection("users").document(uid).getDocument { (document, error) in
             if let document = document, let data = document.data(),
