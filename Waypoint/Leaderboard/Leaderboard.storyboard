@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Y6W-OH-hqX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="56Z-aS-3g6">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="68d-RW-xLQ">
-                                <rect key="frame" x="16" y="159" width="361" height="594"/>
+                                <rect key="frame" x="16" y="167" width="361" height="586"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeaderboardCell" id="aBj-6o-fuz" customClass="LeaderboardViewCell" customModule="Waypoint" customModuleProvider="target">
@@ -71,22 +71,8 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Leaderboard" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iWb-Vs-sQi">
-                                <rect key="frame" x="114" y="59" width="165" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x8t-vp-F3S">
-                                <rect key="frame" x="327" y="52" width="50" height="50"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="line.horizontal.3.decrease.circle" catalog="system"/>
-                                <connections>
-                                    <action selector="filterTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="vAj-RJ-fSk"/>
-                                </connections>
-                            </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TCh-0c-keF">
-                                <rect key="frame" x="16" y="111" width="361" height="33"/>
+                                <rect key="frame" x="16" y="119" width="361" height="33"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="3J4-eo-qt5"/>
                                 </constraints>
@@ -102,23 +88,23 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="TCh-0c-keF" firstAttribute="top" secondItem="iWb-Vs-sQi" secondAttribute="bottom" constant="16" id="2zF-Ew-UfF"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="TCh-0c-keF" secondAttribute="trailing" constant="16" id="8dc-dJ-AcV"/>
-                            <constraint firstItem="iWb-Vs-sQi" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="BEQ-Fw-ivd"/>
                             <constraint firstItem="TCh-0c-keF" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="GYA-if-r2i"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="68d-RW-xLQ" secondAttribute="bottom" constant="16" id="MkZ-qV-UQO"/>
                             <constraint firstItem="68d-RW-xLQ" firstAttribute="top" secondItem="TCh-0c-keF" secondAttribute="bottom" constant="16" id="Nft-DG-qj8"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="x8t-vp-F3S" secondAttribute="trailing" constant="16" id="TOR-eX-gA6"/>
-                            <constraint firstItem="x8t-vp-F3S" firstAttribute="centerY" secondItem="iWb-Vs-sQi" secondAttribute="centerY" id="Tsd-Eu-KYX"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="top" secondItem="x8t-vp-F3S" secondAttribute="top" constant="7" id="ctR-yx-EJC"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="68d-RW-xLQ" secondAttribute="trailing" constant="16" id="img-C5-gAI"/>
+                            <constraint firstItem="TCh-0c-keF" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="16" id="u7h-1T-zk1"/>
                             <constraint firstItem="68d-RW-xLQ" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="uYW-CB-rAQ"/>
-                            <constraint firstItem="iWb-Vs-sQi" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="wHF-1R-B7r"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Leaderboard" image="checkerboard.rectangle" catalog="system" id="f8Z-pV-2cw"/>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="NYq-eV-vwr"/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="NYq-eV-vwr">
+                        <barButtonItem key="rightBarButtonItem" image="line.horizontal.3.decrease.circle.fill" catalog="system" id="da6-9d-XQu">
+                            <connections>
+                                <action selector="filterTapped:" destination="Y6W-OH-hqX" id="WY7-sr-Wzt"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="scopeSegment" destination="TCh-0c-keF" id="Jdf-jl-VDH"/>
@@ -127,13 +113,32 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="1900" y="-2.1126760563380285"/>
+        </scene>
+        <!--Leaderboard-->
+        <scene sceneID="28u-S0-FxN">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="56Z-aS-3g6" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Leaderboard" image="checkerboard.rectangle" catalog="system" id="f8Z-pV-2cw"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="5Pg-9j-2Fv">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Y6W-OH-hqX" kind="relationship" relationship="rootViewController" id="VEB-wK-ZaB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="E0d-vJ-KH3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
             <point key="canvasLocation" x="973.28244274809151" y="-2.1126760563380285"/>
         </scene>
     </scenes>
     <resources>
         <image name="checkerboard.rectangle" catalog="system" width="128" height="93"/>
         <image name="globe" catalog="system" width="128" height="123"/>
-        <image name="line.horizontal.3.decrease.circle" catalog="system" width="128" height="123"/>
+        <image name="line.horizontal.3.decrease.circle.fill" catalog="system" width="128" height="123"/>
         <image name="person.2" catalog="system" width="128" height="87"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

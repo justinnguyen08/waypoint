@@ -49,6 +49,15 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         
         scopeSegment.layer.cornerRadius = 16
         scopeSegment.clipsToBounds = true
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Leaderboard"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        titleLabel.sizeToFit()
+        let leftItem = UIBarButtonItem(customView: titleLabel)
+        self.navigationItem.leftBarButtonItem = leftItem
     }
     
     // load the users and update the leaderboard

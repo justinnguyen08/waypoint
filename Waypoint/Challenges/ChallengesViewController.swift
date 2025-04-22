@@ -64,6 +64,15 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         let monthStr = Calendar.current.monthSymbols[monthInt! - 1]
         monthlyLabel.text = "\(monthStr)'s Challenges"
         
+        let titleLabel = UILabel()
+        titleLabel.text = "Challenges"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        titleLabel.sizeToFit()
+        let leftItem = UIBarButtonItem(customView: titleLabel)
+        self.navigationItem.leftBarButtonItem = leftItem
+        
     }
     
     

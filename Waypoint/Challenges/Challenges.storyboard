@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Challenges-->
+        <!--Challenges View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController id="Y6W-OH-hqX" customClass="ChallengesViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
@@ -210,7 +210,7 @@
                             <constraint firstItem="nF5-lM-TOX" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="jUF-28-npl"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Challenges" id="nGz-p6-kiy" userLabel="Okay">
+                    <navigationItem key="navigationItem" id="nGz-p6-kiy" userLabel="Okay">
                         <barButtonItem key="rightBarButtonItem" title="Feed" id="nE3-vm-Jda">
                             <connections>
                                 <segue destination="GQt-F1-Jtc" kind="show" identifier="ChallengeFeedSegue" id="K3h-Yv-6aM"/>
@@ -532,7 +532,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="db6-Ii-tHi">
-                                                    <rect key="frame" x="295" y="17" width="46" height="21.333333333333329"/>
+                                                    <rect key="frame" x="295" y="17" width="66" height="21.333333333333329"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -540,7 +540,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="db6-Ii-tHi" firstAttribute="top" secondItem="xwF-AA-9BR" secondAttribute="top" constant="17" id="0QD-bp-07F"/>
-                                                <constraint firstAttribute="trailing" secondItem="db6-Ii-tHi" secondAttribute="trailing" constant="20" symbolic="YES" id="4nn-6U-hw1"/>
+                                                <constraint firstAttribute="trailing" secondItem="db6-Ii-tHi" secondAttribute="trailing" id="4nn-6U-hw1"/>
                                                 <constraint firstItem="hbx-BD-qyj" firstAttribute="centerY" secondItem="db6-Ii-tHi" secondAttribute="centerY" id="BSb-EZ-k7X"/>
                                                 <constraint firstItem="6gQ-7W-IpK" firstAttribute="leading" secondItem="JXO-AQ-8OH" secondAttribute="trailing" constant="16" id="Bx2-t0-hnG"/>
                                                 <constraint firstItem="db6-Ii-tHi" firstAttribute="leading" secondItem="hbx-BD-qyj" secondAttribute="trailing" constant="8" id="CvL-lV-0Gd"/>
