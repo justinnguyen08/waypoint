@@ -56,7 +56,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     // update the UI and get stuff ready
     override func viewWillAppear(_ animated: Bool) {
         challengeDescription.text = challengeDescriptionText ?? ""
-        challengePoints.text = challengePointsText ?? "0"
+        challengePoints.text = "\(challengePointsText ?? "0") points"
         photoManager = ChallengePhotoManager()
         
         photoManager.onImageCaptured = {
