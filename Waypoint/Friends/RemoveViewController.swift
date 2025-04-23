@@ -198,7 +198,7 @@ class RemoveViewController: UIViewController {
 
         let imageStack = UIStackView()
         imageStack.axis = .horizontal
-        imageStack.spacing = 12
+        imageStack.spacing = -12
         imageStack.alignment = .center
         imageStack.distribution = .fill
         imageStack.translatesAutoresizingMaskIntoConstraints = false
@@ -231,8 +231,11 @@ class RemoveViewController: UIViewController {
                 fetchImage(from: ref, for: imageView, fallback: "person.circle")
 
                 label.text = "\(user.username) is also following"
-                break // Show only 1 user with their tag line when ≤ 3
             }
+            
+            let names = mutuals.prefix(3).map { $0.username }
+            let nameList = names.joined(separator: ", ")
+            label.text = "\(nameList) \(names.count == 1 ? "is" : "are") also following"
 
             let containerStack = UIStackView()
             containerStack.axis = .horizontal
