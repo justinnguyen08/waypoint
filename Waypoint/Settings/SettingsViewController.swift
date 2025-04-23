@@ -10,11 +10,18 @@
 import UIKit
 import FirebaseAuth
 import FirebaseStorage
+import Photos
+
 
 class SettingsViewController: UITableViewController {
     
     @IBOutlet weak var notificationSwitch: UISwitch!
     @IBOutlet weak var profilePic: UIImageView!
+    
+    var exportProgressView: UIView?
+    var progressBar: UIProgressView?
+    var progressLabel: UILabel?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
@@ -28,8 +35,23 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // sign out button is in section 4
-        if indexPath.section == 4{
+        // sign out button is in section 5
+        print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
+        if indexPath.section == 2 && indexPath.row == 0 {
+            let confirmAlert = UIAlertController(
+                title: "Export All Photos?",
+                message: "This will save all your pictures to your device's photo library. Do you want to continue?",
+                preferredStyle: .alert
+            )
+
+            confirmAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+            confirmAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { _ in
+                self.exportAllPicsAndChallengesToPhotos()
+            }))
+
+            self.present(confirmAlert, animated: true)
+        } else if indexPath.row == 4 {
             // create sign out alert
             let alert = UIAlertController(title: "Sign Out",
                                           message: "Are you sure you want to sign out?",
@@ -127,4 +149,159 @@ class SettingsViewController: UITableViewController {
             }
         }
     }
+    
+    
+    func exportAllPicsAndChallengesToPhotos() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        let baseRef = Storage.storage().reference().child(currentUID)
+
+        PHPhotoLibrary.requestAuthorization { status in
+            guard status == .authorized else {
+                print("Photos access denied.")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.showExportProgressView()
+            }
+            
+            
+            let group = DispatchGroup()
+            var totalImages = 0
+            var completedImages = 0
+
+            func updateProgress() {
+                DispatchQueue.main.async {
+                    let progress = Float(completedImages) / Float(max(totalImages, 1))
+                    self.progressBar?.setProgress(progress, animated: true)
+                    self.progressLabel?.text = "Exporting photos... (\(completedImages)/\(totalImages))"
+                }
+            }
+
+            func exportAndCount(from folder: StorageReference) {
+                group.enter()
+                folder.listAll { result, error in
+                    guard let items = result?.items else {
+                        group.leave()
+                        return
+                    }
+
+                    totalImages += items.count
+                    let innerGroup = DispatchGroup()
+
+                    for imageRef in items {
+                        innerGroup.enter()
+                        imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                            if let data = data, let image = UIImage(data: data) {
+                                PHPhotoLibrary.shared().performChanges({
+                                    PHAssetChangeRequest.creationRequestForAsset(from: image)
+                                }) { success, error in
+                                    completedImages += 1
+                                    updateProgress()
+                                    innerGroup.leave()
+                                }
+                            } else {
+                                completedImages += 1
+                                updateProgress()
+                                innerGroup.leave()
+                            }
+                        }
+                    }
+
+                    innerGroup.notify(queue: .main) {
+                        group.leave()
+                    }
+                }
+            }
+
+            // Start exporting
+            exportAndCount(from: baseRef.child("all_pics"))
+
+            baseRef.child("challenges").listAll { result, error in
+                for folder in result?.prefixes ?? [] {
+                    exportAndCount(from: folder)
+                }
+
+                group.notify(queue: .main) {
+                    self.hideExportProgressView()
+                    let doneAlert = UIAlertController(title: "Done", message: "All photos have been exported!", preferredStyle: .alert)
+                    doneAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(doneAlert, animated: true)
+                }
+            }
+        }
+    }
+
+    func exportImages(in folder: StorageReference) {
+        folder.listAll { result, error in
+            if let error = error {
+                print("Error listing items in \(folder.fullPath): \(error.localizedDescription)")
+                return
+            }
+
+            for imageRef in result!.items {
+                imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                    if let error = error {
+                        print("Error downloading \(imageRef.fullPath): \(error.localizedDescription)")
+                        return
+                    }
+
+                    guard let data = data, let image = UIImage(data: data) else { return }
+
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.creationRequestForAsset(from: image)
+                    }) { success, error in
+                        if success {
+                            print("Saved: \(imageRef.name)")
+                        } else {
+                            print("Failed saving \(imageRef.name): \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    func showExportProgressView() {
+        let backgroundView = UIView(frame: CGRect(x: 40, y: self.view.center.y - 40, width: self.view.frame.width - 80, height: 100))
+        backgroundView.backgroundColor = UIColor.systemBackground
+        backgroundView.layer.cornerRadius = 12
+        backgroundView.layer.shadowOpacity = 0.3
+        backgroundView.layer.shadowRadius = 6
+        backgroundView.layer.shadowOffset = CGSize(width: 0, height: 2)
+
+        let label = UILabel(frame: CGRect(x: 10, y: 10, width: backgroundView.frame.width - 20, height: 20))
+        label.text = "Exporting photos..."
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 16)
+
+        let progress = UIProgressView(progressViewStyle: .default)
+        progress.frame = CGRect(x: 10, y: 50, width: backgroundView.frame.width - 20, height: 10)
+        progress.progress = 0.0
+        progress.tintColor = .systemBlue
+
+        backgroundView.addSubview(label)
+        backgroundView.addSubview(progress)
+
+        self.view.addSubview(backgroundView)
+
+        self.exportProgressView = backgroundView
+        self.progressBar = progress
+        self.progressLabel = label
+    }
+    
+    func hideExportProgressView() {
+        DispatchQueue.main.async {
+            self.exportProgressView?.removeFromSuperview()
+            self.exportProgressView = nil
+            self.progressBar = nil
+            self.progressLabel = nil
+        }
+    }
+
+
+    
+    
+    
 }
