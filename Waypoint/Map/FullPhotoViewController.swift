@@ -19,6 +19,7 @@ class FullPhotoViewController: UIViewController {
     @IBOutlet weak var usernameLabel: UILabel!
     
     
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
     
@@ -51,11 +52,18 @@ class FullPhotoViewController: UIViewController {
     var pendingTagged: [TaggedEntry] = []
     
     let spinner = SpinnerManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         spinner.showSpinner(view: view)
+        let df = DateFormatter()
+        df.calendar = Calendar.current
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.dateFormat = "MMMM d, yyyy"
+        dateLabel.text = df.string(from: Date())
         hideAll()
         // Do any additional setup after loading the view.
+
         photoView.contentMode = .scaleAspectFit
         photoView.image = photo
         
@@ -167,7 +175,8 @@ class FullPhotoViewController: UIViewController {
                 
                 DispatchQueue.main.async{
                     self.usernameLabel.text = self.username
-                    self.locationLabel.text = self.locationName
+                    self.locationLabel.text = " is in \(self.locationName!)"
+                    self.locationLabel.textColor = UIColor(red: (177/255.0), green: (63/255.0),                                         blue: (49/255.0), alpha: 1.0)
                     self.profilePictureView.image = self.profilePicture
                     self.profilePictureView.layer.cornerRadius = self.profilePictureView.frame.width / 2
                     self.profilePictureView.clipsToBounds = true
@@ -203,6 +212,7 @@ class FullPhotoViewController: UIViewController {
         likeButton.isHidden = true
         commentButton.isHidden = true
         taggedButton.isHidden = true
+        dateLabel.isHidden = true
     }
     
     func showAll(){
@@ -213,6 +223,7 @@ class FullPhotoViewController: UIViewController {
         likeButton.isHidden = false
         commentButton.isHidden = false
         taggedButton.isHidden = false
+        dateLabel.isHidden = false
     }
     
     func handleLike() async -> Bool{
