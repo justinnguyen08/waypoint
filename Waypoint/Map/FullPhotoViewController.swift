@@ -46,6 +46,7 @@ class FullPhotoViewController: UIViewController {
     
     var currentUserUID: String?
     var currentUserProfilePicture: UIImage?
+    var currentUserUsername: String?
     
     var pendingTagged: [TaggedEntry] = []
     
@@ -86,11 +87,13 @@ class FullPhotoViewController: UIViewController {
                 
                 // get the username from the userID
                 let userData = await self.manager.getUserDocumentData(uid: uid)
+                let currentUserData = await self.manager.getUserDocumentData(uid: currentUserUID)
                 
-                guard let username = userData?["username"] as? String else{
+                guard let username = userData?["username"] as? String, let currentUsername = currentUserData?["username"] as? String  else{
                     print("not username with this uid!")
                     return
                 }
+                
                 
                 
                 // get the location of the image
@@ -116,6 +119,7 @@ class FullPhotoViewController: UIViewController {
                 // build everything now!
                 
                 self.username = username
+                self.currentUserUsername = currentUsername
                 self.locationName = try await cityNameTask.first?.locality ?? "Austin"
                 self.likes = await likesTask ?? []
                 self.tagged = await taggedTask ?? []

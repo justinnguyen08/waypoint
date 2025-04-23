@@ -365,7 +365,7 @@
         <!--Feed-->
         <scene sceneID="Iqv-Hz-UwS">
             <objects>
-                <viewController title="Feed" id="GQt-F1-Jtc" customClass="ChallengeFeedViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Feed" modalPresentationStyle="fullScreen" id="GQt-F1-Jtc" customClass="ChallengeFeedViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NUG-Qf-PQE">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -450,10 +450,9 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DpH-qb-i6P">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Please complete a challenge to see your friends' as well!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DpH-qb-i6P">
                                 <rect key="frame" x="16" y="376" width="361" height="150"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <string key="text">Please complete a challenge to see your friends' as well! Or you do not have a profile picture, which can be uploaded in settings</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>

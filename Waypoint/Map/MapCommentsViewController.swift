@@ -84,7 +84,7 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
              return
          }
 //         // build a new comment and insert it into the table now
-        let newComment = CommentInfo(uid: uid, profilePicture: profilePicture, comment: text, likes: [], username: prevVC.username, timestamp: Date().timeIntervalSince1970)
+        let newComment = CommentInfo(uid: uid, profilePicture: profilePicture, comment: text, likes: [], username: prevVC.currentUserUsername, timestamp: Date().timeIntervalSince1970)
 //
          allComments.append(newComment)
          commentTable.insertRows(at: [IndexPath(row: allComments.count - 1, section: 0)], with: .automatic)

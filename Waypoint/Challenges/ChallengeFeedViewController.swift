@@ -73,7 +73,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         async let userDataTask = manager.getUserDocumentData(uid: uid)
         async let profilePicTask = manager.getProfilePicture(uid: uid)
         let userData = await userDataTask
-        let profilePicture = await profilePicTask
+        let profilePicture = await profilePicTask ?? UIImage(systemName: "person.fill")
         let username = userData?["username"] as? String ?? "unknown"
         
         profilePicCache[uid] = profilePicture
@@ -192,7 +192,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 self.tableView.isHidden = false
                 self.hideSpinner()
                 if self.feed.count == 0{
-                    self.noDataLabel.isHidden = true
+                    self.noDataLabel.isHidden = false
                 }
             }
         }
