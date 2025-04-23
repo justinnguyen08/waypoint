@@ -243,6 +243,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
             self.stillImageView!.image = image
             self.flipButton.isHidden = true
             self.flashButton.isHidden = true
+            self.capturePicButton.isHidden = true
             
             self.capturedData = imageData
         }
@@ -257,6 +258,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
         tagFriendsButton.isHidden = true
+        capturePicButton.isHidden = false
         self.tabBarController?.tabBar.isHidden = false
         flipButton.isHidden = false
         flashButton.isHidden = false
