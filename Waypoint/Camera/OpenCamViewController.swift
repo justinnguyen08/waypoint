@@ -49,6 +49,8 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         // Do any additional setup after loading the view.
         capturePicButton.layer.cornerRadius = capturePicButton.frame.width / 2
         capturePicButton.clipsToBounds = true
+        flipButton.layer.cornerRadius = 25
+        flipButton.clipsToBounds = true
         resumeLiveButton.isHidden = true
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
@@ -221,6 +223,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                 self.view.insertSubview(self.stillImageView!, belowSubview: self.resumeLiveButton)
             }
             
+            self.resumeLiveButton.layer.cornerRadius = 25
             self.resumeLiveButton.isHidden = false
             self.tagFriendsButton.isHidden = false
             self.sendPostButton.isHidden = false
