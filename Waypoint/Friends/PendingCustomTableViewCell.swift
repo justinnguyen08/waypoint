@@ -7,6 +7,11 @@
 //  Created by Tarun Somisetty on 3/9/25.
 //
 
+protocol PendingFriendActionDelegate: AnyObject {
+    func didAcceptFriendRequest(at indexPath: IndexPath)
+    func didDenyFriendRequest(at indexPath: IndexPath)
+}
+
 import Foundation
 import UIKit
 import FirebaseAuth
@@ -20,9 +25,15 @@ class PendingCustomTableViewCell: UITableViewCell {
     @IBOutlet weak var acceptButton: UIButton!
     @IBOutlet weak var pendingProfileName: UILabel!
     
+    weak var delegate: PendingFriendActionDelegate?
+    var indexPath: IndexPath?
+    
     // Makes sure that when you press accept, both the target user and current user
     // are mutual friends
     @IBAction func acceptPressed(_ sender: Any) {
+        if let indexPath = indexPath {
+            delegate?.didAcceptFriendRequest(at: indexPath)
+        }
         let uniqueUsername = pendingProfileName.text!
         let db = Firestore.firestore()
         let currentUser = Auth.auth().currentUser
@@ -70,6 +81,8 @@ class PendingCustomTableViewCell: UITableViewCell {
                                 }
                                 print("Successfully added \(targetUserUUID) to \(currentUserStruct.username)'s friends.")
                                 
+                                
+                                
                                 // Removing the target from pending friends
                                 db.collection("users").document(currentUser!.uid).updateData([
                                     "pendingFriends": FieldValue.arrayRemove([targetUserDict])
@@ -93,6 +106,9 @@ class PendingCustomTableViewCell: UITableViewCell {
     // Makes sure that when you press deny, the target loses you in the pendingFriends array, and you
     // will see them back in people that you can add
     @IBAction func denyPressed(_ sender: Any) {
+        if let indexPath = indexPath {
+            delegate?.didDenyFriendRequest(at: indexPath)
+        }
         let uniqueUsername = pendingProfileName.text!
         let db = Firestore.firestore()
         let currentUser = Auth.auth().currentUser
