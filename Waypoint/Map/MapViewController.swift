@@ -384,6 +384,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         guard let annotation = view.annotation as? PhotoPost else {
             return
         }
+        mapView.deselectAnnotation(annotation, animated: true)
         
         let photo = annotation.image
         let map = UIStoryboard(name: "Map", bundle: nil)
