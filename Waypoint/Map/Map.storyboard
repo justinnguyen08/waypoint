@@ -43,7 +43,7 @@
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="gear" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="plain" image="gearshape" catalog="system"/>
                                 <connections>
                                     <segue destination="Xmc-Rn-gnM" kind="presentation" modalPresentationStyle="fullScreen" id="sW7-YX-B7t"/>
                                 </connections>
@@ -212,7 +212,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="UBM-AF-in9"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                         <constraints>
                             <constraint firstItem="oto-UY-eHR" firstAttribute="leading" secondItem="UBM-AF-in9" secondAttribute="leading" constant="100" id="6Ji-TO-nHq"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="bottom" secondItem="UBM-AF-in9" secondAttribute="bottom" id="8gA-MJ-d6l"/>
@@ -263,7 +263,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="xKb-el-RHP">
                                 <rect key="frame" x="0.0" y="53" width="402" height="811"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" name="Background"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TaggedCell" textLabel="Olf-q7-ewj" imageView="sRj-Qi-hLv" style="IBUITableViewCellStyleDefault" id="65f-1P-6C5">
                                         <rect key="frame" x="0.0" y="50" width="402" height="43.666667938232422"/>
@@ -285,6 +285,7 @@
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" name="Background"/>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -296,7 +297,7 @@
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LaK-cZ-IsF"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                         <constraints>
                             <constraint firstItem="xKb-el-RHP" firstAttribute="leading" secondItem="LaK-cZ-IsF" secondAttribute="leading" id="Ghb-9E-TVB"/>
                             <constraint firstItem="CrQ-Bh-fCZ" firstAttribute="centerX" secondItem="Xwi-ag-cqX" secondAttribute="centerX" id="VJB-i7-hpG"/>
@@ -325,7 +326,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="349-ze-I2w">
                                 <rect key="frame" x="16" y="159" width="370" height="574"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" name="Background"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MapCommentCell" id="y3h-05-PM3" customClass="MapCommentsTableViewCell" customModule="Waypoint" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="370" height="53.666667938232422"/>
@@ -391,6 +392,7 @@
                                                 <constraint firstItem="wee-g5-x0p" firstAttribute="top" secondItem="CEg-9m-fJP" secondAttribute="bottom" constant="8" id="g0v-cz-FIE"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" name="Background"/>
                                         <connections>
                                             <outlet property="commentLikeButton" destination="d1Y-RG-UTv" id="lD5-B3-pug"/>
                                             <outlet property="commentLikeCountLabel" destination="Ten-ET-UuZ" id="5b9-wv-P1K"/>
@@ -424,7 +426,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" name="Background"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="90" id="rtD-Lf-gaA"/>
                                 </constraints>
@@ -437,7 +439,7 @@
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="G4b-UM-F9l"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                         <constraints>
                             <constraint firstItem="G4b-UM-F9l" firstAttribute="bottom" secondItem="ppR-L2-Zx4" secondAttribute="bottom" constant="21" id="3hn-hZ-4yD"/>
                             <constraint firstItem="349-ze-I2w" firstAttribute="leading" secondItem="G4b-UM-F9l" secondAttribute="leading" constant="16" id="GoT-qA-o2w"/>
@@ -495,19 +497,16 @@
     <resources>
         <image name="Facebook" width="24" height="24"/>
         <image name="bubble" catalog="system" width="128" height="110"/>
-        <image name="gear" catalog="system" width="128" height="122"/>
+        <image name="gearshape" catalog="system" width="128" height="123"/>
         <image name="hand.thumbsup" catalog="system" width="123" height="128"/>
         <image name="mappin.circle" catalog="system" width="128" height="123"/>
         <image name="paperplane.fill" catalog="system" width="128" height="119"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
         <namedColor name="Background">
-            <color red="0.98000001907348633" green="0.97299998998641968" blue="0.9570000171661377" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.90980392156862744" green="0.89411764705882346" blue="0.86274509803921573" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>
