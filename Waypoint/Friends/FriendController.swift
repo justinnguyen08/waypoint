@@ -477,7 +477,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             AddFriendViewController, let indexPath = suggestedFriendView.indexPathForSelectedRow {
             var selectedUser: User
             selectedUser = addFriendsArray[indexPath.row]
-            destinationVC.selectedUsernameA = selectedUser.username
+            destinationVC.selectedUsername = selectedUser.username
         } else if segue.identifier == "pendingSegue", let destinationVC = segue.destination as? PendingViewController, let indexPath = pendingFriendView.indexPathForSelectedRow {
             var selectedUser: User
             selectedUser = pendingFriendsArray[indexPath.row]

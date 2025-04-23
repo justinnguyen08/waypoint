@@ -25,7 +25,7 @@ class AddFriendViewController: UIViewController {
     @IBOutlet weak var numberOfFriends: UILabel!
     
     @IBOutlet weak var profilePic: UIImageView!
-    var selectedUsernameA: String?
+    var selectedUsername: String?
     
     
     override func viewDidLoad() {
@@ -33,7 +33,7 @@ class AddFriendViewController: UIViewController {
         // Creating some connections add and pending buttons and hiding them based on what is called
         super.viewDidLoad()
         pendingButton.isHidden = true
-        username.text = selectedUsernameA!
+        username.text = selectedUsername!
         let db = Firestore.firestore()
         
         // Gets the data for the user's profile that we logged into such as: streak, # of friends, profile pic
@@ -121,7 +121,7 @@ class AddFriendViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        username.text = selectedUsernameA!
+        username.text = selectedUsername!
         let uniqueUsername = username.text!
         let db = Firestore.firestore()
         
