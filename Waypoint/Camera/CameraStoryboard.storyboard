@@ -21,7 +21,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="arrow.counterclockwise.circle.fill" catalog="system">
-                                    <color key="baseBackgroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="baseBackgroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="displayP3"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="flipCamera:" destination="nZr-z4-OeM" eventType="touchUpInside" id="hpo-zj-zG7"/>
@@ -34,7 +34,7 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title="">
-                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 </buttonConfiguration>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -48,7 +48,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vwd-iE-Jvz">
                                 <rect key="frame" x="8" y="106" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system">
                                     <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -68,7 +68,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
-                                <rect key="frame" x="336" y="808" width="50" height="35"/>
+                                <rect key="frame" x="336" y="774" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system">
                                     <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -90,6 +90,17 @@
                                     <action selector="onPinPressed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="cZ5-iW-v9U"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7aV-Xf-Kvv">
+                                <rect key="frame" x="8" y="179" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="bolt.slash" catalog="system">
+                                    <color key="baseBackgroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="displayP3"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="triggerFlash:" destination="nZr-z4-OeM" eventType="touchUpInside" id="lKk-Gi-qf4"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ham-cv-7LU"/>
                         <color key="backgroundColor" name="Background"/>
@@ -105,12 +116,13 @@
                             <constraint firstItem="Ham-cv-7LU" firstAttribute="bottom" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="24" id="pfc-fG-ZGG"/>
                             <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="sEk-VA-TOD"/>
                             <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="573" id="shz-NY-ysq"/>
-                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" relation="lessThanOrEqual" secondItem="Ham-cv-7LU" secondAttribute="top" constant="10" id="xgQ-HJ-Iua"/>
+                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="10" id="xgQ-HJ-Iua"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jFC-ld-vya"/>
                     <connections>
                         <outlet property="capturePicButton" destination="ccQ-pL-FW2" id="R6A-ne-ONB"/>
+                        <outlet property="flashButton" destination="7aV-Xf-Kvv" id="bZT-bW-1Sw"/>
                         <outlet property="flipButton" destination="PyY-5k-y71" id="gkQ-LY-aPd"/>
                         <outlet property="pinPhotoButton" destination="iRs-lF-iDs" id="z4N-q4-MOM"/>
                         <outlet property="resumeLiveButton" destination="vwd-iE-Jvz" id="ONN-ZV-efK"/>
@@ -220,6 +232,7 @@
     </scenes>
     <resources>
         <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="bolt.slash" catalog="system" width="98" height="128"/>
         <image name="camera" catalog="system" width="128" height="93"/>
         <image name="paperplane" catalog="system" width="128" height="119"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>

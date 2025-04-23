@@ -21,6 +21,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     var preview: AVCaptureVideoPreviewLayer?
     var position: AVCaptureDevice.Position = .front
     var photoOutput: AVCapturePhotoOutput?
+    var flashMode: AVCaptureDevice.FlashMode = .off
     var stillImageView: UIImageView?
     var capturedData: Data?
     var validPicture = false
@@ -28,7 +29,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
     var locManager = CLLocationManager()
     var location: CLLocation?
 
-    
+    @IBOutlet weak var flashButton: UIButton!
     @IBOutlet weak var sendPostButton: UIButton!
     @IBOutlet weak var pinPhotoButton: UIButton!
     @IBOutlet weak var tagFriendsButton: UIButton!
@@ -51,7 +52,11 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         capturePicButton.clipsToBounds = true
         flipButton.layer.cornerRadius = 25
         flipButton.clipsToBounds = true
+        flashButton.layer.cornerRadius = 25
+        flashButton.clipsToBounds = true
         resumeLiveButton.isHidden = true
+        resumeLiveButton.layer.cornerRadius = 25
+        resumeLiveButton.clipsToBounds = true
         sendPostButton.isHidden = true
         pinPhotoButton.isHidden = true
         tagFriendsButton.isHidden = true
@@ -135,6 +140,11 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         }
     }
     
+    @IBAction func triggerFlash(_ sender: Any) {
+        flashMode = (flashMode == .off ? .on : .off)
+        let symbol = (flashMode == .off ? "bolt.slash" : "bolt")
+        flashButton.setImage(UIImage(systemName: symbol), for: .normal)
+    }
     @IBAction func flipCamera(_ sender: Any) {
         guard let currentSession = session, currentSession.isRunning else { return }
         
@@ -176,6 +186,9 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         guard let photoOutput = photoOutput else { return }
         self.tabBarController?.tabBar.isHidden = true
         let settings = AVCapturePhotoSettings()
+        if photoOutput.supportedFlashModes.contains(flashMode) {
+            settings.flashMode = flashMode
+        }
         photoOutput.capturePhoto(with: settings, delegate: self)
         validPicture = true
         
@@ -223,13 +236,13 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
                 self.view.insertSubview(self.stillImageView!, belowSubview: self.resumeLiveButton)
             }
             
-            self.resumeLiveButton.layer.cornerRadius = 25
             self.resumeLiveButton.isHidden = false
             self.tagFriendsButton.isHidden = false
             self.sendPostButton.isHidden = false
             self.pinPhotoButton.isHidden = false
             self.stillImageView!.image = image
             self.flipButton.isHidden = true
+            self.flashButton.isHidden = true
             
             self.capturedData = imageData
         }
@@ -246,6 +259,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         tagFriendsButton.isHidden = true
         self.tabBarController?.tabBar.isHidden = false
         flipButton.isHidden = false
+        flashButton.isHidden = false
         if doDelete{
             print("DELETING: \(postID)")
             db.collection("mapPosts").document(postID).delete { error in
