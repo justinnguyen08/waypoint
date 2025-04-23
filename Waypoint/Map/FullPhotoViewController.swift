@@ -182,7 +182,7 @@ class FullPhotoViewController: UIViewController {
                     self.profilePictureView.clipsToBounds = true
                     self.profilePictureView.contentMode = .scaleAspectFill
                     self.likeButton.setTitle("\(self.likes.count)", for: .normal)
-                    if self.likes.contains(self.uid!){
+                    if self.likes.contains(self.currentUserUID!){
                         self.likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
                     }
                     else{
