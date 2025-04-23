@@ -12,7 +12,7 @@
         <scene sceneID="dWi-lt-aWT">
             <objects>
                 <viewController id="nZr-z4-OeM" customClass="OpenCamViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" ambiguous="YES" id="hM8-Ez-ZBL">
+                    <view key="view" contentMode="scaleToFill" id="hM8-Ez-ZBL">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -27,24 +27,6 @@
                                     <action selector="flipCamera:" destination="nZr-z4-OeM" eventType="touchUpInside" id="hpo-zj-zG7"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
-                                <rect key="frame" x="157" y="741" width="88" height="34.333333333333371"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="88" id="oKq-Wc-FND"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title="">
-                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                </buttonConfiguration>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="5"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="capturePicture:" destination="nZr-z4-OeM" eventType="touchUpInside" id="44n-dC-6Iz"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vwd-iE-Jvz">
                                 <rect key="frame" x="8" y="106" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -57,8 +39,8 @@
                                     <action selector="resumeLiveFeed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="Mik-E6-u24"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
-                                <rect key="frame" x="19" y="809" width="50" height="35"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
+                                <rect key="frame" x="16" y="809" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system">
                                     <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -67,8 +49,8 @@
                                     <segue destination="8EX-yT-KkL" kind="show" identifier="tagSegue" id="5b1-st-S4R"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
-                                <rect key="frame" x="336" y="774" width="50" height="35"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
+                                <rect key="frame" x="336" y="809" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system">
                                     <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -78,9 +60,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
-                                <rect key="frame" x="176" y="816.33333333333337" width="50" height="35"/>
+                                <rect key="frame" x="176" y="809" width="50" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="Kup-Gi-w5R"/>
+                                    <constraint firstAttribute="height" constant="35" id="jCO-jB-RKa"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="pin" catalog="system">
@@ -101,22 +84,37 @@
                                     <action selector="triggerFlash:" destination="nZr-z4-OeM" eventType="touchUpInside" id="lKk-Gi-qf4"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
+                                <rect key="frame" x="163.66666666666666" y="713" width="75" height="75"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="75" id="83P-Pk-rCB"/>
+                                    <constraint firstAttribute="height" constant="75" id="XuH-xe-FPb"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="camera" catalog="system" title="">
+                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="capturePicture:" destination="nZr-z4-OeM" eventType="touchUpInside" id="44n-dC-6Iz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ham-cv-7LU"/>
                         <color key="backgroundColor" name="Background"/>
                         <constraints>
-                            <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="ccQ-pL-FW2" secondAttribute="centerX" id="1p5-N9-a22"/>
-                            <constraint firstItem="YhB-nW-oTU" firstAttribute="bottom" secondItem="Ham-cv-7LU" secondAttribute="bottom" constant="52" id="41A-Fr-yvt"/>
-                            <constraint firstAttribute="bottom" secondItem="55X-QM-QQ3" secondAttribute="bottom" constant="30" id="TPD-3L-pRw"/>
-                            <constraint firstItem="YhB-nW-oTU" firstAttribute="trailing" secondItem="hM8-Ez-ZBL" secondAttribute="trailingMargin" id="Xoz-qF-Ud8"/>
-                            <constraint firstItem="iRs-lF-iDs" firstAttribute="top" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="41" id="arb-LJ-CIP"/>
-                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="baa-WZ-nmr"/>
-                            <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="bha-cq-bj5"/>
-                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="8" id="jNg-rs-15s"/>
-                            <constraint firstItem="Ham-cv-7LU" firstAttribute="bottom" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="24" id="pfc-fG-ZGG"/>
-                            <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="sEk-VA-TOD"/>
-                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="573" id="shz-NY-ysq"/>
-                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="10" id="xgQ-HJ-Iua"/>
+                            <constraint firstItem="YhB-nW-oTU" firstAttribute="trailing" secondItem="hM8-Ez-ZBL" secondAttribute="trailingMargin" id="0ad-au-GhW"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="545" id="41Q-q9-drC"/>
+                            <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="hM8-Ez-ZBL" secondAttribute="leadingMargin" id="FYs-Ur-p5a"/>
+                            <constraint firstAttribute="bottom" secondItem="iRs-lF-iDs" secondAttribute="bottom" constant="30" id="Uo4-GR-sHw"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="baseline" secondItem="55X-QM-QQ3" secondAttribute="baseline" id="eeO-eA-aq4"/>
+                            <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="fkW-AA-XfH"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="mcX-cy-X9e"/>
+                            <constraint firstItem="iRs-lF-iDs" firstAttribute="baseline" secondItem="YhB-nW-oTU" secondAttribute="baseline" id="pJf-w2-dr8"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jFC-ld-vya"/>
@@ -177,7 +175,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kao-11-muX">
-                                                    <rect key="frame" x="287" y="5" width="52" height="35"/>
+                                                    <rect key="frame" x="287" y="5" width="83" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="filled" title="Tag"/>
