@@ -14,6 +14,9 @@ import FirebaseFirestore
 import FirebaseAuth
 import FirebaseStorage
 
+protocol RemoveFriendActionDelegate: AnyObject {
+    func removeFriendRequest(at indexPath: IndexPath)
+}
 
 class RemoveTableViewCell: UITableViewCell {
     
@@ -22,8 +25,16 @@ class RemoveTableViewCell: UITableViewCell {
     @IBOutlet weak var profilePic: UIImageView!
     
     @IBOutlet weak var removeButton: UIButton!
+    
+    weak var delegate: RemoveFriendActionDelegate?
+    var indexPath: IndexPath?
+    
     // Removing the friend from my friends array
     @IBAction func removeButtonPressed(_ sender: Any) {
+        if let indexPath = indexPath {
+            delegate?.removeFriendRequest(at: indexPath)
+        }
+        
         let uniqueUsername = customProfileName.text!
         let db = Firestore.firestore()
         let currentUser = Auth.auth().currentUser

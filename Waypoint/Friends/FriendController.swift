@@ -24,7 +24,7 @@ public var pendingFriendsArray: [User] = [] // pending friends
 public var suggestedFriends: [User] = []    // suggested friends
 
 class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,
-                        UITextFieldDelegate{
+                        UITextFieldDelegate, PendingFriendActionDelegate, RemoveFriendActionDelegate {
     
     @IBOutlet weak var friendProfileView: UITableView!
     @IBOutlet weak var pendingFriendView: UITableView!
@@ -350,7 +350,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             if pendingFriendsArray.count == 0 {
                 pendingFriendView.isHidden = true
                 pendingFriendLabel.isHidden = true
-
             } else {
                 pendingFriendView.isHidden = false
                 pendingFriendLabel.isHidden = false
@@ -362,22 +361,28 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     // Fetches the image from storage to for any reference such as profile or regular pics
-    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
-        imageView.image = UIImage(systemName: fallback)  
+    func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String, uid: String) {
+        let tag = UUID().uuidString
+        imageView.accessibilityIdentifier = tag
+
+        // Set fallback immediately
+        DispatchQueue.main.async {
+            imageView.image = UIImage(systemName: fallback)
+        }
+
         ref.getData(maxSize: 10 * 1024 * 1024) { data, error in
-            if let error = error {
-                print("Error fetching \(ref.fullPath): \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    imageView.image = UIImage(systemName: fallback)
-                }
-            } else if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
+            guard let data = data, let image = UIImage(data: data) else {
+                print("Error loading image for \(uid): \(error?.localizedDescription ?? "unknown error")")
+                return
+            }
+
+            DispatchQueue.main.async {
+                // Only set image if this is still the same imageView (not reused)
+                if imageView.accessibilityIdentifier == tag {
                     imageView.image = image
                 }
             }
         }
-        imageView.layer.cornerRadius = imageView.frame.width / 2
-        imageView.contentMode = .scaleAspectFill
     }
     
     // Get the count of the how many rows should show up
@@ -397,10 +402,13 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         if segCtrl?.selectedSegmentIndex == 0 {
             let cell: RemoveTableViewCell = friendProfileView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath) as! RemoveTableViewCell
 //            print(removeFriendsArray.count)
+            cell.indexPath = indexPath
+            cell.delegate = self
             cell.customProfileName.text = friendFilteredUsers[indexPath.row].username
             cell.customProfileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(friendFilteredUsers[indexPath.row].uid)/profile_pic.jpg")
-            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
+            let user = filteredUsers[indexPath.row]
+            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle", uid: user.uid)
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
             cell.profilePic.contentMode = .scaleAspectFill
             cell.profilePic.clipsToBounds = true
@@ -412,10 +420,13 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             return cell
         } else if segCtrl?.selectedSegmentIndex == 1 && tableView == pendingFriendView {
             let cell: PendingCustomTableViewCell = pendingFriendView.dequeueReusableCell(withIdentifier: "pendingCell", for: indexPath) as! PendingCustomTableViewCell
+            cell.indexPath = indexPath
+            cell.delegate = self
             cell.pendingProfileName.text = pendingFriendsArray[indexPath.row].username
             cell.pendingProfileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(pendingFriendsArray[indexPath.row].uid)/profile_pic.jpg")
-            fetchImage(from: profilePicRef, for: cell.profilePicture, fallback: "person.circle")
+            let user = pendingFriendsArray[indexPath.row]
+            fetchImage(from: profilePicRef, for: cell.profilePicture, fallback: "person.circle", uid: user.uid)
             cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
             cell.profilePicture.contentMode = .scaleAspectFill
             cell.profilePicture.clipsToBounds = true
@@ -433,7 +444,8 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             cell.profileName.text = filteredUsers[indexPath.row].username
             cell.profileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(filteredUsers[indexPath.row].uid)/profile_pic.jpg")
-            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle")
+            let user = filteredUsers[indexPath.row]
+            fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle", uid: user.uid)
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
             cell.profilePic.contentMode = .scaleAspectFill
             cell.profilePic.clipsToBounds = true
@@ -563,6 +575,54 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         view.endEditing(true)
     }
     
+    func didAcceptFriendRequest(at indexPath: IndexPath) {
+        let acceptedUser = pendingFriendsArray[indexPath.row]
+        removeFriendsArray.append(acceptedUser)
+        friendFilteredUsers.append(acceptedUser)
+        pendingFriendsArray.remove(at: indexPath.row)
+        pendingFriendView.deleteRows(at: [indexPath], with: .fade)
+        if pendingFriendsArray.count == 0 {
+            pendingFriendView.isHidden = true
+            pendingFriendLabel.isHidden = true
+        } else {
+            pendingFriendView.isHidden = false
+            pendingFriendLabel.isHidden = false
+            pendingFriendLabel.text = "  Pending Friends"
+        }
+        suggestedFriendView.reloadData()
+        friendProfileView.reloadData()
+        pendingFriendView.reloadData()
+    }
+    
+    func didDenyFriendRequest(at indexPath: IndexPath) {
+        let deniedUser = pendingFriendsArray[indexPath.row]
+        addFriendsArray.append(deniedUser)
+        filteredUsers.append(deniedUser)
+        pendingFriendsArray.remove(at: indexPath.row)
+        pendingFriendView.deleteRows(at: [indexPath], with: .fade)
+        if pendingFriendsArray.count == 0 {
+            pendingFriendView.isHidden = true
+            pendingFriendLabel.isHidden = true
+        } else {
+            pendingFriendView.isHidden = false
+            pendingFriendLabel.isHidden = false
+            pendingFriendLabel.text = "  Pending Friends"
+        }
+        friendProfileView.reloadData()
+        suggestedFriendView.reloadData()
+        pendingFriendView.reloadData()
+    }
+    
+    func removeFriendRequest(at indexPath: IndexPath) {
+        let removedUser = removeFriendsArray[indexPath.row]
+        addFriendsArray.append(removedUser)
+        filteredUsers.append(removedUser)
+        removeFriendsArray.remove(at: indexPath.row)
+        friendFilteredUsers.remove(at: indexPath.row)
+        friendProfileView.deleteRows(at: [indexPath], with: .fade)
+        friendProfileView.reloadData()
+    }
+
     
 }
 
