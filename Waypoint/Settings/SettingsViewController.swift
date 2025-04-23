@@ -11,11 +11,12 @@ import UIKit
 import FirebaseAuth
 import FirebaseStorage
 import Photos
-
+import UserNotifications
 
 class SettingsViewController: UITableViewController {
     
     @IBOutlet weak var notificationSwitch: UISwitch!
+    @IBOutlet weak var darkModeSwitch: UISwitch!
     @IBOutlet weak var profilePic: UIImageView!
     
     var exportProgressView: UIView?
@@ -27,6 +28,14 @@ class SettingsViewController: UITableViewController {
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
+        
+        // sync switch
+        if self.traitCollection.userInterfaceStyle == .dark {
+            darkModeSwitch.isOn = true
+        }
+        else {
+            darkModeSwitch.isOn = false
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -35,9 +44,9 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // sign out button is in section 5
-        print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
-        if indexPath.section == 2 && indexPath.row == 0 {
+//        print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
+        // export photos is in section 3
+        if indexPath.section == 3 {
             let confirmAlert = UIAlertController(
                 title: "Export All Photos?",
                 message: "This will save all your pictures to your device's photo library. Do you want to continue?",
@@ -51,7 +60,9 @@ class SettingsViewController: UITableViewController {
             }))
 
             self.present(confirmAlert, animated: true)
-        } else if indexPath.row == 4 {
+        }
+        // sign out button is in section 4
+        else if indexPath.section == 4 {
             // create sign out alert
             let alert = UIAlertController(title: "Sign Out",
                                           message: "Are you sure you want to sign out?",
@@ -99,24 +110,91 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {
-        let current = UNUserNotificationCenter.current()
-        if sender.isOn {
-            // request notification permission if notifications are being enabled
-            // will be promised in final
-            current.requestAuthorization(
-                options: [.alert, .sound, .badge]
-            ) { granted, error in
-                if granted {
-                    print("permission granted")
-                } else if let error = error {
-                    self.notificationSwitch.setOn(false, animated: true)
-                    print("Error: \(error.localizedDescription)")
-                }
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings { settings in
+          DispatchQueue.main.async {
+            if sender.isOn {
+              switch settings.authorizationStatus {
+              case .notDetermined:
+                let alert = UIAlertController(
+                  title: "Enable Notifications?",
+                  message: "Would you like to receive alerts, sounds, and badge updates?",
+                  preferredStyle: .alert
+                )
+                alert.addAction(.init(title: "Yes", style: .default) { _ in
+                  center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                    DispatchQueue.main.async {
+                      if granted {
+                        UIApplication.shared.registerForRemoteNotifications()
+                      } else {
+                        // User tapped “Don’t Allow” in system prompt
+                        sender.setOn(false, animated: true)
+                      }
+                    }
+                  }
+                })
+                alert.addAction(.init(title: "No", style: .cancel) { _ in
+                  sender.setOn(false, animated: true)
+                })
+                self.present(alert, animated: true)
+                
+              case .denied:
+                // already denied in Settings — guide them to Settings.app
+                let alert = UIAlertController(
+                  title: "Notifications Disabled",
+                  message: "To enable, go to Settings → Notifications → YourApp.",
+                  preferredStyle: .alert
+                )
+                alert.addAction(.init(title: "Open Settings", style: .default) { _ in
+                  UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                })
+                alert.addAction(.init(title: "Cancel", style: .cancel) { _ in
+                  sender.setOn(false, animated: true)
+                })
+                self.present(alert, animated: true)
+                
+              case .authorized, .provisional, .ephemeral:
+                UIApplication.shared.registerForRemoteNotifications()
+                
+              @unknown default:
+                sender.setOn(false, animated: true)
+              }
+              
+            } else {
+              // unregister & clear delivered/pending notifications
+              UIApplication.shared.unregisterForRemoteNotifications()
+              center.removeAllPendingNotificationRequests()
+              center.removeAllDeliveredNotifications()
+              UIApplication.shared.applicationIconBadgeNumber = 0
             }
-        } else {
-            current.removeAllPendingNotificationRequests()
-            current.removeAllDeliveredNotifications()
+          }
         }
+    }
+    
+    @IBAction func darkModeSwitchChanged(_ sender: UISwitch) {
+        let dark = sender.isOn
+        UserDefaults.standard.set(dark, forKey: "isDarkMode")
+        applyStyle(dark: dark)
+    }
+    
+    private func applyStyle(dark: Bool) {
+        let style: UIUserInterfaceStyle = dark ? .dark : .light
+
+        UIApplication.shared.connectedScenes
+          .compactMap { $0 as? UIWindowScene }
+          .flatMap     { $0.windows }
+          .forEach { window in
+            UIView.transition(
+              with: window,
+              duration: 0.3,
+              options: .transitionCrossDissolve,
+              animations: {
+                window.overrideUserInterfaceStyle = style
+                window.backgroundColor = UIColor(named: "AppBackground")
+              },
+              completion: nil
+            )
+          }
     }
     
     @IBAction func backButtonTapped(_ sender: Any) {
