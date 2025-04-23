@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZRo-Cw-v29">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZRo-Cw-v29">
     <device id="retina6_3" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,23 +12,23 @@
         <scene sceneID="dWi-lt-aWT">
             <objects>
                 <viewController id="nZr-z4-OeM" customClass="OpenCamViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="hM8-Ez-ZBL">
+                    <view key="view" contentMode="scaleToFill" ambiguous="YES" id="hM8-Ez-ZBL">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PyY-5k-y71">
-                                <rect key="frame" x="0.0" y="106" width="84" height="83"/>
+                                <rect key="frame" x="8" y="106" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="arrow.counterclockwise.circle.fill" catalog="system">
-                                    <color key="baseForegroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <buttonConfiguration key="configuration" style="filled" image="arrow.counterclockwise.circle.fill" catalog="system">
+                                    <color key="baseBackgroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="flipCamera:" destination="nZr-z4-OeM" eventType="touchUpInside" id="hpo-zj-zG7"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccQ-pL-FW2">
-                                <rect key="frame" x="157" y="679" width="88" height="88"/>
+                                <rect key="frame" x="157" y="741" width="88" height="34.333333333333371"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="88" id="oKq-Wc-FND"/>
                                 </constraints>
@@ -45,8 +45,9 @@
                                     <action selector="capturePicture:" destination="nZr-z4-OeM" eventType="touchUpInside" id="44n-dC-6Iz"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwd-iE-Jvz">
-                                <rect key="frame" x="19" y="130" width="47" height="35"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vwd-iE-Jvz">
+                                <rect key="frame" x="8" y="106" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system">
@@ -56,7 +57,7 @@
                                     <action selector="resumeLiveFeed:" destination="nZr-z4-OeM" eventType="touchUpInside" id="Mik-E6-u24"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55X-QM-QQ3">
                                 <rect key="frame" x="19" y="809" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="person.crop.circle" catalog="system">
@@ -66,7 +67,7 @@
                                     <segue destination="8EX-yT-KkL" kind="show" identifier="tagSegue" id="5b1-st-S4R"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YhB-nW-oTU">
                                 <rect key="frame" x="336" y="808" width="50" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" image="paperplane" catalog="system">
@@ -77,7 +78,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iRs-lF-iDs">
-                                <rect key="frame" x="176" y="808" width="50" height="35"/>
+                                <rect key="frame" x="176" y="816.33333333333337" width="50" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="Kup-Gi-w5R"/>
                                 </constraints>
@@ -100,11 +101,11 @@
                             <constraint firstItem="iRs-lF-iDs" firstAttribute="top" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="41" id="arb-LJ-CIP"/>
                             <constraint firstItem="ccQ-pL-FW2" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="baa-WZ-nmr"/>
                             <constraint firstItem="iRs-lF-iDs" firstAttribute="centerX" secondItem="hM8-Ez-ZBL" secondAttribute="centerX" id="bha-cq-bj5"/>
-                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="jNg-rs-15s"/>
+                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="8" id="jNg-rs-15s"/>
                             <constraint firstItem="Ham-cv-7LU" firstAttribute="bottom" secondItem="ccQ-pL-FW2" secondAttribute="bottom" constant="24" id="pfc-fG-ZGG"/>
                             <constraint firstItem="55X-QM-QQ3" firstAttribute="leading" secondItem="Ham-cv-7LU" secondAttribute="leading" constant="19" id="sEk-VA-TOD"/>
                             <constraint firstItem="ccQ-pL-FW2" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="573" id="shz-NY-ysq"/>
-                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" secondItem="Ham-cv-7LU" secondAttribute="top" constant="24" id="xgQ-HJ-Iua"/>
+                            <constraint firstItem="vwd-iE-Jvz" firstAttribute="top" relation="lessThanOrEqual" secondItem="Ham-cv-7LU" secondAttribute="top" constant="10" id="xgQ-HJ-Iua"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jFC-ld-vya"/>
@@ -204,7 +205,7 @@
                     <toolbarItems/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="EiU-en-bab">
-                        <rect key="frame" x="0.0" y="62" width="402" height="44"/>
+                        <rect key="frame" x="0.0" y="124" width="402" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -225,7 +226,7 @@
         <image name="pin" catalog="system" width="116" height="128"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <namedColor name="Background">
-            <color red="0.90980392156862744" green="0.89411764705882346" blue="0.86274509803921573" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.9100000262260437" green="0.89399999380111694" blue="0.86299997568130493" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
