@@ -107,17 +107,17 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Section-4" id="8aR-ya-OPK">
+                            <tableViewSection headerTitle="Section-4" footerTitle="" id="8aR-ya-OPK">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="qjy-Uo-wXD" style="IBUITableViewCellStyleDefault" id="FfM-9s-oQk">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="qjy-Uo-wXD" style="IBUITableViewCellStyleDefault" id="FfM-9s-oQk">
                                         <rect key="frame" x="0.0" y="496" width="402" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FfM-9s-oQk" id="ngT-za-OEI">
-                                            <rect key="frame" x="0.0" y="0.0" width="371.66666666666669" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="402" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Timelapse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qjy-Uo-wXD">
-                                                    <rect key="frame" x="20" y="0.0" width="343.66666666666669" height="44"/>
+                                                    <rect key="frame" x="20" y="0.0" width="362" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
                                                     <nil key="textColor"/>
@@ -126,23 +126,20 @@
                                             </subviews>
                                             <color key="backgroundColor" name="Background"/>
                                         </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="eoQ-pt-G3i" kind="show" id="huS-v6-6Cj"/>
-                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Section-5" id="dY7-1M-nK5">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="k1z-pv-gOI" style="IBUITableViewCellStyleDefault" id="eKd-iR-TEo">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="k1z-pv-gOI" style="IBUITableViewCellStyleDefault" id="eKd-iR-TEo">
                                         <rect key="frame" x="0.0" y="618" width="402" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="eKd-iR-TEo" id="if7-n2-jgY">
-                                            <rect key="frame" x="0.0" y="0.0" width="371.66666666666669" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="402" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Sign Out" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="k1z-pv-gOI">
-                                                    <rect key="frame" x="20" y="0.0" width="343.66666666666669" height="44"/>
+                                                    <rect key="frame" x="20" y="0.0" width="362" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
                                                     <color key="textColor" systemColor="systemRedColor"/>
@@ -175,16 +172,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e6c-C1-Asg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2673.1343283582087" y="-28.146453089244851"/>
-        </scene>
-        <!--Login-->
-        <scene sceneID="8z8-Fg-Edc">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Login" id="bdV-b7-i42" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Qc6-dP-jYp"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Pxb-gs-Nh5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1790" y="516"/>
         </scene>
         <!--Profile Settings Page View Controller-->
         <scene sceneID="zRl-m9-8fV">
@@ -378,38 +365,6 @@
             </objects>
             <point key="canvasLocation" x="4294.0298507462685" y="-18.535469107551485"/>
         </scene>
-        <!--Yearly Timelapse View Controller-->
-        <scene sceneID="iIT-jN-uBN">
-            <objects>
-                <viewController id="eoQ-pt-G3i" customClass="YearlyTimelapseViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="hhg-nk-egD">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Yearly Timelapse" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nb8-l4-MeC">
-                                <rect key="frame" x="105" y="106" width="182" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="soO-sx-Uji">
-                                <rect key="frame" x="16" y="232.66666666666663" width="361" height="427"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="HwW-nC-ZYG"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="TNb-53-psw"/>
-                    <connections>
-                        <outlet property="yearlyTimelapsPictures" destination="soO-sx-Uji" id="70Y-Er-ocV"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eBi-U8-HMC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2554.9618320610684" y="703.52112676056345"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="891-s0-bTk">
             <objects>
@@ -435,7 +390,7 @@
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <namedColor name="Background">
-            <color red="0.98000001907348633" green="0.97299998998641968" blue="0.9570000171661377" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.9100000262260437" green="0.89399999380111694" blue="0.86299997568130493" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
