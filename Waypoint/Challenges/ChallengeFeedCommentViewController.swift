@@ -174,12 +174,42 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         if prevVC.currentUserUsername == currentCommentUsername{
             return indexPath
         }
-        performSegue(withIdentifier: "ChallengeCommentToRemoveProfile", sender: self)
+        if prevVC.currentUserFriends.contains(where: { entry in
+            if let currentEntryUsername = entry["username"] as? String {
+                return currentEntryUsername == currentCommentUsername
+            }
+            return false
+        }){
+            performSegue(withIdentifier: "ChallengeCommentToRemoveProfile", sender: self)
+        }
+        else if prevVC.currentUserPendingFriends.contains(where: { entry in
+            if let currentEntryUsername = entry["username"] as? String {
+                return currentEntryUsername == currentCommentUsername
+            }
+            return false
+        }){
+            performSegue(withIdentifier: "ChallengeCommentToPendingProfile", sender: self)
+        }
+        else{
+            performSegue(withIdentifier: "ChallengeCommentToAddProfile", sender: self)
+        }
         return indexPath
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ChallengeCommentToRemoveProfile", let nextVC = segue.destination as? RemoveViewController {
+            // get the username
+            let userName = allComments[commentIndexWillSelect].username
+            // if friend send to this view controller
+            nextVC.selectedUsername = userName
+        }
+        else if segue.identifier == "ChallengeCommentToAddProfile", let nextVC = segue.destination as? AddFriendViewController{
+            // get the username
+            let userName = allComments[commentIndexWillSelect].username
+            // if friend send to this view controller
+            nextVC.selectedUsername = userName
+        }
+        else if segue.identifier == "ChallengeCommentToPendingProfile", let nextVC = segue.destination as? PendingViewController{
             // get the username
             let userName = allComments[commentIndexWillSelect].username
             // if friend send to this view controller

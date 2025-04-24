@@ -262,11 +262,22 @@
                         <outlet property="taggedButton" destination="HZK-dn-d6V" id="IwI-UK-7y4"/>
                         <outlet property="usernameLabel" destination="oI9-RB-sSr" id="lf1-C0-XgQ"/>
                         <segue destination="uka-gZ-028" kind="showDetail" identifier="mapTaggedSegue" id="jqY-py-In9"/>
+                        <segue destination="oB6-mX-v8y" kind="show" identifier="FullPhotoToRemoveProfile" id="0po-u6-cg5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Oxb-J7-guG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2622.3880597014922" y="-318.53546910755148"/>
+        </scene>
+        <!--removeFriend-->
+        <scene sceneID="I29-VZ-JtJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="removeFriend" id="oB6-mX-v8y" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Ero-1L-6NI"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lea-QA-wba" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3149" y="-413"/>
         </scene>
         <!--Map Tagged View Controller-->
         <scene sceneID="jid-aS-LEF">
@@ -475,6 +486,8 @@
                         <outlet property="profilePictureView" destination="r7a-Qm-eWV" id="t1z-ae-Am0"/>
                         <outlet property="sendCommentView" destination="ppR-L2-Zx4" id="wws-la-nlJ"/>
                         <segue destination="wxc-Kg-Xqi" kind="show" identifier="MapCommentToRemoveProfile" id="fXa-Cx-OMH"/>
+                        <segue destination="8AU-ll-rHO" kind="show" identifier="MapCommentToAddProfile" id="6eo-g0-laY"/>
+                        <segue destination="FJ2-gx-WjB" kind="show" identifier="MapCommentToPendingProfile" id="ZYc-G6-ztK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v7a-Co-n7j" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -489,7 +502,27 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Cl-5b-a2L" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2919" y="222"/>
+            <point key="canvasLocation" x="3050" y="346"/>
+        </scene>
+        <!--addFriend-->
+        <scene sceneID="gNn-qw-3rV">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="addFriend" id="8AU-ll-rHO" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="z9n-md-FAn"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bUK-gp-Si0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3049" y="400"/>
+        </scene>
+        <!--pendingFriend-->
+        <scene sceneID="wdt-hp-pOW">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="pendingFriend" id="FJ2-gx-WjB" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="5A4-eY-LaJ"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9yC-g0-5FF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3049" y="445"/>
         </scene>
         <!--CameraStoryboard-->
         <scene sceneID="46Y-NH-grb">

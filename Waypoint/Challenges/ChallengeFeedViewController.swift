@@ -39,6 +39,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     var currentUserUsername: String!
     
+    var currentUserFriends: [[String : Any]]!
+    var currentUserPendingFriends: [[String : Any]]!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -51,7 +55,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         noDataLabel.isHidden = true
         showSpinner()
         feed.removeAll()
-        getAllUsers{
+        getCurrentUserFriends{
             self.loadTableInformation()
         }
     }
@@ -72,59 +76,116 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     // https://anasaman-p.medium.com/understanding-async-let-in-swift-unlocking-concurrency-with-ease-3d25473a16db
     func getChallengesFromUser(uid: String, weekdayIndex: Int) async -> [FeedInfo]{
-        async let userDataTask = manager.getUserDocumentData(uid: uid)
-        async let profilePicTask = manager.getProfilePicture(uid: uid)
-        let userData = await userDataTask
-        let profilePicture = await profilePicTask ?? UIImage(systemName: "person.fill")
-        let username = userData?["username"] as? String ?? "unknown"
-        
-        profilePicCache[uid] = profilePicture
-        usernameCache[uid] = username
-        
         var results: [FeedInfo] = []
         if didDailyChallenge{
+            
+            if !profilePicCache.contains(where: { key, value in
+                return key == uid
+            }){
+                profilePicCache[uid] = await self.manager.getProfilePicture(uid: uid) ?? UIImage(systemName: "person.fill")
+            }
+            if !usernameCache.contains(where: { key, value in
+                return key == uid
+            }){
+                let userData = await self.manager.getUserDocumentData(uid: uid)
+                let username = userData?["username"] as? String ?? "unknown"
+                usernameCache[uid] = username
+            }
+            
             let dailyPath = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
             
-            async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
             async let dailyChallengeMetadataTask = manager.getImageMetadata(path: dailyPath)
             
-            let dailyChallengeImage = await dailyChallengeImageTask
+            
             let dailyChallengeMetadata = await dailyChallengeMetadataTask
             
             if let postID = dailyChallengeMetadata?["postID"]{
+                async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
+                
                 async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
                 async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                 
-                let likes = await likesTask
-                var comments = await commentsTask
-                comments?.sort{
+                let dailyChallengeImage = await dailyChallengeImageTask
+                
+                let likes = await likesTask ?? []
+                var comments = await commentsTask ?? []
+                comments.sort{
                     ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                 }
-                results.append(FeedInfo(username: username, indicator: "daily", profilePicture: profilePicture, mainPicture: dailyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: -1, postID: postID))
+                
+                for comment in comments{
+                    if let commentUID = comment["uid"] as? String{
+                        if !profilePicCache.contains(where: { key, value in
+                            return key == commentUID
+                        }){
+                            profilePicCache[commentUID] = await self.manager.getProfilePicture(uid: commentUID) ?? UIImage(systemName: "person.fill")
+                        }
+                        if !usernameCache.contains(where: { key, value in
+                            return key == commentUID
+                        }){
+                            let userData = await self.manager.getUserDocumentData(uid: commentUID)
+                            let username = userData?["username"] as? String ?? "unknown"
+                            usernameCache[commentUID] = username
+                        }
+                    }
+                }
+                results.append(FeedInfo(username: usernameCache[uid], indicator: "daily", profilePicture: profilePicCache[uid], mainPicture: dailyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: -1, postID: postID))
             }
         }
         
         for index in 1..<6{
             if didMonthChallenge[index - 1]{
+                
+                if !profilePicCache.contains(where: { key, value in
+                    return key == uid
+                }){
+                    profilePicCache[uid] = await self.manager.getProfilePicture(uid: uid) ?? UIImage(systemName: "person.fill")
+                }
+                if !usernameCache.contains(where: { key, value in
+                    return key == uid
+                }){
+                    let userData = await self.manager.getUserDocumentData(uid: uid)
+                    let username = userData?["username"] as? String ?? "unknown"
+                    usernameCache[uid] = username
+                }
+                
+                
                 let monthlyPath = "\(uid)/challenges/monthlyChallenges/\(index - 1).jpg"
                 
-                async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
                 async let monthlyChallengeMetadataTask = manager.getImageMetadata(path: monthlyPath)
                 
-                let monthlyChallengeImage = await monthlyChallengeImageTask
                 let monthlyChallengeMetadata = await monthlyChallengeMetadataTask
                 
                 if let postID = monthlyChallengeMetadata?["postID"]{
+                    async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
                     async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
                     async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                     
+                    let monthlyChallengeImage = await monthlyChallengeImageTask
                     let likes = await likesTask
-                    var comments = await commentsTask
-                    comments?.sort{
+                    var comments = await commentsTask ?? []
+                    comments.sort{
                         ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                     }
                     
-                    results.append(FeedInfo(username: userData?["username"] as? String, indicator: "monthly", profilePicture: profilePicture, mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
+                    for comment in comments{
+                        if let commentUID = comment["uid"] as? String{
+                            if !profilePicCache.contains(where: { key, value in
+                                return key == commentUID
+                            }){
+                                profilePicCache[commentUID] = await self.manager.getProfilePicture(uid: commentUID) ?? UIImage(systemName: "person.fill")
+                            }
+                            if !usernameCache.contains(where: { key, value in
+                                return key == commentUID
+                            }){
+                                let userData = await self.manager.getUserDocumentData(uid: commentUID)
+                                let username = userData?["username"] as? String ?? "unknown"
+                                usernameCache[commentUID] = username
+                            }
+                        }
+                    }
+                    
+                    results.append(FeedInfo(username: usernameCache[uid], indicator: "monthly", profilePicture: profilePicCache[uid], mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
                 }
             }
         }
@@ -133,11 +194,12 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     // get all of the current user's friends and set up which challenge photos to look for
-    func getAllUsers(handler: @escaping () -> Void){
+    func getCurrentUserFriends(handler: @escaping () -> Void){
         guard let uid = Auth.auth().currentUser?.uid else{
             print("user is not logged in")
             return
         }
+        
         db.collection("users").document(uid).getDocument(){
             (document, error) in
             if let error = error{
@@ -149,8 +211,13 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                    let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
                    let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
                    let currentUserFriendsList = data["friends"] as? [[String: Any]],
-                   let currentUsername = data["username"] as? String{
+                   let currentUsername = data["username"] as? String,
+                   let currentUserPendingFriendsList = data["pendingFriends"] as? [[String: Any]]{
+                    
+                    self.currentUserFriends = currentUserFriendsList
+                    self.currentUserPendingFriends = currentUserPendingFriendsList
                     self.currentUserUsername = currentUsername
+                    self.usernameCache[uid] = self.currentUserUsername
                     let calendar = Calendar.current
                     self.didDailyChallenge = calendar.isDateInToday(Date(timeIntervalSince1970: getDailyChallenge))
                     self.didMonthChallenge = didMonthlyChallenges
@@ -479,6 +546,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         willClickCellAt = indexPath.row
+        if feed[willClickCellAt].username != usernameCache[Auth.auth().currentUser?.uid ?? ""]{
+            self.performSegue(withIdentifier: "ChallengeFeedToRemoveProfile", sender: self)
+        }
         return indexPath
     }
     
@@ -531,6 +601,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
             nextVC.postID = cInfo.postID
             nextVC.index = willClickCellAt
+        }
+        else if segue.identifier == "ChallengeFeedToRemoveProfile",
+                let nextVC = segue.destination as? RemoveViewController{
+            let cInfo = feed[willClickCellAt]
+            nextVC.selectedUsername = cInfo.username
         }
     }
 }

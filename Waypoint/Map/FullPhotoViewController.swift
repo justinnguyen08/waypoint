@@ -48,6 +48,8 @@ class FullPhotoViewController: UIViewController {
     var currentUserUID: String?
     var currentUserProfilePicture: UIImage?
     var currentUserUsername: String?
+    var currentUserFriends: [[String : Any]]!
+    var currentUserPendingFriends: [[String : Any]]!
     
     var pendingTagged: [TaggedEntry] = []
     
@@ -66,6 +68,9 @@ class FullPhotoViewController: UIViewController {
 
         photoView.contentMode = .scaleAspectFit
         photoView.image = photo
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(recognizeTapGesture(recognizer:)))
+        self.view.addGestureRecognizer(tapGestureRecognizer)
         
         
         // get the username
@@ -96,6 +101,9 @@ class FullPhotoViewController: UIViewController {
                 // get the username from the userID
                 let userData = await self.manager.getUserDocumentData(uid: uid)
                 let currentUserData = await self.manager.getUserDocumentData(uid: currentUserUID)
+                
+                self.currentUserFriends = currentUserData?["friends"] as? [[String : Any]] ?? [[:]]
+                self.currentUserPendingFriends = currentUserData?["pendingFriends"] as? [[String : Any]] ?? [[:]]
                 
                 guard let username = userData?["username"] as? String, let currentUsername = currentUserData?["username"] as? String  else{
                     print("not username with this uid!")
@@ -203,6 +211,13 @@ class FullPhotoViewController: UIViewController {
             
         }
     }
+    
+    @IBAction func recognizeTapGesture(recognizer: UITapGestureRecognizer){
+        if usernameLabel.text != currentUserUsername{
+            performSegue(withIdentifier: "FullPhotoToRemoveProfile", sender: self)
+        }
+    }
+    
     
     func hideAll(){
         profilePictureView.isHidden = true
@@ -499,6 +514,9 @@ class FullPhotoViewController: UIViewController {
             nextVC.prevVC = self
             nextVC.postID = postID
             nextVC.profilePicture = currentUserProfilePicture
+        }
+        else if segue.identifier == "FullPhotoToRemoveProfile", let nextVC = segue.destination as? RemoveViewController{
+            nextVC.selectedUsername = usernameLabel.text
         }
     }
 }

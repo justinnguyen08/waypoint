@@ -153,7 +153,25 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         willSelectCommentIndex = indexPath.row
         if let currentCommentUsername = allComments[willSelectCommentIndex].username, currentCommentUsername != prevVC.currentUserUsername{
-            performSegue(withIdentifier: "MapCommentToRemoveProfile", sender: self)
+            if prevVC.currentUserFriends.contains(where: { entry in
+                if let entryUsername = entry["username"] as? String{
+                    return entryUsername == currentCommentUsername
+                }
+                return false
+            }){
+                performSegue(withIdentifier: "MapCommentToRemoveProfile", sender: self)
+            }
+            else if prevVC.currentUserPendingFriends.contains(where: { entry in
+                if let entryUsername = entry["username"] as? String{
+                    return entryUsername == currentCommentUsername
+                }
+                return false
+            }){
+                performSegue(withIdentifier: "MapCommentToPendingProfile", sender: self)
+            }
+            else{
+                performSegue(withIdentifier: "MapCommentToAddProfile", sender: self)
+            }
         }
         return indexPath
     }
@@ -184,6 +202,12 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "MapCommentToRemoveProfile", let nextVC = segue.destination as? RemoveViewController{
+            nextVC.selectedUsername = allComments[willSelectCommentIndex].username
+        }
+        else if segue.identifier == "MapCommentToAddProfile", let nextVC = segue.destination as? AddFriendViewController{
+            nextVC.selectedUsername = allComments[willSelectCommentIndex].username
+        }
+        else if segue.identifier == "MapCommentToPendingProfile", let nextVC = segue.destination as? PendingViewController{
             nextVC.selectedUsername = allComments[willSelectCommentIndex].username
         }
     }
