@@ -168,6 +168,25 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         self.view.endEditing(true)
     }
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        commentIndexWillSelect = indexPath.row
+        let currentCommentUsername = allComments[commentIndexWillSelect].username
+        if prevVC.currentUserUsername == currentCommentUsername{
+            return indexPath
+        }
+        performSegue(withIdentifier: "ChallengeCommentToRemoveProfile", sender: self)
+        return indexPath
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ChallengeCommentToRemoveProfile", let nextVC = segue.destination as? RemoveViewController {
+            // get the username
+            let userName = allComments[commentIndexWillSelect].username
+            // if friend send to this view controller
+            nextVC.selectedUsername = userName
+        }
+    }
+    
     // table view functions
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath) as! CommentTableViewCell

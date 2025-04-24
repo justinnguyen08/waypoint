@@ -37,6 +37,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     var profilePicCache: [String: UIImage] = [:]
     var usernameCache: [String: String] = [:]
     
+    var currentUserUsername: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -146,8 +148,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 if let document = document, let data = document.data(),
                    let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
                    let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
-                   let currentUserFriendsList = data["friends"] as? [[String: Any]]{
-
+                   let currentUserFriendsList = data["friends"] as? [[String: Any]],
+                   let currentUsername = data["username"] as? String{
+                    self.currentUserUsername = currentUsername
                     let calendar = Calendar.current
                     self.didDailyChallenge = calendar.isDateInToday(Date(timeIntervalSince1970: getDailyChallenge))
                     self.didMonthChallenge = didMonthlyChallenges

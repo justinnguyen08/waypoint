@@ -21,6 +21,8 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
     var profilePicture: UIImage!
     var prevVC: FullPhotoViewController!
     var postID: String!
+    
+    var willSelectCommentIndex: Int!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,6 +150,14 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
         self.view.endEditing(true)
     }
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        willSelectCommentIndex = indexPath.row
+        if let currentCommentUsername = allComments[willSelectCommentIndex].username, currentCommentUsername != prevVC.currentUserUsername{
+            performSegue(withIdentifier: "MapCommentToRemoveProfile", sender: self)
+        }
+        return indexPath
+    }
+    
     // table view functions
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MapCommentCell", for: indexPath) as! MapCommentsTableViewCell
@@ -170,6 +180,12 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
         }
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "MapCommentToRemoveProfile", let nextVC = segue.destination as? RemoveViewController{
+            nextVC.selectedUsername = allComments[willSelectCommentIndex].username
+        }
     }
 
 }
