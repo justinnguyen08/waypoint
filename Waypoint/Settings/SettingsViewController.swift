@@ -29,21 +29,7 @@ class SettingsViewController: UITableViewController {
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
         
-        // sync switches
-        let center = UNUserNotificationCenter.current()
-        center.getNotificationSettings { settings in
-            switch settings.authorizationStatus {
-            case .notDetermined:
-                self.notificationSwitch.isOn = false
-            case .denied:
-                self.notificationSwitch.isOn = false
-            case .authorized, .provisional, .ephemeral:
-                self.notificationSwitch.isOn = true
-            @unknown default:
-                self.notificationSwitch.isOn = false
-            }
-        }
-        
+        // sync switch
         if self.traitCollection.userInterfaceStyle == .dark {
             darkModeSwitch.isOn = true
         }
@@ -55,6 +41,21 @@ class SettingsViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         getProfilePic()
+        // sync switch
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+          DispatchQueue.main.async {
+            switch settings.authorizationStatus {
+            case .authorized, .provisional:
+              // Notifications are allowed
+              self.notificationSwitch.setOn(true, animated: false)
+            case .denied, .notDetermined:
+              // Either explicitly denied, or never asked
+              self.notificationSwitch.setOn(false, animated: false)
+            default:
+              self.notificationSwitch.setOn(false, animated: false)
+            }
+          }
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -124,64 +125,21 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {
-        let center = UNUserNotificationCenter.current()
-        center.getNotificationSettings { settings in
-          DispatchQueue.main.async {
-            if sender.isOn {
-              switch settings.authorizationStatus {
-              case .notDetermined:
-                let alert = UIAlertController(
-                  title: "Enable Notifications?",
-                  message: "Would you like to receive alerts, sounds, and badge updates?",
-                  preferredStyle: .alert
-                )
-                alert.addAction(.init(title: "Yes", style: .default) { _ in
-                  center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-                    DispatchQueue.main.async {
-                      if granted {
-                        UIApplication.shared.registerForRemoteNotifications()
-                      } else {
-                        // User tapped “Don’t Allow” in system prompt
-                        sender.setOn(false, animated: true)
-                      }
-                    }
-                  }
-                })
-                alert.addAction(.init(title: "No", style: .cancel) { _ in
-                  sender.setOn(false, animated: true)
-                })
-                self.present(alert, animated: true)
-                
-              case .denied:
-                // already denied in Settings — guide them to Settings.app
-                let alert = UIAlertController(
-                  title: "Notifications Disabled",
-                  message: "To enable, go to Settings → Notifications → YourApp.",
-                  preferredStyle: .alert
-                )
-                alert.addAction(.init(title: "Open Settings", style: .default) { _ in
-                  UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                })
-                alert.addAction(.init(title: "Cancel", style: .cancel) { _ in
-                  sender.setOn(false, animated: true)
-                })
-                self.present(alert, animated: true)
-                
-              case .authorized, .provisional, .ephemeral:
-                UIApplication.shared.registerForRemoteNotifications()
-                
-              @unknown default:
-                sender.setOn(false, animated: true)
+        if sender.isOn {
+          // Request permission (or re-request if they’d never been asked)
+          UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+              DispatchQueue.main.async {
+                // If they declined again, flip it back off
+                sender.setOn(granted, animated: true)
               }
-              
-            } else {
-              // unregister & clear delivered/pending notifications
-              UIApplication.shared.unregisterForRemoteNotifications()
-              center.removeAllPendingNotificationRequests()
-              center.removeAllDeliveredNotifications()
-              center.setBadgeCount(0)
             }
-          }
+        } else {
+          // They turned it off—send them to Settings.app since you can’t revoke programmatically
+          guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+          UIApplication.shared.open(url)
+          // Keep your switch off
+          sender.setOn(false, animated: true)
         }
     }
     
