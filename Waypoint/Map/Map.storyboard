@@ -180,7 +180,7 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="hand.thumbsup" catalog="system" title="Button">
-                                    <color key="baseForegroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="baseForegroundColor" systemColor="labelColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="likeButtonPressed:" destination="iFw-o8-cML" eventType="touchUpInside" id="paL-Y2-Nuo"/>
@@ -193,7 +193,7 @@
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="bubble" catalog="system" title="Button">
-                                    <color key="baseForegroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="baseForegroundColor" systemColor="labelColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="commentButtonPressed:" destination="iFw-o8-cML" eventType="touchUpInside" id="JO0-Fq-evp"/>
@@ -209,14 +209,14 @@
                                 <color key="textColor" systemColor="systemGrayColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HZK-dn-d6V">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HZK-dn-d6V">
                                 <rect key="frame" x="336" y="762" width="50" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="Hrz-cN-6sH"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="person.crop.circle" catalog="system">
-                                    <color key="baseForegroundColor" red="0.69411766529999996" green="0.2470588088" blue="0.19607841970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="baseForegroundColor" systemColor="labelColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="taggedButtonPressed:" destination="iFw-o8-cML" eventType="touchUpInside" id="fTv-LP-LDE"/>
@@ -243,7 +243,7 @@
                             <constraint firstItem="oI9-RB-sSr" firstAttribute="top" secondItem="UBM-AF-in9" secondAttribute="top" constant="43" id="S1d-8f-t0P"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="top" secondItem="UBM-AF-in9" secondAttribute="top" constant="131.33333333333337" id="VOq-qB-cwg"/>
                             <constraint firstItem="oto-UY-eHR" firstAttribute="top" secondItem="oI9-RB-sSr" secondAttribute="bottom" constant="37" id="VkB-HA-FOZ"/>
-                            <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="HZK-dn-d6V" secondAttribute="bottom" constant="4" id="Xjv-67-izf"/>
+                            <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="HZK-dn-d6V" secondAttribute="bottom" id="Xjv-67-izf"/>
                             <constraint firstItem="YW9-uI-ade" firstAttribute="top" secondItem="wiL-rK-tDH" secondAttribute="bottom" constant="51.333333333333314" id="k9Z-pZ-rI5"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="trailing" secondItem="oto-UY-eHR" secondAttribute="trailing" constant="16" id="t7m-sG-IJd"/>
                             <constraint firstItem="UBM-AF-in9" firstAttribute="bottom" secondItem="YW9-uI-ade" secondAttribute="bottom" id="uEO-yH-Z83"/>
