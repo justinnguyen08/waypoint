@@ -305,78 +305,6 @@
             </objects>
             <point key="canvasLocation" x="3474.6268656716416" y="-28.83295194508009"/>
         </scene>
-        <!--Profile Pic View Controller-->
-        <scene sceneID="Y2X-zP-0eW">
-            <objects>
-                <viewController id="C6w-uv-s0a" customClass="ProfilePicViewController" customModule="Waypoint" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="xuE-PP-9rg">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ob7-9b-dAF">
-                                <rect key="frame" x="165" y="593" width="88" height="88"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Button"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="5"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="capturePicture:" destination="C6w-uv-s0a" eventType="touchUpInside" id="E80-S1-E5d"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MW6-s0-AG3">
-                                <rect key="frame" x="165" y="593" width="88" height="88"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Send">
-                                    <color key="baseBackgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="onSendPressed:" destination="C6w-uv-s0a" eventType="touchUpInside" id="JNf-VA-tR3"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z21-7Y-GQL">
-                                <rect key="frame" x="0.0" y="168" width="84" height="83"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="arrow.counterclockwise.circle.fill" catalog="system">
-                                    <color key="baseForegroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="flipCamera:" destination="C6w-uv-s0a" eventType="touchUpInside" id="vW3-TH-mjL"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="itH-Fa-sh2">
-                                <rect key="frame" x="19" y="192" width="47" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.69019607839999997" green="0.12549019610000001" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="xmark" catalog="system">
-                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="resumeLiveFeed:" destination="C6w-uv-s0a" eventType="touchUpInside" id="Q10-TA-ZKQ"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="SwV-Ve-WlR"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="CGs-vg-ZN0"/>
-                    <connections>
-                        <outlet property="capturePicButton" destination="Ob7-9b-dAF" id="glz-0o-57g"/>
-                        <outlet property="flipButton" destination="z21-7Y-GQL" id="DHy-Re-wNl"/>
-                        <outlet property="resumeLiveButton" destination="itH-Fa-sh2" id="795-xz-wf2"/>
-                        <outlet property="sendPostButton" destination="MW6-s0-AG3" id="BgO-oP-6X2"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Iu3-ma-92v" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4294.0298507462685" y="-18.535469107551485"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="891-s0-bTk">
             <objects>
@@ -397,16 +325,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrow.counterclockwise.circle.fill" catalog="system" width="128" height="123"/>
         <image name="arrow.left" catalog="system" width="128" height="95"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
-        <image name="xmark" catalog="system" width="128" height="113"/>
         <namedColor name="Background">
             <color red="0.90980392156862744" green="0.89411764705882346" blue="0.86274509803921573" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
