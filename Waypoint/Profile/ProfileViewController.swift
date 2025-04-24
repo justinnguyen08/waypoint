@@ -26,6 +26,8 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var streakLabel: UILabel!
     @IBOutlet weak var mapCollectionView: UIImageView!
     
+    @IBOutlet weak var badgeView: UIImageView!
+    
     var imageReferences: [StorageReference] = []
     let imageCache = NSCache<NSString, UIImage>()
     
@@ -182,10 +184,24 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
         nicknameLabel.text = user.nickname
         usernameLabel.text = user.username
-        pointsLabel.text = "\(user.score ?? 0)"
+        pointsLabel.text = "\(user.challengePoints ?? 0)"
         // Display the count of friend IDs.
         friendsLabel.text = "\(user.friends.count)"
         streakLabel.text = "\(user.streak ?? 0)"
+        let challengePoints = user.challengePoints ?? 0
+        badgeView.isHidden = false
+        if challengePoints > 0 {
+            badgeView.tintColor = .brown
+        }
+        if challengePoints > 10 {
+            badgeView.tintColor = .gray
+        }
+        if challengePoints > 100{
+            badgeView.tintColor = .yellow
+        }
+        if challengePoints == 0{
+            badgeView.isHidden = true
+        }
     }
     
     // creates a segue for MapCollectionView

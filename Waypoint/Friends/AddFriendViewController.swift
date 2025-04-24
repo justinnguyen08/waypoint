@@ -69,7 +69,7 @@ class AddFriendViewController: UIViewController {
                     }
                 }
                 let count = friends.count
-                self.numberOfFriends.text = "\(count) \nfriends"
+                self.numberOfFriends.text = "\(count)"
                 targetFriends = friends
             }
             
@@ -159,7 +159,7 @@ class AddFriendViewController: UIViewController {
                     }
                 }
                 let count = friends.count
-                self.numberOfFriends.text = "\(count) \nfriends"
+                self.numberOfFriends.text = "\(count)"
                 targetFriends = friends
             }
             
