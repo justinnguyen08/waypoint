@@ -227,6 +227,10 @@ class AddFriendViewController: UIViewController {
     
     func configureMutualFriendsView(mutuals: [User]) {
         mutualFriends.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        guard !mutuals.isEmpty else {
+            return
+        }
 
         let imageStack = UIStackView()
         imageStack.axis = .horizontal
