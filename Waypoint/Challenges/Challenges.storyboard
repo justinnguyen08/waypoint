@@ -384,13 +384,15 @@
             </objects>
             <point key="canvasLocation" x="267.93893129770993" y="756.33802816901414"/>
         </scene>
-        <!--Storyboard Reference-->
+        <!--removeFriend-->
         <scene sceneID="Myx-B9-EQX">
             <objects>
-                <viewControllerPlaceholder id="Bm4-8l-iZo" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="removeFriend" id="Bm4-8l-iZo" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="5PM-e6-cUQ"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YJy-LF-9mq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2072" y="-187"/>
+            <point key="canvasLocation" x="2334" y="-203"/>
         </scene>
         <!--Feed-->
         <scene sceneID="Iqv-Hz-UwS">
@@ -504,6 +506,7 @@
                         <outlet property="noDataLabel" destination="DpH-qb-i6P" id="c7W-cj-MMe"/>
                         <outlet property="tableView" destination="3IY-jb-CAX" id="w5x-cH-Ygb"/>
                         <segue destination="eHB-Hl-n1z" kind="showDetail" identifier="commentSegue" id="1Lb-D8-KZM"/>
+                        <segue destination="Bm4-8l-iZo" kind="showDetail" identifier="ChallengeFeedToRemoveProfile" id="lKv-zg-KbZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iz0-xN-UjO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

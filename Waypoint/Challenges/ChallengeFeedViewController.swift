@@ -546,6 +546,9 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         willClickCellAt = indexPath.row
+        if feed[willClickCellAt].username != usernameCache[Auth.auth().currentUser?.uid ?? ""]{
+            self.performSegue(withIdentifier: "ChallengeFeedToRemoveProfile", sender: self)
+        }
         return indexPath
     }
     
@@ -598,6 +601,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
             nextVC.postID = cInfo.postID
             nextVC.index = willClickCellAt
+        }
+        else if segue.identifier == "ChallengeFeedToRemoveProfile",
+                let nextVC = segue.destination as? RemoveViewController{
+            let cInfo = feed[willClickCellAt]
+            nextVC.selectedUsername = cInfo.username
         }
     }
 }
