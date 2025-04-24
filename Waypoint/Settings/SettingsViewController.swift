@@ -29,7 +29,21 @@ class SettingsViewController: UITableViewController {
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
         
-        // sync switch
+        // sync switches
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                self.notificationSwitch.isOn = false
+            case .denied:
+                self.notificationSwitch.isOn = false
+            case .authorized, .provisional, .ephemeral:
+                self.notificationSwitch.isOn = true
+            @unknown default:
+                self.notificationSwitch.isOn = false
+            }
+        }
+        
         if self.traitCollection.userInterfaceStyle == .dark {
             darkModeSwitch.isOn = true
         }
@@ -165,7 +179,7 @@ class SettingsViewController: UITableViewController {
               UIApplication.shared.unregisterForRemoteNotifications()
               center.removeAllPendingNotificationRequests()
               center.removeAllDeliveredNotifications()
-              UIApplication.shared.applicationIconBadgeNumber = 0
+              center.setBadgeCount(0)
             }
           }
         }

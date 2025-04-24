@@ -240,7 +240,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     @IBAction func filterTapped(_ sender: Any) {
         
         let controller = UIAlertController(
-            title: "Alert Controller",
+            title: "Leaderboard Filter",
             message: "Weekly or Monthly!",
             preferredStyle: .actionSheet)
         

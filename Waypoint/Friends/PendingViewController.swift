@@ -21,6 +21,7 @@ class PendingViewController: UIViewController {
     @IBOutlet weak var numberOfStreak: UILabel!
     @IBOutlet weak var numberOfFriends: UILabel!
     @IBOutlet weak var username: UILabel!
+    @IBOutlet weak var denyButton: UIButton!
     
     // Does nothing for now needed it for a new controller
     var selectedUsername: String?
@@ -57,7 +58,7 @@ class PendingViewController: UIViewController {
                 }
                 let count = friends.count
                 print("This is how many friends you have friends you have \(count)")
-                self.numberOfFriends.text = "\(count) \nfriends"
+                self.numberOfFriends.text = "\(count)"
                 targetFriends = friends
             }
             
@@ -104,7 +105,11 @@ class PendingViewController: UIViewController {
 
             
         }
-
+        var cfg = UIButton.Configuration.filled()
+        cfg.title = "Deny"
+        cfg.baseBackgroundColor = .systemRed
+        cfg.baseForegroundColor = .white      // your text color
+        denyButton.configuration = cfg
         // Do any additional setup after loading the view.
     }
     
@@ -138,7 +143,7 @@ class PendingViewController: UIViewController {
                 }
                 let count = friends.count
                 print("This is how many friends you have friends you have \(count)")
-                self.numberOfFriends.text = "\(count) \nfriends"
+                self.numberOfFriends.text = "\(count)"
                 targetFriends = friends
             }
             

@@ -21,6 +21,7 @@ class UserProfile {
     
     var streak: Int?
     var score: Int?
+    var challengePoints: Int?
     
     init(id: String? = nil,
          nickname: String,
@@ -28,7 +29,7 @@ class UserProfile {
          profilePicture: String? = nil,
          friends: [User] = [],
          streak: Int? = 0,
-         score: Int? = 0) {
+         score: Int? = 0, challengePoints: Int? = 0) {
         self.id = id
         self.nickname = nickname
         self.username = username
@@ -36,6 +37,7 @@ class UserProfile {
         self.friends = friends
         self.streak = streak
         self.score = score
+        self.challengePoints = challengePoints
     }
     
     // convenience initializer that creates a UserProfile from Firestore data.
@@ -62,6 +64,7 @@ class UserProfile {
         
         let streak = data["streak"] as? Int
         let score = data["score"] as? Int
+        let challengePoints = data["monthlyChallengeScore"] as? Int
         
         // now with all necessary data, call the designated initializer.
         self.init(id: id,
@@ -70,7 +73,9 @@ class UserProfile {
                   profilePicture: profilePicture,
                   friends: friendsArray,
                   streak: streak,
-                  score: score)
+                  score: score,
+                  challengePoints: challengePoints
+        )
     }
 
 }
