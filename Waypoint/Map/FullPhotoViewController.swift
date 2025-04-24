@@ -58,11 +58,6 @@ class FullPhotoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         spinner.showSpinner(view: view)
-        let df = DateFormatter()
-        df.calendar = Calendar.current
-        df.locale = Locale(identifier: "en_US_POSIX")
-        df.dateFormat = "MMMM d, yyyy"
-        dateLabel.text = df.string(from: Date())
         hideAll()
         // Do any additional setup after loading the view.
 
@@ -97,6 +92,17 @@ class FullPhotoViewController: UIViewController {
                     return
                 }
                 self.uid = uid
+                
+                guard let time = data["time"] as? TimeInterval else {
+                    print("no time found")
+                    return
+                }
+                let timestamp = Date(timeIntervalSince1970: time)
+                let df = DateFormatter()
+                df.calendar = Calendar.current
+                df.locale = Locale(identifier: "en_US_POSIX")
+                df.dateFormat = "MMMM d, yyyy"
+                dateLabel.text = df.string(from: timestamp)
                 
                 // get the username from the userID
                 let userData = await self.manager.getUserDocumentData(uid: uid)
