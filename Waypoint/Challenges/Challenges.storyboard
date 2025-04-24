@@ -646,6 +646,8 @@
                         <outlet property="profilePictureView" destination="nkh-f6-s9a" id="gnN-ol-TVS"/>
                         <outlet property="sendCommentView" destination="mUT-OW-Ei9" id="xtW-Q1-VGK"/>
                         <segue destination="VFl-dX-50Q" kind="show" identifier="ChallengeCommentToRemoveProfile" id="Lmh-GZ-OcY"/>
+                        <segue destination="Iob-tZ-4XK" kind="show" identifier="ChallengeCommentToAddProfile" id="PLx-oH-gff"/>
+                        <segue destination="g33-0g-Kmr" kind="show" identifier="ChallengeCommentToPendingProfile" id="ryn-5H-gpK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="17O-uc-GZx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -661,6 +663,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xrd-2n-7hA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3353" y="149"/>
+        </scene>
+        <!--addFriend-->
+        <scene sceneID="jCP-Hp-LW2">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="addFriend" id="Iob-tZ-4XK" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="6GO-HE-Mzu"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NSq-8S-ahX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3443" y="263"/>
+        </scene>
+        <!--pendingFriend-->
+        <scene sceneID="0yg-av-Hoo">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Friend2" referencedIdentifier="pendingFriend" id="g33-0g-Kmr" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="ivy-W9-Q0z"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TEf-38-BN8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3443" y="399"/>
         </scene>
         <!--Challenges-->
         <scene sceneID="O9x-Cr-1cw">

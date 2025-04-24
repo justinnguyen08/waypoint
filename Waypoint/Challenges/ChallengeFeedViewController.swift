@@ -39,6 +39,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     var currentUserUsername: String!
     
+    var currentUserFriends: [[String : Any]]!
+    var currentUserPendingFriends: [[String : Any]]!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -51,8 +55,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         noDataLabel.isHidden = true
         showSpinner()
         feed.removeAll()
-        getAllUsers{
-            self.loadTableInformation()
+        getAllUsers {
+            self.getCurrentUserFriends{
+                self.loadTableInformation()
+            }
         }
     }
     
@@ -72,35 +78,28 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     
     // https://anasaman-p.medium.com/understanding-async-let-in-swift-unlocking-concurrency-with-ease-3d25473a16db
     func getChallengesFromUser(uid: String, weekdayIndex: Int) async -> [FeedInfo]{
-        async let userDataTask = manager.getUserDocumentData(uid: uid)
-        async let profilePicTask = manager.getProfilePicture(uid: uid)
-        let userData = await userDataTask
-        let profilePicture = await profilePicTask ?? UIImage(systemName: "person.fill")
-        let username = userData?["username"] as? String ?? "unknown"
-        
-        profilePicCache[uid] = profilePicture
-        usernameCache[uid] = username
-        
         var results: [FeedInfo] = []
         if didDailyChallenge{
             let dailyPath = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
             
-            async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
             async let dailyChallengeMetadataTask = manager.getImageMetadata(path: dailyPath)
             
-            let dailyChallengeImage = await dailyChallengeImageTask
             let dailyChallengeMetadata = await dailyChallengeMetadataTask
             
             if let postID = dailyChallengeMetadata?["postID"]{
+                async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
+                
                 async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
                 async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
+                
+                let dailyChallengeImage = await dailyChallengeImageTask
                 
                 let likes = await likesTask
                 var comments = await commentsTask
                 comments?.sort{
                     ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                 }
-                results.append(FeedInfo(username: username, indicator: "daily", profilePicture: profilePicture, mainPicture: dailyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: -1, postID: postID))
+                results.append(FeedInfo(username: usernameCache[uid], indicator: "daily", profilePicture: profilePicCache[uid], mainPicture: dailyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: -1, postID: postID))
             }
         }
         
@@ -108,23 +107,23 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             if didMonthChallenge[index - 1]{
                 let monthlyPath = "\(uid)/challenges/monthlyChallenges/\(index - 1).jpg"
                 
-                async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
                 async let monthlyChallengeMetadataTask = manager.getImageMetadata(path: monthlyPath)
                 
-                let monthlyChallengeImage = await monthlyChallengeImageTask
                 let monthlyChallengeMetadata = await monthlyChallengeMetadataTask
                 
                 if let postID = monthlyChallengeMetadata?["postID"]{
+                    async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
                     async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
                     async let commentsTask = manager.getPostComments(collection: "challengePosts", postID: postID)
                     
+                    let monthlyChallengeImage = await monthlyChallengeImageTask
                     let likes = await likesTask
                     var comments = await commentsTask
                     comments?.sort{
                         ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                     }
                     
-                    results.append(FeedInfo(username: userData?["username"] as? String, indicator: "monthly", profilePicture: profilePicture, mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
+                    results.append(FeedInfo(username: usernameCache[uid], indicator: "monthly", profilePicture: profilePicCache[uid], mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
                 }
             }
         }
@@ -132,12 +131,38 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return results
     }
     
-    // get all of the current user's friends and set up which challenge photos to look for
+    
     func getAllUsers(handler: @escaping () -> Void){
+        db.collection("users").getDocuments { (snapshot, error) in
+            if let error = error{
+                print("Error fetching all users: \(error.localizedDescription)")
+                return
+            }
+            else{
+                if let snapshot = snapshot{
+                    for document in snapshot.documents{
+                        let data = document.data()
+                        // get the username and profile picture for each user
+                        let uid = document.documentID
+                        Task{
+                            let profilePicture = await self.manager.getProfilePicture(uid: uid) ?? UIImage(systemName: "person.fill")
+                            self.profilePicCache[uid] = profilePicture
+                        }
+                        self.usernameCache[uid] = data["username"] as? String ?? "unknown"
+                    }
+                    handler()
+                }
+            }
+        }
+    }
+    
+    // get all of the current user's friends and set up which challenge photos to look for
+    func getCurrentUserFriends(handler: @escaping () -> Void){
         guard let uid = Auth.auth().currentUser?.uid else{
             print("user is not logged in")
             return
         }
+        
         db.collection("users").document(uid).getDocument(){
             (document, error) in
             if let error = error{
@@ -149,7 +174,12 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                    let getDailyChallenge = data["getDailyChallenge"] as? TimeInterval,
                    let didMonthlyChallenges = data["didMonthlyChallenges"] as? [Bool],
                    let currentUserFriendsList = data["friends"] as? [[String: Any]],
-                   let currentUsername = data["username"] as? String{
+                   let currentUsername = data["username"] as? String,
+                   let currentUserPendingFriendsList = data["pendingFriends"] as? [[String: Any]]{
+                    
+                    self.currentUserFriends = currentUserFriendsList
+                    self.currentUserPendingFriends = currentUserPendingFriendsList
+                    
                     self.currentUserUsername = currentUsername
                     let calendar = Calendar.current
                     self.didDailyChallenge = calendar.isDateInToday(Date(timeIntervalSince1970: getDailyChallenge))
