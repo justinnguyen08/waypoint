@@ -123,14 +123,14 @@ class SettingsViewController: UITableViewController {
           // Request permission (or re-request if they’d never been asked)
             center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
                   DispatchQueue.main.async {
-                    sender.setOn(granted, animated: true)
-                    if granted {
-                      UIApplication.shared.registerForRemoteNotifications()
-                    } else {
-                      UserDefaults.standard.set(false, forKey: "NotificationsEnabledInApp")
-                    }
+                        sender.setOn(granted, animated: true)
+                        if granted {
+                          UIApplication.shared.registerForRemoteNotifications()
+                        } else {
+                          UserDefaults.standard.set(false, forKey: "NotificationsEnabledInApp")
+                        }
                   }
-                }
+            }
         } else {
           // They turned it off—send them to Settings.app since you can’t revoke programmatically
             center.removeAllPendingNotificationRequests()
@@ -212,12 +212,13 @@ class SettingsViewController: UITableViewController {
                 self.showExportProgressView()
             }
             
-            
+            // Set up dispatch group to take care of getting all the pictures first and then
+            // sends the pictures to photo library
             let group = DispatchGroup()
             var totalImages = 0
             var completedImages = 0
             
-            // displawy progress bar
+            // update the progress bar
             func updateProgress() {
                 DispatchQueue.main.async {
                     let progress = Float(completedImages) / Float(max(totalImages, 1))
@@ -282,6 +283,7 @@ class SettingsViewController: UITableViewController {
         }
     }
     
+    // Sets up the progress exporting view
     func showExportProgressView() {
         let backgroundView = UIView(frame: CGRect(x: 40, y: self.view.center.y - 40, width: self.view.frame.width - 80, height: 100))
         backgroundView.backgroundColor = UIColor.systemBackground
@@ -318,9 +320,5 @@ class SettingsViewController: UITableViewController {
             self.progressLabel = nil
         }
     }
-
-
-    
-    
     
 }
