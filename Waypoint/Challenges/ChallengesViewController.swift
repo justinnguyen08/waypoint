@@ -56,14 +56,17 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         monthlyTableView.dataSource = self
         hideAllButtons()
         
+        // make these views circular
         makeCircle(view: flashButton)
         makeCircle(view: cameraButton)
         makeCircle(view: rotateCameraButton)
         
+        // update the monthly challenge text
         let monthInt = Calendar.current.dateComponents([.month], from: Date()).month
         let monthStr = Calendar.current.monthSymbols[monthInt! - 1]
         monthlyLabel.text = "\(monthStr)'s Challenges"
         
+        // update the nav bar title
         let titleLabel = UILabel()
         titleLabel.text = "Challenges"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
@@ -72,15 +75,15 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         titleLabel.sizeToFit()
         let leftItem = UIBarButtonItem(customView: titleLabel)
         self.navigationItem.leftBarButtonItem = leftItem
-        
     }
     
+    // when completing a monthly challenge set the indicator to be true
     func updateMonthlyChallenges(index: Int){
         hasDoneMonthlyChallenges[index] = true
         monthlyTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
     }
     
-    
+    // make a view circular
     func makeCircle(view: UIView){
         view.layer.cornerRadius = view.frame.width / 2
         view.contentMode = .scaleAspectFill
@@ -172,7 +175,23 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                 print("Document is nil or document has no data")
                 return
             }
-        
+            
+            // check to see if we need to reset the weekly challenge score and the monthly challenge score
+            let weekdayInt = Calendar.current.dateComponents([.weekday], from: Date()).weekday
+            
+            if weekdayInt == 1{
+                self.db.collection("users").document(uid).updateData(["weeklyChallengeScore" : 0])
+            }
+            let dayInt = Calendar.current.dateComponents([.day], from: Date()).day ?? 1
+            
+            // https://stackoverflow.com/questions/63973204/how-can-we-get-all-the-days-in-selected-month
+            let calendar = Calendar(identifier: .gregorian)
+            // get the range of days and then count how many are in the range
+            let numDays = calendar.range(of: .day, in: .month, for: Date())?.count ?? 1
+            if dayInt == numDays{
+                self.db.collection("users").document(uid).updateData(["monthlyChallengeScore" : 0])
+            }
+            
             if let lastUploadTimestamp = data["getDailyChallenge"] as? TimeInterval {
                 self.hasDoneDailyChallenge = self.hasUploadedDailyChallenge(lastUploadTimestamp)
                 if !self.hasDoneDailyChallenge {
@@ -220,7 +239,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                         }
                     }
                 }
-                
                 
                 item.delete {
                     (error) in
@@ -349,18 +367,14 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                             self.monthlyChallenges.append(challenge)
                         }
                         
-                    
-                        
                         DispatchQueue.main.async{
                             self.monthlyTableView.reloadData()
                         }
                         handler()
                     }
-                   
                 }
             }
         }
-        
     }
     
     // turn the flash on or off for the camera
@@ -596,8 +610,8 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             monthlyView.isHidden = false
             dailyView.isHidden = true
             loadChallenges {
-                
-                guard let uid = Auth.auth().currentUser?.uid else{            self.monthlyTableView.reloadData()
+                guard let uid = Auth.auth().currentUser?.uid else{
+                    self.monthlyTableView.reloadData()
                     return
                 }
                 
@@ -615,7 +629,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
                                 self.hasDoneMonthlyChallenges = didMonthlyChallenges
                                 self.monthlyTableView.reloadData()
                             }
-                            
                         }
                     }
                 }
@@ -642,6 +655,7 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    // if we do select something from the monthly challenge table then set this up
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         monthlyChallengeIndex = indexPath.row
         return indexPath
@@ -660,7 +674,6 @@ class ChallengesViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             
             nextVC.delegate = self
-            
             nextVC.challengeDescriptionText = monthlyChallenges[index].description
             nextVC.challengePointsText = String(monthlyChallenges[index].points)
             nextVC.index = index

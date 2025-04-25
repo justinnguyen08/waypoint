@@ -10,8 +10,10 @@
 import UIKit
 import FirebaseAuth
 
+// this shows up whenever a user clicks on the feed comment
 class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
+    // holds all comments to be displayed
     var allComments: [CommentInfo]!
     
     @IBOutlet weak var profilePictureView: UIImageView!
@@ -20,17 +22,16 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
     @IBOutlet weak var commentTable: UITableView!
     @IBOutlet weak var sendCommentView: UIView!
     
-    var profilePicture: UIImage!
+    var profilePicture: UIImage! // profile picture of the user to comment
     var prevVC: ChallengeFeedViewController!
     var postID: String!
-    var index: Int!
+    var index: Int! // which comment are we
     
     var commentIndexWillSelect: Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         commentTable.delegate = self
         commentTable.dataSource = self
         commentTextField.delegate = self
@@ -48,7 +49,6 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         view.endEditing(true)
     }
 
-    
     // https://www.youtube.com/watch?v=O4tP7egAV1I
     // when the keyboard appears, move the view higher
     @objc func keyboardWillShow(sender: NSNotification){
@@ -76,6 +76,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         profilePictureView.contentMode = .scaleAspectFill
     }
     
+    // update the comments in the original feed when we leave
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         var toReplaceComments : [[String : Any]] = []
@@ -116,9 +117,6 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         }
     }
     
-    
-
-    
     // when the comment button is pressed then go up the chain to like a comment!
     func handleCommentLike(commentIndex: Int) async -> Bool{
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -142,10 +140,10 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
             cell.commentLikeCountLabel.text = "\(likes.count)"
         }
         
-        
         // reload this row
         commentTable.reloadRows(at: [IndexPath(row: commentIndex, section: 0)], with: .automatic)
         
+        // reload the prev VC information
         prevVC.feed[index].comments[commentIndex]["likes"] = likes
         prevVC.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         
@@ -170,6 +168,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         self.view.endEditing(true)
     }
     
+    // ensure we go to the correct profile
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         commentIndexWillSelect = indexPath.row
         let currentCommentUsername = allComments[commentIndexWillSelect].username
@@ -198,6 +197,7 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         return indexPath
     }
     
+    // prepare to send to the profile view controllers
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ChallengeCommentToRemoveProfile", let nextVC = segue.destination as? RemoveViewController {
             // get the username
@@ -241,9 +241,6 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         else{
             cell.commentLikeButton.setImage(UIImage(systemName: "hand.thumbsup"), for: .normal)
         }
-        
-    
         return cell
     }
-
 }

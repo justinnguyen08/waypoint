@@ -13,7 +13,7 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
-
+// This is a class to handle the photo camera
 class ChallengePhotoManager: NSObject, AVCapturePhotoCaptureDelegate{
     // camera information
     var session: AVCaptureSession?
@@ -82,14 +82,12 @@ class ChallengePhotoManager: NSObject, AVCapturePhotoCaptureDelegate{
             self.preview?.removeFromSuperlayer()
             self.preview = nil
 
-            // Nil out everything to release camera resources
+            // got scared of the camera coming back
             self.session = nil
             self.photoOutput = nil
             self.device = nil
         }
     }
-
-
     
     func toggleFlash() -> Bool{
         self.flashMode = (self.flashMode == .off) ? .on : .off

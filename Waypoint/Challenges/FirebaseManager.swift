@@ -12,11 +12,12 @@ import UIKit
 import FirebaseStorage
 import FirebaseFirestore
 
+// a class to help with common firebase calls
 class FirebaseManager{
-    
     let storageRef = Storage.storage().reference()
     let db = Firestore.firestore()
-
+    
+    // get the image metadata as a Dictionary or Map
     func getImageMetadata(path: String) async -> [String: String]?{
         let imageRef = storageRef.child(path)
         do{
@@ -30,6 +31,7 @@ class FirebaseManager{
     }
     
     // https://www.hackingwithswift.com/quick-start/concurrency/how-to-use-continuations-to-convert-completion-handlers-into-async-functions
+    // get the profile picture
     func getProfilePicture(uid: String) async -> UIImage?{
         await withCheckedContinuation { continuation in
             let profilePicRef = storageRef.child("\(uid)/profile_pic.jpg")
@@ -51,6 +53,7 @@ class FirebaseManager{
         }
     }
     // https://www.hackingwithswift.com/quick-start/concurrency/how-to-use-continuations-to-convert-completion-handlers-into-async-functions
+    // get a challenge photo
     func getChallengePicture(path: String) async -> UIImage?{
         await withCheckedContinuation {
             continuation in
@@ -71,9 +74,9 @@ class FirebaseManager{
                 }
             }
         }
-        
     }
     
+    // get the user document in "users"
     func getUserDocumentData(uid: String) async -> [String: Any]?{
         let docRef = db.collection("users").document(uid)
         do{
@@ -92,6 +95,7 @@ class FirebaseManager{
         return nil
     }
     
+    // get the  post likes (likes are just strings of uids)
     func getPostLikes(collection: String, postID: String) async -> [String]?{
         let postRef = db.collection(collection).document(postID)
         
@@ -107,6 +111,7 @@ class FirebaseManager{
         return nil
     }
     
+    // get the comments which are of form (uid: String, username: String)
     func getPostComments(collection: String, postID: String) async -> [[String : Any]]? {
         let postRef = db.collection(collection).document(postID)
         do{
@@ -122,6 +127,7 @@ class FirebaseManager{
         return nil
     }
     
+    // get the tagged users which is an array of uids
     func getPostTagged(collection: String, postID: String) async -> [String]?{
         let postRef = db.collection(collection).document(postID)
         
@@ -137,6 +143,7 @@ class FirebaseManager{
         return nil
     }
     
+    // get the friends list
     func getFriendsList(uid: String) async -> [[String : Any]]? {
         let userData: [String : Any]? = await getUserDocumentData(uid: uid)
         let friends: [[String : Any]]? = userData?["friends"] as? [[String : Any]]
