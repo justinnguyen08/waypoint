@@ -177,6 +177,8 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                             return
                         }
                         
+                        let currentMonthlyPoints = data["monthlyChallengeScore"] as? Int ?? 0
+                        
                         if var monthlyChallengeStatus = data["didMonthlyChallenges"] as? [Bool]{
                             monthlyChallengeStatus[self.index!] = true
                             self.db.collection("users").document(userId).setData(["didMonthlyChallenges" : monthlyChallengeStatus], merge: true){
@@ -188,6 +190,7 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
                                     self.delegate.updateMonthlyChallenges(index: self.index!)
                                 }
                             }
+                            self.db.collection("users").document(userId).updateData(["monthlyChallengeScore" : currentMonthlyPoints + 10])
                         }
                         else{
                             print("monthlyChallengeStatus does not exist")
