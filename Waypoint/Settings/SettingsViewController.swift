@@ -52,7 +52,6 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
         // export photos is in section 3
         if indexPath.section == 3 {
             let confirmAlert = UIAlertController(
@@ -135,8 +134,8 @@ class SettingsViewController: UITableViewController {
         } else {
           // They turned it off—send them to Settings.app since you can’t revoke programmatically
             center.removeAllPendingNotificationRequests()
-                center.removeAllDeliveredNotifications()
-                UIApplication.shared.applicationIconBadgeNumber = 0
+            center.removeAllDeliveredNotifications()
+            center.setBadgeCount(0)
         }
     }
     
@@ -146,6 +145,7 @@ class SettingsViewController: UITableViewController {
         applyStyle(dark: dark)
     }
     
+    // apply dark or light style
     private func applyStyle(dark: Bool) {
         let style: UIUserInterfaceStyle = dark ? .dark : .light
 
@@ -197,7 +197,7 @@ class SettingsViewController: UITableViewController {
         }
     }
     
-    
+    // exports all daily and challenge photos to camera roll
     func exportAllPicsAndChallengesToPhotos() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         let baseRef = Storage.storage().reference().child(currentUID)
@@ -216,7 +216,8 @@ class SettingsViewController: UITableViewController {
             let group = DispatchGroup()
             var totalImages = 0
             var completedImages = 0
-
+            
+            // displawy progress bar
             func updateProgress() {
                 DispatchQueue.main.async {
                     let progress = Float(completedImages) / Float(max(totalImages, 1))
@@ -224,7 +225,8 @@ class SettingsViewController: UITableViewController {
                     self.progressLabel?.text = "Exporting photos... (\(completedImages)/\(totalImages))"
                 }
             }
-
+            
+            // export all photos from folder
             func exportAndCount(from folder: StorageReference) {
                 group.enter()
                 folder.listAll { result, error in
@@ -235,7 +237,8 @@ class SettingsViewController: UITableViewController {
 
                     totalImages += items.count
                     let innerGroup = DispatchGroup()
-
+                    
+                    // iterate through all images in folder ("all_pics" & "challenges")
                     for imageRef in items {
                         innerGroup.enter()
                         imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
@@ -277,37 +280,6 @@ class SettingsViewController: UITableViewController {
                 }
             }
         }
-    }
-
-    func exportImages(in folder: StorageReference) {
-        folder.listAll { result, error in
-            if let error = error {
-                print("Error listing items in \(folder.fullPath): \(error.localizedDescription)")
-                return
-            }
-
-            for imageRef in result!.items {
-                imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
-                    if let error = error {
-                        print("Error downloading \(imageRef.fullPath): \(error.localizedDescription)")
-                        return
-                    }
-
-                    guard let data = data, let image = UIImage(data: data) else { return }
-
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.creationRequestForAsset(from: image)
-                    }) { success, error in
-                        if success {
-                            print("Saved: \(imageRef.name)")
-                        } else {
-                            print("Failed saving \(imageRef.name): \(error?.localizedDescription ?? "Unknown error")")
-                        }
-                    }
-                }
-            }
-        }
-        
     }
     
     func showExportProgressView() {
