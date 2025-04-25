@@ -150,6 +150,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                         self.currentLeaderboardToDisplay.append(item)
                     }
                 }
+                self.currentLeaderboardToDisplay = Array(self.currentLeaderboardToDisplay.prefix(100))
                 self.spinnerManager.hideSpinner()
                 self.tableView.reloadData()
                 self.currentDateScope = "weekly"
@@ -230,9 +231,13 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
         if currentDateScope == "weekly" { // Weekly
             currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})
+            // https://stackoverflow.com/questions/28527797/how-to-return-first-5-objects-of-array-in-swift
+            currentLeaderboardToDisplay = Array(currentLeaderboardToDisplay.prefix(100))
         }
         else{ // Monthly
             currentLeaderboardToDisplay.sort(by: {$0.monthlyScore > $1.monthlyScore})
+            // https://stackoverflow.com/questions/28527797/how-to-return-first-5-objects-of-array-in-swift
+            currentLeaderboardToDisplay = Array(currentLeaderboardToDisplay.prefix(100))
         }
         tableView.reloadData()
     }
