@@ -22,6 +22,7 @@ class YearlyTimelapseViewController: UIViewController {
     var basePath = ""
 
 
+    // Sets up the image view for the yearly timelapse to work as a presentation
     override func viewDidLoad() {
         super.viewDidLoad()
         if let user = Auth.auth().currentUser {
@@ -41,6 +42,8 @@ class YearlyTimelapseViewController: UIViewController {
 
     }
     
+    // Gets all the image urls using the functions from the firebase commands to store all the urls, and
+    // send it to start the slideshow
     func fetchAllImageURLs(uuid: String) {
         Task {
             do {
@@ -83,6 +86,7 @@ class YearlyTimelapseViewController: UIViewController {
         }
     }
     
+    // shows the images, and presents it in the image view
     func showImage(index: Int) {
         let url = imageUrls[index]
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -105,6 +109,7 @@ class YearlyTimelapseViewController: UIViewController {
         }.resume()
     }
 
+    // Makes sure that slideshow stops when you leave the screen
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         slideshowTimer?.invalidate()
@@ -127,7 +132,7 @@ extension StorageReference {
         }
     }
     
-    // downloads all urls in firebase asynchronously
+    // To download a url from firebase asynchronously
     func downloadURLAsync() async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
             self.downloadURL { url, error in
