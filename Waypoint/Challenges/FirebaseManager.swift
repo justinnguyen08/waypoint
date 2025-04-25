@@ -52,6 +52,7 @@ class FirebaseManager{
             }
         }
     }
+    
     // https://www.hackingwithswift.com/quick-start/concurrency/how-to-use-continuations-to-convert-completion-handlers-into-async-functions
     // get a challenge photo
     func getChallengePicture(path: String) async -> UIImage?{

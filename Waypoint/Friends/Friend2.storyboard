@@ -148,7 +148,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VFf-8L-Ncm">
-                                                                    <rect key="frame" x="245" y="2" width="77.666666666666657" height="34.333333333333336"/>
+                                                                    <rect key="frame" x="244.99999999999997" y="2" width="77.666666666666657" height="34.333333333333336"/>
                                                                     <state key="normal" title="Button"/>
                                                                     <buttonConfiguration key="configuration" style="filled" title="Accept"/>
                                                                     <connections>
@@ -252,7 +252,7 @@
                                                             <constraints>
                                                                 <constraint firstItem="sY3-KY-5YG" firstAttribute="centerY" secondItem="thO-Hv-vwJ" secondAttribute="centerY" id="10N-V0-2K5"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="dZU-8o-a5I" secondAttribute="centerY" constant="-3" id="1Aq-ex-DGV"/>
-                                                                <constraint firstItem="sY3-KY-5YG" firstAttribute="leading" secondItem="thO-Hv-vwJ" secondAttribute="trailing" constant="75.333333333333314" id="RCw-gP-CCb"/>
+                                                                <constraint firstAttribute="trailing" secondItem="sY3-KY-5YG" secondAttribute="trailing" constant="15" id="3Ob-IS-kVq"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="centerY" secondItem="thO-Hv-vwJ" secondAttribute="centerY" constant="-3.5" id="SYd-kJ-iH1"/>
                                                                 <constraint firstItem="thO-Hv-vwJ" firstAttribute="top" secondItem="OAI-Jo-mEs" secondAttribute="top" constant="10.666666666666664" id="TfV-MC-KzG"/>
                                                                 <constraint firstItem="Jbv-pD-ewj" firstAttribute="leading" secondItem="OAI-Jo-mEs" secondAttribute="leadingMargin" constant="4" id="Y0r-AV-EM1"/>
@@ -355,8 +355,7 @@
                                 <rect key="frame" x="28" y="260" width="87" height="35"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Pending">
-                                    <color key="baseForegroundColor" systemColor="labelColor"/>
-                                    <color key="baseBackgroundColor" systemColor="systemGray5Color"/>
+                                    <color key="baseBackgroundColor" systemColor="systemGray2Color"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="pendingButtonPressed:" destination="tdd-bu-dLl" eventType="touchUpInside" id="Lc8-rf-ceV"/>
@@ -817,9 +816,6 @@
         </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
