@@ -17,12 +17,10 @@ class FeedTableViewCell: UITableViewCell {
     @IBOutlet weak var typeLabel: UILabel!
     @IBOutlet weak var mainImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
-    
     @IBOutlet weak var likeLabel: UILabel!
-    
     @IBOutlet weak var commentLabel: UILabel!
-    
     @IBOutlet weak var commentButton: UIButton!
+    
     var delegate: ChallengeFeedViewController!
     var likes: [String]!
     var index: Int!
@@ -41,7 +39,6 @@ class FeedTableViewCell: UITableViewCell {
         super.layoutSubviews()
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        
     }
     
     @IBAction func commentButtonPressed(_ sender: Any) {
@@ -49,7 +46,7 @@ class FeedTableViewCell: UITableViewCell {
     }
     
     @IBAction func likeButtonPressed(_ sender: Any) {
-        // XCode suggested this task monstrosity
+        // XCode suggested this @MainActor
         Task { @MainActor in
             let status: Bool = await delegate.handleLike(rowIndex: index)
             if status{

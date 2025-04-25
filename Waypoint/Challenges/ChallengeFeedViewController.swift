@@ -22,12 +22,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     var allUIds: [String] = []
     var didDailyChallenge: Bool = false
     var didMonthChallenge: [Bool] = [false, false, false, false, false]
-    
     var willClickCellAt: Int!
     var pendingComments: [CommentInfo] = []
     
     // https://www.hackingwithswift.com/example-code/uikit/how-to-use-uiactivityindicatorview-to-show-a-spinner-when-work-is-happening
-    var spinner = UIActivityIndicatorView(style: .large)
+    var spinner = SpinnerManager()
     
     
     // allows us access into the Google Firebase Firestore
@@ -38,10 +37,8 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     var usernameCache: [String: String] = [:]
     
     var currentUserUsername: String!
-    
     var currentUserFriends: [[String : Any]]!
     var currentUserPendingFriends: [[String : Any]]!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,37 +50,27 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     override func viewWillAppear(_ animated: Bool) {
         tableView.isHidden = true
         noDataLabel.isHidden = true
-        showSpinner()
+        spinner.showSpinner(view: view)
         feed.removeAll()
         getCurrentUserFriends{
             self.loadTableInformation()
         }
     }
     
-    func showSpinner(){
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        view.addSubview(spinner)
-
-        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-    }
-    
-    func hideSpinner(){
-        spinner.stopAnimating()
-        spinner.removeFromSuperview()
-    }
-    
     // https://anasaman-p.medium.com/understanding-async-let-in-swift-unlocking-concurrency-with-ease-3d25473a16db
     func getChallengesFromUser(uid: String, weekdayIndex: Int) async -> [FeedInfo]{
         var results: [FeedInfo] = []
+       
+        // only get the daily challenge if we as the actual user has done it
         if didDailyChallenge{
             
+            // update our cache of profile pictures
             if !profilePicCache.contains(where: { key, value in
                 return key == uid
             }){
                 profilePicCache[uid] = await self.manager.getProfilePicture(uid: uid) ?? UIImage(systemName: "person.fill")
             }
+            // update our cache of usernames
             if !usernameCache.contains(where: { key, value in
                 return key == uid
             }){
@@ -93,12 +80,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
             
             let dailyPath = "\(uid)/challenges/dailyChallenge/\(weekdayIndex).jpg"
-            
             async let dailyChallengeMetadataTask = manager.getImageMetadata(path: dailyPath)
-            
-            
             let dailyChallengeMetadata = await dailyChallengeMetadataTask
             
+            // get the daily challenge from this user if they have done it
             if let postID = dailyChallengeMetadata?["postID"]{
                 async let dailyChallengeImageTask = manager.getChallengePicture(path: dailyPath)
                 
@@ -133,14 +118,19 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
             }
         }
         
+        // go through the monthly challenges
         for index in 1..<6{
+            // if we have done that monthly challenge
             if didMonthChallenge[index - 1]{
                 
+                // update the cache for profile pictures
                 if !profilePicCache.contains(where: { key, value in
                     return key == uid
                 }){
                     profilePicCache[uid] = await self.manager.getProfilePicture(uid: uid) ?? UIImage(systemName: "person.fill")
                 }
+                
+                // update the cahce for usernames
                 if !usernameCache.contains(where: { key, value in
                     return key == uid
                 }){
@@ -151,11 +141,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 
                 
                 let monthlyPath = "\(uid)/challenges/monthlyChallenges/\(index - 1).jpg"
-                
                 async let monthlyChallengeMetadataTask = manager.getImageMetadata(path: monthlyPath)
-                
                 let monthlyChallengeMetadata = await monthlyChallengeMetadataTask
                 
+                // if they have done the monthly challenge load it
                 if let postID = monthlyChallengeMetadata?["postID"]{
                     async let monthlyChallengeImageTask = manager.getChallengePicture(path: monthlyPath)
                     async let likesTask = manager.getPostLikes(collection: "challengePosts", postID: postID)
@@ -164,6 +153,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     let monthlyChallengeImage = await monthlyChallengeImageTask
                     let likes = await likesTask
                     var comments = await commentsTask ?? []
+                    
                     comments.sort{
                         ($0["timestamp"] as? TimeInterval ?? 0) < ($1["timestamp"] as? TimeInterval ?? 0)
                     }
@@ -184,12 +174,10 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                             }
                         }
                     }
-                    
                     results.append(FeedInfo(username: usernameCache[uid], indicator: "monthly", profilePicture: profilePicCache[uid], mainPicture: monthlyChallengeImage, likes: likes, comments: comments, uid: uid, monthlyChallngeIndex: index, postID: postID))
                 }
             }
         }
-        
         return results
     }
     
@@ -234,8 +222,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
 
-    
-    
     // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
     // https://www.avanderlee.com/concurrency/task-groups-in-swift/
     func loadTableInformation(){
@@ -254,13 +240,12 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 }
                 return combined
             }
-            
             self.feed = allFeeds
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
                 self.tableView.isHidden = false
-                self.hideSpinner()
+                self.spinner.hideSpinner()
                 if self.feed.count == 0{
                     self.noDataLabel.isHidden = false
                 }
@@ -269,6 +254,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     // logic for posting a comment!
+    // inspired by the firebase documentation
     func postComment(commentText: String, postID: String, index: Int) async {
         guard let uid = Auth.auth().currentUser?.uid else{
             print("User is not logged in")
@@ -296,7 +282,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                       domain: "AppErrorDomain",
                       code: -1,
                       userInfo: [
-                        NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                        NSLocalizedDescriptionKey: "Unable to retrieve comments from snapshot \(postDocument)"
                       ]
                     )
                     errorPointer?.pointee = error
@@ -322,6 +308,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     // handle liking a post from the feed
+    // inspired by the firebase documentation
     func handleLike(rowIndex: Int) async -> Bool{
         guard let uid = Auth.auth().currentUser?.uid else{
             print("User is not logged in")
@@ -349,15 +336,13 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 domain: "AppErrorDomain",
                 code: -1,
                 userInfo: [
-                  NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                  NSLocalizedDescriptionKey: "Unable to retrieve likes from snapshot \(postDocument)"
                 ]
               )
               errorPointer?.pointee = error
               return false
             }
 
-            // Note: this could be done without a transaction
-            //       by updating the population using FieldValue.increment()
               if oldLikes.contains(uid){
                   oldLikes.removeAll { $0 == uid}
               }
@@ -410,7 +395,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                     domain: "AppErrorDomain",
                     code: -1,
                     userInfo: [
-                      NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(postDocument)"
+                      NSLocalizedDescriptionKey: "Unable to retrieve likes from snapshot \(postDocument)"
                     ]
                   )
                   errorPointer?.pointee = error
@@ -444,80 +429,6 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return false
     }
     
-    // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
-    // https://www.avanderlee.com/concurrency/task-groups-in-swift/
-    func getNewData(index: Int) async -> [CommentInfo]{
-        guard let postID = feed[index].postID else {
-            print("no valid post id for this feed post!")
-            return []
-        }
-        
-        let postRef = db.collection("challengePosts").document(postID)
-        var rawComments: [[String : Any]] = []
-        do{
-            let document = try await postRef.getDocument()
-            if document.exists{
-                if let data = document.data(){
-                    rawComments = data["comments"] as! [[String : Any]]
-                    rawComments.sort{
-                        $0["timestamp"] as? TimeInterval ?? 0 < $1["timestamp"] as? TimeInterval ?? 0
-                    }
-                }
-            }
-        }
-        catch{
-            print("error getting lated data from storage")
-            return []
-        }
-        
-        var loadedComments: [CommentInfo] = []
-        
-        await withTaskGroup(of: CommentInfo?.self) { group in
-            for comment in rawComments{
-                group.addTask{
-                    guard let commentUID = comment["uid"] as? String else{
-                        print("Cannot get uid for comment!")
-                        return nil
-                    }
-                    
-                    guard let commentText = comment["comment"] as? String else{
-                        print("Cannot get uid for comment!")
-                        return nil
-                    }
-                    
-                    guard let likes = comment["likes"] as? [String] else{
-                        print("Cannot get uid for comment!")
-                        return nil
-                    }
-                    
-                    guard let timestamp = comment["timestamp"] as? Double else{
-                        print("Cannot get timestamp for comment!")
-                        return nil
-                    }
-                    
-                    async let profilePictureTask = self.manager.getProfilePicture(uid: commentUID)
-                    async let userDocTask = self.manager.getUserDocumentData(uid: commentUID)
-                    
-                    guard let username = await userDocTask?["username"] as? String else{
-                        print("Cannot get username for comment!")
-                        return nil
-                    }
-                    
-                    return CommentInfo(uid: commentUID, profilePicture: await profilePictureTask, comment: commentText, likes: likes, username: username, timestamp: timestamp)
-                }
-            }
-            
-            for await result in group{
-                if let commentInfo = result{
-                    loadedComments.append(commentInfo)
-                }
-            }
-        }
-        return loadedComments.sorted { $0.timestamp < $1.timestamp }
-    }
-    
-    // https://medium.com/@viveksehrawat36/migrating-from-dispatchgroup-to-async-await-with-taskgroup-in-swift-44725e207f3c
-    // https://www.avanderlee.com/concurrency/task-groups-in-swift/
     // handles going into the view by getting the comments ready!
     func handleCommentSegue(index: Int){
         let cInfo = feed[index]
@@ -552,6 +463,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return indexPath
     }
     
+    // display each thing in the feed
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as! FeedTableViewCell
         let cInfo = feed[indexPath.row]
@@ -575,7 +487,7 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
         return cell
     }
     
-    
+    // prepare to send to either comment or the profile
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "commentSegue",
            let nextVC = segue.destination as? ChallengeFeedCommentViewController{
@@ -584,14 +496,11 @@ class ChallengeFeedViewController: UIViewController, UITableViewDelegate, UITabl
                 sheet.detents = [.medium()]
                 sheet.prefersGrabberVisible = true
             }
-            
-            
             nextVC.prevVC = self
             
             guard let currentUserUID = Auth.auth().currentUser?.uid else{
                 return
             }
-            
             
             let cInfo = feed[willClickCellAt]
             nextVC.profilePicture = profilePicCache[currentUserUID]

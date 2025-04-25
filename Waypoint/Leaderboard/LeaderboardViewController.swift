@@ -59,6 +59,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         scopeSegment.layer.cornerRadius = 16
         scopeSegment.clipsToBounds = true
         
+        // sets the nav bar title at first
         titleLabel.text = "Leaderboard - Weekly"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
         titleLabel.textColor = .label
@@ -97,6 +98,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
 
+    // load the table
     func loadTableInformation(){
         self.mockLeaderboard = []
         self.currentLeaderboardToDisplay = []
@@ -107,16 +109,14 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
         Task{
             let currentUserData = await self.manager.getUserDocumentData(uid: uid)
-            
             var friends = currentUserData?["friends"] as? [[String : Any]] ?? []
             let username = currentUserData?["username"] as? String ?? ""
-            
             guard !username.isEmpty else{
                 return
             }
             
+            // get all info for friends and yourself
             friends.append(["uid" : uid, "username" : username])
-            
             let allInfo = await withTaskGroup(of: LeaderboardEntry.self) { group in
                 for uid in allUIds{
                     group.addTask{
@@ -131,6 +131,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
                 return results
             }
             
+            // first sort by weekly score by default
             self.mockLeaderboard = allInfo
             self.mockLeaderboard.sort{
                 $0.weeklyScore > $1.weeklyScore
@@ -156,6 +157,7 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    // get the information!
     func getChallengesInformation(uid: String, friends: [[String : Any]]) async -> LeaderboardEntry{
         async let userDataTask = manager.getUserDocumentData(uid: uid)
         async let profilePictureTask = manager.getProfilePicture(uid: uid)
@@ -238,12 +240,10 @@ class LeaderboardViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     @IBAction func filterTapped(_ sender: Any) {
-        
         let controller = UIAlertController(
             title: "Leaderboard Filter",
             message: "Weekly or Monthly!",
             preferredStyle: .actionSheet)
-        
         
         controller.addAction(UIAlertAction(title: "Weekly", style: .default, handler: { _ in
             self.currentLeaderboardToDisplay.sort(by: {$0.weeklyScore > $1.weeklyScore})

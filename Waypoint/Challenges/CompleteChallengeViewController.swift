@@ -13,6 +13,7 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
+// this allows us to complete challenges when clicked on a monthly challenge
 class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDelegate{
     
     @IBOutlet weak var cameraButton: UIButton!
@@ -24,7 +25,6 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     @IBOutlet weak var challengePoints: UILabel!
     @IBOutlet weak var monthlyChallengeSelectedView: UIView!
     @IBOutlet weak var cameraDisplayView: UIView!
-    
     
     // camerea type stuff
     var capturedData: Data?
@@ -38,7 +38,6 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
     let db = Firestore.firestore()
     
     var photoManager: ChallengePhotoManager!
-    
     let spinnerManager = SpinnerManager()
     var delegate: ChallengesViewController!
     
@@ -48,7 +47,6 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         makeCircle(view: rotateCameraButton)
         makeCircle(view: flashButton)
         makeCircle(view: cameraButton)
-        
         
         hideAllButtons()
     }
@@ -86,12 +84,14 @@ class CompleteChallengeViewController: UIViewController, AVCapturePhotoCaptureDe
         }
     }
     
+    // make a view circular
     func makeCircle(view: UIView){
         view.layer.cornerRadius = view.frame.width / 2
         view.contentMode = .scaleAspectFill
         view.clipsToBounds = true
     }
     
+    // ensure that when we leave the camera stops
     override func viewDidDisappear(_ animated: Bool) {
         if photoManager != nil{
             photoManager.dismissCamera()

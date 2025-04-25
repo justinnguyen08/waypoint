@@ -10,6 +10,8 @@
 import Foundation
 import UIKit
 
+// https://www.hackingwithswift.com/example-code/uikit/how-to-use-uiactivityindicatorview-to-show-a-spinner-when-work-is-happening
+// spinner manager that allows us to indicate that there is activity
 class SpinnerManager{
     let spinner = UIActivityIndicatorView(style: .large)
     
