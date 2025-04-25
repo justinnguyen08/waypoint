@@ -96,6 +96,18 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
         }
+        suggestedFriendView.reloadData()
+        pendingFriendView.reloadData()
+        if pendingFriendsArray.count == 0 {
+            pendingFriendView.isHidden = true
+            pendingFriendLabel.isHidden = true
+            suggestFriendsLabel.isHidden = false
+        } else {
+            pendingFriendView.isHidden = false
+            pendingFriendLabel.isHidden = false
+            pendingFriendLabel.text = "  Pending Friends"
+            suggestFriendsLabel.isHidden = false
+        }
     }
 
     
@@ -149,6 +161,18 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         filteredUsers = addFriendsArray
         searchBar.text = ""
         friendFilteredUsers = removeFriendsArray
+        suggestedFriendView.reloadData()
+        pendingFriendView.reloadData()
+        if pendingFriendsArray.count == 0 {
+            pendingFriendView.isHidden = true
+            pendingFriendLabel.isHidden = true
+            suggestFriendsLabel.isHidden = false
+        } else {
+            pendingFriendView.isHidden = false
+            pendingFriendLabel.isHidden = false
+            pendingFriendLabel.text = "  Pending Friends"
+            suggestFriendsLabel.isHidden = false
+        }
     }
     
     // get all the users that are in your pending users
@@ -355,6 +379,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 pendingFriendView.isHidden = false
                 pendingFriendLabel.isHidden = false
                 pendingFriendLabel.text = "  Pending Friends"
+                suggestFriendsLabel.isHidden = false
             }
         default:
             print("Should Not happen")
@@ -499,10 +524,12 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             if searchText.isEmpty {
                 // If the search text is empty, show all users
                 filteredUsers = addFriendsArray
+                suggestFriendsLabel.isHidden = false
                 if pendingFriendsArray.count == 0 {
                     pendingFriendView.isHidden = true
-                    pendingFriendLabel.isHidden = false
-                    pendingFriendLabel.text = "  Suggested Friends"
+                    pendingFriendLabel.isHidden = true
+//                    pendingFriendLabel.text = "  Suggested Friends"
+//                    suggestFriendsLabel.isHidden = true
                 } else {
                     pendingFriendView.isHidden = false
                     pendingFriendLabel.isHidden = false
@@ -551,10 +578,13 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         if pendingFriendsArray.count == 0 {
             pendingFriendView.isHidden = true
             pendingFriendLabel.isHidden = true
+            suggestFriendsLabel.isHidden = false
         } else {
             pendingFriendView.isHidden = false
             pendingFriendLabel.isHidden = false
+            suggestFriendsLabel.isHidden = false
         }
+        suggestFriendsLabel.isHidden = false
         pendingFriendView.reloadData()
         suggestedFriendView.reloadData()
     }
@@ -586,6 +616,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             pendingFriendView.isHidden = false
             pendingFriendLabel.isHidden = false
             pendingFriendLabel.text = "  Pending Friends"
+            suggestFriendsLabel.isHidden = false
         }
         suggestedFriendView.reloadData()
         friendProfileView.reloadData()
@@ -605,6 +636,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             pendingFriendView.isHidden = false
             pendingFriendLabel.isHidden = false
             pendingFriendLabel.text = "  Pending Friends"
+            suggestFriendsLabel.isHidden = false
         }
         friendProfileView.reloadData()
         suggestedFriendView.reloadData()
