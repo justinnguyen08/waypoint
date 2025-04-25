@@ -407,7 +407,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             cell.customProfileName.text = friendFilteredUsers[indexPath.row].username
             cell.customProfileName.font = .systemFont(ofSize: 16, weight: .semibold)
             let profilePicRef = storage.reference().child("\(friendFilteredUsers[indexPath.row].uid)/profile_pic.jpg")
-            let user = filteredUsers[indexPath.row]
+            let user = friendFilteredUsers[indexPath.row]
             fetchImage(from: profilePicRef, for: cell.profilePic, fallback: "person.circle", uid: user.uid)
             cell.profilePic.layer.cornerRadius = cell.profilePic.frame.width / 2
             cell.profilePic.contentMode = .scaleAspectFill

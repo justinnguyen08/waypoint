@@ -43,19 +43,12 @@ class SettingsViewController: UITableViewController {
         getProfilePic()
         // sync switch
         UNUserNotificationCenter.current().getNotificationSettings { settings in
-          DispatchQueue.main.async {
-            switch settings.authorizationStatus {
-            case .authorized, .provisional:
-              // Notifications are allowed
-              self.notificationSwitch.setOn(true, animated: false)
-            case .denied, .notDetermined:
-              // Either explicitly denied, or never asked
-              self.notificationSwitch.setOn(false, animated: false)
-            default:
-              self.notificationSwitch.setOn(false, animated: false)
+            let systemAllowed = (settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional)
+            let userEnabled  = UserDefaults.standard.bool(forKey: "NotificationsEnabledInApp")
+            DispatchQueue.main.async {
+              self.notificationSwitch.isOn = (systemAllowed && userEnabled)
             }
           }
-        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -125,21 +118,25 @@ class SettingsViewController: UITableViewController {
     }
     
     @IBAction func notificationsButtonTapped(_ sender: UISwitch) {
+        let center = UNUserNotificationCenter.current()
+        UserDefaults.standard.set(sender.isOn, forKey: "NotificationsEnabledInApp")
         if sender.isOn {
           // Request permission (or re-request if they’d never been asked)
-          UNUserNotificationCenter.current()
-            .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-              DispatchQueue.main.async {
-                // If they declined again, flip it back off
-                sender.setOn(granted, animated: true)
-              }
-            }
+            center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                  DispatchQueue.main.async {
+                    sender.setOn(granted, animated: true)
+                    if granted {
+                      UIApplication.shared.registerForRemoteNotifications()
+                    } else {
+                      UserDefaults.standard.set(false, forKey: "NotificationsEnabledInApp")
+                    }
+                  }
+                }
         } else {
           // They turned it off—send them to Settings.app since you can’t revoke programmatically
-          guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-          UIApplication.shared.open(url)
-          // Keep your switch off
-          sender.setOn(false, animated: true)
+            center.removeAllPendingNotificationRequests()
+                center.removeAllDeliveredNotifications()
+                UIApplication.shared.applicationIconBadgeNumber = 0
         }
     }
     
