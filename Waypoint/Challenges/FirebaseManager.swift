@@ -50,6 +50,7 @@ class FirebaseManager{
             }
         }
     }
+    
     // https://www.hackingwithswift.com/quick-start/concurrency/how-to-use-continuations-to-convert-completion-handlers-into-async-functions
     func getChallengePicture(path: String) async -> UIImage?{
         await withCheckedContinuation {
@@ -71,7 +72,6 @@ class FirebaseManager{
                 }
             }
         }
-        
     }
     
     func getUserDocumentData(uid: String) async -> [String: Any]?{
