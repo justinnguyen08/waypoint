@@ -51,7 +51,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         // fetch profile data
         fetchUserProfile()
         
-        fetchProfileAndPinnedImages()
+        fetchPinnedImages()
         fetchUserImages()
     }
     
@@ -75,16 +75,11 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         
     }
     
-    func fetchProfileAndPinnedImages() {
+    // get and load pinned image
+    func fetchPinnedImages() {
         if let userId = Auth.auth().currentUser?.uid {
             let storage = Storage.storage()
-            let profilePicRef = storage.reference().child("\(userId)/profile_pic.jpg")
             let pinnedPicRef = storage.reference().child("\(userId)/pinned_pic.jpg")
-            
-            // Fetch profile pic
-//            fetchImage(from: profilePicRef, for: avatarImageView, fallback: "person.circle")
-//            avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
-//            avatarImageView.contentMode = .scaleAspectFill
             
             // Fetch pinned pic
             fetchImage(from: pinnedPicRef, for: pinnedImageView, fallback: "pin.circle")
@@ -95,6 +90,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         }
     }
     
+    // get image associated with passed Firebase reference
     func fetchImage(from ref: StorageReference, for imageView: UIImageView, fallback: String) {
         let path = ref.fullPath as NSString
         if let cachedImage = imageCache.object(forKey: path) {
@@ -117,6 +113,7 @@ class ProfileViewController: UIViewController, UICollectionViewDataSource, UICol
         }
     }
     
+    // loop through and load all of the current user's map and daily images
     func fetchUserImages() {
         if let userId = Auth.auth().currentUser?.uid {
             let storage = Storage.storage()
