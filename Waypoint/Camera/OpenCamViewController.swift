@@ -145,6 +145,7 @@ class OpenCamViewController: UIViewController, AVCapturePhotoCaptureDelegate, CL
         let symbol = (flashMode == .off ? "bolt.slash" : "bolt")
         flashButton.setImage(UIImage(systemName: symbol), for: .normal)
     }
+    
     @IBAction func flipCamera(_ sender: Any) {
         guard let currentSession = session, currentSession.isRunning else { return }
         

@@ -23,7 +23,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var dailyAnnotation: PhotoPost?
     var posted: Bool = false
     var flushTimer: Timer?
-//    var targetDate: String = readableDate(from: Date())
     
     let manager = CLLocationManager()
     
@@ -182,8 +181,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     let custom = metadata.customMetadata,
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
-                    let lat    = Double(latStr),
-                    let lon    = Double(lonStr),
+                    let lat = Double(latStr),
+                    let lon = Double(lonStr),
                     let postID = custom["postID"]
                 else { return }
 
@@ -215,7 +214,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     // very similar to dailyPic, just retrieving from different location in Firebase Storage
     private func showPinnedPic(for uid: String, date: String, pinnedToday: Bool = false) {
         
-//        let path = pinnedToday ? "\(uid)/pinned_pic.jpg" : "\(uid)/\(date)/pinned_pic.jpg"
         let pinnedRef = Storage.storage().reference().child("\(uid)/\(date)/pinned_pic.jpg")
 
         pinnedRef.getMetadata { [weak self] metaResult in
@@ -234,8 +232,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     let custom = metadata.customMetadata,
                     let latStr = custom["latitude"],
                     let lonStr = custom["longitude"],
-                    let lat    = Double(latStr),
-                    let lon    = Double(lonStr),
+                    let lat = Double(latStr),
+                    let lon = Double(lonStr),
                     let postID = custom["postID"]
                 else { return }
 
@@ -276,9 +274,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             }
             let friendUIDs: [String] = (snap?.data()?["friends"] as? [[String: Any]] ?? []).compactMap { $0["uid"] as? String }
             let allUIDs = [me.uid] + friendUIDs
-
-//            self.showDailyPic(for: me.uid, date: date)
-//            self.showPinnedPic(for: me.uid, date: date)
+            
             for uid in allUIDs {
                 self.showDailyPic(for: uid, date: date)
                 self.findPinnedPic(for: uid, date: date) {
@@ -293,6 +289,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
+    // update pinned picture; if one hasn't been posted today, use yesterday's entry
     func findPinnedPic(for uid: String, date: String, completion: @escaping () -> Void) {
         let storage = Storage.storage()
         let datedRef = storage.reference().child("\(uid)/\(date)/pinned_pic.jpg")

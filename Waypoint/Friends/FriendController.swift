@@ -147,6 +147,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
             }
         }
         filteredUsers = addFriendsArray
+        searchBar.text = ""
         friendFilteredUsers = removeFriendsArray
     }
     
@@ -476,7 +477,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         if segue.identifier == "addSegue", let destinationVC = segue.destination as?
             AddFriendViewController, let indexPath = suggestedFriendView.indexPathForSelectedRow {
             var selectedUser: User
-            selectedUser = addFriendsArray[indexPath.row]
+            selectedUser = filteredUsers[indexPath.row]
             destinationVC.selectedUsername = selectedUser.username
         } else if segue.identifier == "pendingSegue", let destinationVC = segue.destination as? PendingViewController, let indexPath = pendingFriendView.indexPathForSelectedRow {
             var selectedUser: User
@@ -487,7 +488,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                   let indexPath = friendProfileView.indexPathForSelectedRow,
                   indexPath.row < removeFriendsArray.count {
               
-              let selectedUser = removeFriendsArray[indexPath.row]
+              let selectedUser = friendFilteredUsers[indexPath.row]
               destinationVC.selectedUsername = selectedUser.username
           }
 
@@ -543,13 +544,10 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
 
     // Clear search when cancel button is tapped
-    
-    //TODO: Not working
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         filteredUsers = addFriendsArray
         friendFilteredUsers = removeFriendsArray
-//        print(pendingFriendsArray.count)
         if pendingFriendsArray.count == 0 {
             pendingFriendView.isHidden = true
             pendingFriendLabel.isHidden = true

@@ -97,6 +97,8 @@ class FullPhotoViewController: UIViewController {
                     print("no time found")
                     return
                 }
+                
+                // show date taken on image view
                 let timestamp = Date(timeIntervalSince1970: time)
                 let df = DateFormatter()
                 df.calendar = Calendar.current
@@ -186,7 +188,7 @@ class FullPhotoViewController: UIViewController {
                         $0.timestamp < $1.timestamp
                     }
                 }
-                
+                // load full view
                 DispatchQueue.main.async{
                     self.usernameLabel.text = self.username
                     self.locationLabel.text = " is in \(self.locationName!)"
