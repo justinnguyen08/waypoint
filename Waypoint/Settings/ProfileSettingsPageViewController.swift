@@ -33,6 +33,7 @@ class ProfileSettingsPageViewController: UIViewController, UIImagePickerControll
         getProfilePic()
     }
     
+    // present alert when uploading profile picture
     @IBAction func uploadPhotoButtonTapped(_ sender: Any) {
         let alert = UIAlertController(title: "Profile Picture",
                                           message: "Choose a source",
@@ -60,6 +61,7 @@ class ProfileSettingsPageViewController: UIViewController, UIImagePickerControll
         present(picker, animated: true)
     }
     
+    // update firestore values after clicking "Save and Exit"
     @IBAction func saveAndExitTapped(_ sender: Any) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()

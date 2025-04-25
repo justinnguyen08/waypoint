@@ -1,3 +1,5 @@
+//  Project: Waypoint
+//  Course: CS371L
 //
 //  YearlyTimelapseViewController.swift
 //  Waypoint
@@ -26,7 +28,6 @@ class YearlyTimelapseViewController: UIViewController {
             print("User is signed in with uid: \(user.uid)")
             basePath = "\(user.uid)/"
             fetchAllImageURLs(uuid: user.uid)
-            
         } else {
             print("No user is signed in.")
         }
@@ -51,6 +52,7 @@ class YearlyTimelapseViewController: UIViewController {
                     do {
                         let folderResult = try await folderRef.listAllAsync()
                         if let dailyItem = folderResult.items.first(where: { $0.name.contains("daily_pic.jpg") }) ?? folderResult.items.first {
+                            // fetch image url
                             let url = try await dailyItem.downloadURLAsync()
                             urls.append(url)
                         }
@@ -58,7 +60,8 @@ class YearlyTimelapseViewController: UIViewController {
                         print("Error processing folder \(folderRef.name): \(error)")
                     }
                 }
-
+                
+                // sort images and start slideshow video
                 await MainActor.run {
                     self.imageUrls = urls.sorted { $0.absoluteString < $1.absoluteString }
                     self.startSlideshow()
@@ -68,7 +71,8 @@ class YearlyTimelapseViewController: UIViewController {
             }
         }
     }
-
+    
+    // runs slideshow video of each image
     func startSlideshow() {
         guard !imageUrls.isEmpty else { return }
         showImage(index: currentIndex)
@@ -80,26 +84,26 @@ class YearlyTimelapseViewController: UIViewController {
     }
     
     func showImage(index: Int) {
-            let url = imageUrls[index]
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                guard let data = data,
-                      let image = UIImage(data: data) else {
-                    return
+        let url = imageUrls[index]
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data,
+                  let image = UIImage(data: data) else {
+                return
+            }
+            DispatchQueue.main.async {
+                if self.yearlyTimelapsPictures.image?.pngData() != image.pngData() {
+                    UIView.transition(with: self.yearlyTimelapsPictures,
+                                      duration: 1.0,
+                                      options: [.transitionCrossDissolve],
+                                      animations: {
+                        self.yearlyTimelapsPictures.alpha = 0
+                        self.yearlyTimelapsPictures.image = image
+                        self.yearlyTimelapsPictures.alpha = 1
+                    })
                 }
-                DispatchQueue.main.async {
-                    if self.yearlyTimelapsPictures.image?.pngData() != image.pngData() {
-                        UIView.transition(with: self.yearlyTimelapsPictures,
-                                          duration: 1.0,
-                                          options: [.transitionCrossDissolve],
-                                          animations: {
-                            self.yearlyTimelapsPictures.alpha = 0
-                            self.yearlyTimelapsPictures.image = image
-                            self.yearlyTimelapsPictures.alpha = 1
-                        })
-                    }
-                }
-            }.resume()
-        }
+            }
+        }.resume()
+    }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -110,6 +114,7 @@ class YearlyTimelapseViewController: UIViewController {
 
 extension StorageReference {
     
+    // lists all folders shown in firebase asynchronously
     func listAllAsync() async throws -> StorageListResult {
         try await withCheckedThrowingContinuation { continuation in
             self.listAll { result, error in
@@ -121,7 +126,8 @@ extension StorageReference {
             }
         }
     }
-
+    
+    // downloads all urls in firebase asynchronously
     func downloadURLAsync() async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
             self.downloadURL { url, error in

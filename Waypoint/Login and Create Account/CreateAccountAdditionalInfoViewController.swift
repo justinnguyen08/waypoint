@@ -127,6 +127,8 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
                                 }
                             }
                         }
+                        
+                        // updating user's profile image
                         guard let image = self!.selectedProfileImage,
                               let data = image.jpegData(compressionQuality: 0.8) else {
                               return
@@ -150,6 +152,7 @@ class CreateAccountAdditionalInfoViewController: UIViewController, UITextFieldDe
         picker.dismiss(animated: true)
     }
       
+    // when image is picked from picker display that image as selected profile picture
     func imagePickerController(_ picker: UIImagePickerController,
                                  didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true)
