@@ -21,7 +21,6 @@ public struct User {
 public var addFriendsArray: [User] = []     // all users
 public var removeFriendsArray: [User] = []  // current friends
 public var pendingFriendsArray: [User] = [] // pending friends
-public var suggestedFriends: [User] = []    // suggested friends
 
 class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,
                         UITextFieldDelegate, PendingFriendActionDelegate, RemoveFriendActionDelegate {
@@ -45,6 +44,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
     var friendFilteredUsers: [User] = []
     let db = Firestore.firestore()
     
+    // Set up stuff whenever the user loads everything from the table view to the all the arrays
     override func viewDidLoad() {
         let titleLabel = UILabel()
         titleLabel.text = "Friends"
@@ -110,7 +110,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
 
-    
+    // Set up stuff whenever the user loads everything from the table view to the all the arrays
     override func viewWillAppear(_ animated: Bool) {
         guard let uid = Auth.auth().currentUser?.uid else {
             print("User not authenticated")
@@ -197,9 +197,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                         }
                     }
                     pendingFriendsArray = pendingList
-//                    DispatchQueue.main.async {
-//                        self.pendingFriendView.reloadData()
-//                    }
                     handler() 
                 } else {
                     print("No pending friends data found")
@@ -236,8 +233,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 }
             }
             addFriendsArray = fetchedUsers
-            // Only shows like the first 10, but you can search for all the names
-            suggestedFriends = Array(addFriendsArray.prefix(10))
             handler()
         }
     }
@@ -519,6 +514,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
 
     }
     
+    // Code to handle what users shows up when I start searching some letters
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if segCtrl.selectedSegmentIndex == 1 {
             if searchText.isEmpty {
@@ -528,8 +524,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
                 if pendingFriendsArray.count == 0 {
                     pendingFriendView.isHidden = true
                     pendingFriendLabel.isHidden = true
-//                    pendingFriendLabel.text = "  Suggested Friends"
-//                    suggestFriendsLabel.isHidden = true
                 } else {
                     pendingFriendView.isHidden = false
                     pendingFriendLabel.isHidden = false
@@ -599,10 +593,12 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         self.view.endEditing(true)
     }
     
+    // Helps to dismiss the keyboard when you click out of it
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
     
+    // When you accept a friend request, it removes it from the table view and adds it to current friends
     func didAcceptFriendRequest(at indexPath: IndexPath) {
         let acceptedUser = pendingFriendsArray[indexPath.row]
         removeFriendsArray.append(acceptedUser)
@@ -623,6 +619,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         pendingFriendView.reloadData()
     }
     
+    // When you deny a friend request, it removes it from the table view and adds it to current friends
     func didDenyFriendRequest(at indexPath: IndexPath) {
         let deniedUser = pendingFriendsArray[indexPath.row]
         addFriendsArray.append(deniedUser)
@@ -643,6 +640,7 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         pendingFriendView.reloadData()
     }
     
+    // When you remove a friend, it removes it from the table view and adds it to suggested friends
     func removeFriendRequest(at indexPath: IndexPath) {
         let removedUser = removeFriendsArray[indexPath.row]
         addFriendsArray.append(removedUser)
@@ -652,8 +650,6 @@ class FriendController: UIViewController, UITableViewDelegate, UITableViewDataSo
         friendProfileView.deleteRows(at: [indexPath], with: .fade)
         friendProfileView.reloadData()
     }
-
-    
 }
 
 

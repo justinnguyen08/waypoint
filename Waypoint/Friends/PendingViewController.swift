@@ -182,7 +182,6 @@ class PendingViewController: UIViewController {
                     }
                 }
                 
-                // 3. Find mutual friends
                 let mutuals = self.findMutualFriends(currentUserFriends: currentFriends, targetUserFriends: targetFriends)
                 print("Mutual Friends: \(mutuals.map { $0.username })")
                 self.configureMutualFriendsView(mutuals: mutuals)
@@ -192,11 +191,13 @@ class PendingViewController: UIViewController {
         }
     }
     
+    // Finds mutual friends and sets that up for the stack view
     func findMutualFriends(currentUserFriends: [User], targetUserFriends: [User]) -> [User] {
         let currentSet = Set(currentUserFriends.map { $0.uid })
         return targetUserFriends.filter { currentSet.contains($0.uid) }
     }
     
+    // Takes care of showing up the mutual friends in the stack view for every person
     func configureMutualFriendsView(mutuals: [User]) {
         mutualFriends.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
@@ -217,7 +218,7 @@ class PendingViewController: UIViewController {
         label.textColor = .darkGray
 
         if count > 3 {
-            // Show only 3 overlapping profile pics + label
+            // Show only 3 overlapping profile pics and their username
             for user in mutuals.prefix(3) {
                 let imageView = createProfileImageView()
                 imageStack.addArrangedSubview(imageView)
@@ -239,7 +240,7 @@ class PendingViewController: UIViewController {
                 fetchImage(from: ref, for: imageView, fallback: "person.circle")
 
                 label.text = "\(user.username) is also following"
-                break // Show only 1 user with their tag line when ≤ 3
+                break
             }
 
             let containerStack = UIStackView()
@@ -255,8 +256,7 @@ class PendingViewController: UIViewController {
         }
     }
 
-
-
+    // Makes the profile picture view for the mutual friends
     func createProfileImageView() -> UIImageView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
