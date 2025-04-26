@@ -197,6 +197,55 @@ class SettingsViewController: UITableViewController {
         }
     }
     
+    // update the progress bar
+    func updateProgress(totalImages: Int, completedImages: Int) {
+        DispatchQueue.main.async {
+            let progress = Float(completedImages) / Float(max(totalImages, 1))
+            self.progressBar?.setProgress(progress, animated: true)
+            self.progressLabel?.text = "Exporting photos... (\(completedImages)/\(totalImages))"
+        }
+    }
+    
+    // export all photos from folder
+    func exportAndCount(from folder: StorageReference, group: DispatchGroup, totalImages: Int, completedImages: Int) {
+        var totalCurImages = totalImages
+        var completedCurImages = completedImages
+        group.enter()
+        folder.listAll { result, error in
+            guard let items = result?.items else {
+                group.leave()
+                return
+            }
+
+            totalCurImages += items.count
+            let innerGroup = DispatchGroup()
+            
+            // iterate through all images in folder ("all_pics" & "challenges")
+            for imageRef in items {
+                innerGroup.enter()
+                imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+                    if let data = data, let image = UIImage(data: data) {
+                        PHPhotoLibrary.shared().performChanges({
+                            PHAssetChangeRequest.creationRequestForAsset(from: image)
+                        }) { success, error in
+                            completedCurImages += 1
+                            self.updateProgress(totalImages: totalCurImages, completedImages: completedCurImages)
+                            innerGroup.leave()
+                        }
+                    } else {
+                        completedCurImages += 1
+                        self.updateProgress(totalImages: totalCurImages, completedImages: completedCurImages)
+                        innerGroup.leave()
+                    }
+                }
+            }
+
+            innerGroup.notify(queue: .main) {
+                group.leave()
+            }
+        }
+    }
+    
     // exports all daily and challenge photos to camera roll
     func exportAllPicsAndChallengesToPhotos() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
@@ -217,60 +266,13 @@ class SettingsViewController: UITableViewController {
             let group = DispatchGroup()
             var totalImages = 0
             var completedImages = 0
-            
-            // update the progress bar
-            func updateProgress() {
-                DispatchQueue.main.async {
-                    let progress = Float(completedImages) / Float(max(totalImages, 1))
-                    self.progressBar?.setProgress(progress, animated: true)
-                    self.progressLabel?.text = "Exporting photos... (\(completedImages)/\(totalImages))"
-                }
-            }
-            
-            // export all photos from folder
-            func exportAndCount(from folder: StorageReference) {
-                group.enter()
-                folder.listAll { result, error in
-                    guard let items = result?.items else {
-                        group.leave()
-                        return
-                    }
-
-                    totalImages += items.count
-                    let innerGroup = DispatchGroup()
-                    
-                    // iterate through all images in folder ("all_pics" & "challenges")
-                    for imageRef in items {
-                        innerGroup.enter()
-                        imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
-                            if let data = data, let image = UIImage(data: data) {
-                                PHPhotoLibrary.shared().performChanges({
-                                    PHAssetChangeRequest.creationRequestForAsset(from: image)
-                                }) { success, error in
-                                    completedImages += 1
-                                    updateProgress()
-                                    innerGroup.leave()
-                                }
-                            } else {
-                                completedImages += 1
-                                updateProgress()
-                                innerGroup.leave()
-                            }
-                        }
-                    }
-
-                    innerGroup.notify(queue: .main) {
-                        group.leave()
-                    }
-                }
-            }
-
+    
             // Start exporting
-            exportAndCount(from: baseRef.child("all_pics"))
+            self.exportAndCount(from: baseRef.child("all_pics"), group: group, totalImages: totalImages, completedImages: completedImages)
 
             baseRef.child("challenges").listAll { result, error in
                 for folder in result?.prefixes ?? [] {
-                    exportAndCount(from: folder)
+                    self.exportAndCount(from: folder, group: group, totalImages: totalImages, completedImages: completedImages)
                 }
 
                 group.notify(queue: .main) {
