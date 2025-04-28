@@ -74,7 +74,6 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
         profilePictureView.clipsToBounds = true
     }
     
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         prevVC.comments = allComments
@@ -127,7 +126,6 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
             cell.commentLikeCountLabel.text = "\(likes.count)"
         }
         
-        
         // reload this row
         commentTable.reloadRows(at: [IndexPath(row: commentIndex, section: 0)], with: .automatic)
         
@@ -136,9 +134,6 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
         let _ = await prevVC.handleCommentLike(postID: postID, commentIndex: commentIndex)
         return !currentLiked
     }
-    
-    
-    
     
     // table view functions
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -217,5 +212,4 @@ class MapCommentsViewController: UIViewController, UITableViewDelegate, UITableV
             nextVC.selectedUsername = allComments[willSelectCommentIndex].username
         }
     }
-
 }
