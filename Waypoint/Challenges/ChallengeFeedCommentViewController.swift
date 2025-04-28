@@ -39,8 +39,9 @@ class ChallengeFeedCommentViewController: UIViewController, UITableViewDelegate,
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        // https://stackoverflow.com/questions/29195705/swift-tap-gesture-to-dismiss-keyboard-uitableview
         let tableTap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tableTap.cancelsTouchesInView = false
+        tableTap.cancelsTouchesInView = true
         commentTable.addGestureRecognizer(tableTap)
 
     }
