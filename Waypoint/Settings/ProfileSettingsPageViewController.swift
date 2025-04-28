@@ -13,7 +13,7 @@ import FirebaseAuth
 import FirebaseStorage
 import FirebaseFirestore
 
-class ProfileSettingsPageViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ProfileSettingsPageViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
     
     var picker = UIImagePickerController()
     @IBOutlet weak var profilePic: UIImageView!
@@ -25,12 +25,19 @@ class ProfileSettingsPageViewController: UIViewController, UIImagePickerControll
     override func viewDidLoad() {
         super.viewDidLoad()
         picker.delegate = self
+        nicknameTextField.delegate = self
+        usernameTextField.delegate = self
         profilePic.layer.cornerRadius = profilePic.frame.width / 2
         profilePic.clipsToBounds = true
         profilePic.contentMode = .scaleAspectFill
         profilePic.layer.borderColor = UIColor.black.cgColor
         profilePic.layer.borderWidth = 1
         getProfilePic()
+    }
+    
+    // Called when the user clicks on the view outside of the UITextField
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     // present alert when uploading profile picture
